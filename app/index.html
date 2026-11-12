@@ -236,31 +236,68 @@ details.desc dd{margin:0;font-size:13.5px}
 .foto-row .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .foto-row .fn{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* class grid (brush) */
-.vt{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.gbar{position:sticky;top:var(--top-h,58px);z-index:5;background:var(--bg);padding:8px 0;display:flex;flex-direction:column;gap:6px}
+/* class grid: one table, tap a cell, values in the editor bar */
+.vt{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .gbr{display:flex;gap:4px}
 .gbr .lv{flex:1;min-width:0}
 .g0{--gc:var(--bad);--gs:var(--bad-soft)} .g1{--gc:var(--warn);--gs:var(--warn-soft)} .g2{--gc:var(--accent);--gs:var(--accent-soft)} .g3{--gc:var(--ok);--gs:var(--ok-soft)}
 .gbr .lv.on,.gbr .lv.on.NI{background:var(--gc,var(--ink));border-color:var(--gc,var(--ink));color:var(--surface)}
-.gnote{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:24px}
-table.gt th,table.gt td{padding:3px}
-table.gt th.gh{white-space:normal;vertical-align:bottom}
-.gh button{border:0;background:none;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;padding:4px 2px;line-height:1.15;max-width:86px;min-width:44px}
-.sticky{position:sticky;left:0;z-index:1;background:var(--surface)}
-th.sticky{background:var(--surface-2)}
-.rowh button{display:flex;align-items:center;gap:8px;border:0;background:none;padding:2px 4px;text-align:left;max-width:168px;font-weight:600;color:var(--ink)}
-.rowh .nmx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rowh .n{font-family:var(--f-display);color:var(--muted);font-variant-numeric:tabular-nums}
-.gc{width:100%;min-width:44px;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font-family:var(--f-display);font-weight:700;font-size:15px;color:var(--muted);padding:0}
-.gc.g0,.gc.g1,.gc.g2,.gc.g3{background:var(--gs);color:var(--gc);border-color:transparent}
-.gc.auto{font-style:italic;font-weight:600;background:transparent;border:1px dashed var(--line)}
-.gc:disabled{opacity:.35}
-input.fz{width:68px;min-height:40px;padding:4px;text-align:center;font-size:15px;border-radius:8px}
-.fz.z0{background:var(--bad-soft);color:var(--bad);border-color:transparent}
-.fz.z1{background:var(--ok-soft);color:var(--ok);border-color:transparent}
-.fz.z2{background:var(--accent-soft);color:var(--accent);border-color:transparent}
-td.gtot{font-family:var(--f-display);font-weight:700;font-size:16px;padding:3px 8px}
+.gwrap{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);max-height:70vh;overscroll-behavior:contain}
+table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-content;min-width:100%}
+.gt2 th,.gt2 td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:0;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gt2 thead th{position:sticky;z-index:2;background:var(--surface-2);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.gt2 thead tr.grp th{top:0;height:24px;padding:0 6px;text-align:left;color:var(--gk,var(--muted));border-bottom:2px solid var(--gk,var(--line))}
+.gt2 thead tr.cols th{top:24px;padding:4px;white-space:normal;line-height:1.15;min-width:52px;max-width:92px;cursor:pointer;vertical-align:bottom}
+.gt2 thead tr.cols th.sub{font-weight:500;text-transform:none;letter-spacing:0;font-size:11.5px}
+.gt2 thead tr.cols th small{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+.gt2 thead tr.cols th.srt::after{content:" ↕";color:var(--accent)}
+.gt2 th.corner{left:0;top:0;z-index:4;text-align:left;padding:4px 8px;vertical-align:bottom}
+.gt2 tbody th.rh{position:sticky;left:0;z-index:1;background:var(--surface);text-align:left;padding:4px 8px 4px 6px;cursor:pointer;font-weight:600;color:var(--ink);max-width:180px}
+.rh .rhi{display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-size:14px}
+.rh .n{font-family:var(--f-display);color:var(--muted);min-width:16px;text-align:right}
+.rh .nmx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gt2 td.c{height:42px;min-width:52px;font-family:var(--f-display);font-weight:700;font-size:16px;color:var(--ink);cursor:pointer;background:var(--surface)}
+.gt2 td.c.g0,.gt2 td.c.g1,.gt2 td.c.g2,.gt2 td.c.g3,.gcr .c.g0,.gcr .c.g1,.gcr .c.g2,.gcr .c.g3{background:var(--gs);color:var(--gc)}
+.c.z0{--gs:var(--bad-soft);--gc:var(--bad)} .c.z1{--gs:var(--ok-soft);--gc:var(--ok)} .c.z2{--gs:var(--accent-soft);--gc:var(--accent)}
+.gt2 td.c.z0,.gt2 td.c.z1,.gt2 td.c.z2,.gcr .c.z0,.gcr .c.z1,.gcr .c.z2{background:var(--gs);color:var(--gc)}
+.c.auto{font-style:italic;font-weight:600;opacity:.8}
+.c.off{background:var(--surface-2)!important;color:var(--muted);cursor:default}
+.c.calc{background:var(--surface-2);cursor:default}
+.c.low{color:var(--bad)}
+.c.fin-ok{background:var(--ok-soft);color:var(--ok)} .c.fin-bad{background:var(--bad-soft);color:var(--bad)} .c.fin-inc{color:var(--muted)}
+.gt2 td.c.sel,.gcr.sel .c{outline:3px solid var(--ink);outline-offset:-3px}
+.gt2 tr.rsel th.rh{background:var(--accent-soft)}
+.gt2 tfoot td,.gt2 tfoot th{position:sticky;bottom:0;background:var(--surface-2);font-size:12px;color:var(--muted);padding:4px;z-index:2}
+.gt2 tfoot th{left:0;z-index:3;text-align:left;padding-left:8px}
+.gk-mat{--gk:var(--accent)} .gk-fit{--gk:var(--ok)} .gk-con{--gk:var(--warn)} .gk-av{--gk:var(--mat)} .gk-fin{--gk:var(--ink)}
+/* one column at a time (phone) */
+.gcnav{display:grid;grid-template-columns:44px 1fr 44px;gap:6px;align-items:center}
+.gcnav select{font-weight:600}
+.gcl{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;touch-action:pan-y}
+.gcr{display:flex;align-items:center;gap:12px;padding:8px 12px;border:0;border-top:1px solid var(--line);background:none;text-align:left;width:100%;min-height:58px}
+.gcr:first-child{border-top:0}
+.gcr .who{flex:1;min-width:0;display:flex;flex-direction:column}
+.gcr .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcr .meta{font-size:12.5px;color:var(--muted)}
+.gcr .c{flex:none;min-width:58px;height:42px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:18px;background:var(--surface-2);padding:0 8px}
+.gcr.sel{background:var(--accent-soft)}
+/* editor bar */
+#ged{position:fixed;left:0;right:0;bottom:var(--nav-h,64px);z-index:30;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(19,32,45,.08)}
+#ged .wrap{padding-block:8px 10px;display:flex;flex-direction:column;gap:8px}
+.ged-h{display:flex;align-items:center;gap:8px;min-width:0}
+.ged-h .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.ged-h .icon-btn{width:36px;height:36px;font-size:20px}
+.ged-num{display:flex;gap:8px}
+.ged-num input{flex:1;font-size:20px;text-align:center;font-family:var(--f-display);font-weight:700}
+.pin{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.pin input{width:20px;height:20px}
+.domd summary{font-size:13px;font-weight:600;cursor:pointer;padding:2px 0}
+.domd summary .ok{color:var(--ok)} .domd summary .nx{color:var(--warn)}
+.domd .dom{margin-top:6px;max-height:24vh}
+.dom{font-size:13px;display:grid;gap:4px;max-height:28vh;overflow:auto;background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.dom b{font-family:var(--f-display);letter-spacing:.02em}
+.dom .ok{color:var(--ok)} .dom .nx{color:var(--warn)}
+body.ged-on #main{padding-bottom:calc(84px + var(--ged-h,160px) + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion: no-preference){ .sh{animation:up .18s ease-out} @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}} }
 @media (max-width:380px){ .ps{grid-template-columns:repeat(5,34px)} .ps button{height:36px} .seg button{padding:6px 7px} }
 </style>
@@ -272,6 +309,7 @@ td.gtot{font-family:var(--f-display);font-weight:700;font-size:16px;padding:3px 
   <main id="main"><div class="wrap"><div class="loading">A abrir o caderno…</div></div></main>
   <nav id="nav" aria-label="Secções"><div class="wrap" id="nav-in"></div></nav>
 </div>
+<div id="ged" hidden></div>
 <div id="sheet" hidden></div>
 <div id="toast" role="status" hidden></div>
 <input type="file" id="file-import" accept=".json,application/json" hidden>
@@ -390,7 +428,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 /* ---------- state ---------- */
 let S = {cfg:{}, turmas:{}, aulas:{}, aval:{}, fotos:{}};
 let CFG = null;
-const UI = {turma:null, tab:'aulas', p:1, avTab:'mat', avView:'grelha', brush:{mat:null, av:null}, mat:null, fit:'vaivem', fitref:'vaivem', draft:null};
+const UI = {turma:null, tab:'aulas', p:1, avTab:'mat', avMode:'grelha', glay:null, gcol:null, hide:{mat:false, fit:false, con:false, av:false}, todo:false, sort:null, mat:null, fit:'vaivem', fitref:'vaivem', draft:null};
 let IMP = null, FOTOS = null, DFOTO, UNDO = null;
 function loadUI() { try { Object.assign(UI, JSON.parse(localStorage.getItem('ef:ui') || '{}'), {draft:null}); } catch (e) {} }
 function saveUI() { try { const {draft, ...rest} = UI; localStorage.setItem('ef:ui', JSON.stringify(rest)); } catch (e) {} }
@@ -444,7 +482,8 @@ function zoneOf(f, al, age, v) {
 
 function calc(t, p, al) {
   const v = avalOf(t.id, p); const R = REG[al.regime] || REG.Normal; const afOn = R.af > 0, apfOn = R.apf > 0;
-  const lv = (v.af || {})[al.id] || {}; const ls = Object.values(lv).filter(x => x in LVP);
+  const lv = {}; new Set([...Object.keys((v.af || {})[al.id] || {}), ...Object.keys(v.ind || {})]).forEach(m => { const x = lvOf(v, al.id, m); if (x) lv[m] = x.l; });
+  const ls = Object.values(lv).filter(x => x in LVP);
   const AF = ls.length ? ls.reduce((s, x) => s + LVP[x], 0) / ls.length : null;
   const age = ageAt(al.nasc, refDate(p)); let pts = 0, any = false; const zones = {};
   FIT.forEach(f => { const z = zoneOf(f, al, age, v); zones[f.k] = z; if (z != null) { any = true; pts += f.pts[z] || 0; } });
@@ -492,6 +531,7 @@ function render() {
   if (!t && UI.tab !== 'mais') h = vWelcome();
   else h = ({aulas:vAulas, alunos:vAlunos, avaliar:vAvaliar, pauta:vPauta, mais:vMais})[UI.tab](t);
   $('#main').innerHTML = '<div class="wrap">' + h + '</div>';
+  gEditor();
 }
 
 function storageNote() {
@@ -555,14 +595,12 @@ function vAlunos(t) {
 
 function vAvaliar(t) {
   const als = alunosOf(t);
-  let h = `<div class="stack"><div class="seg block" role="group" aria-label="Domínio">` +
-    [['mat','Matérias'],['fit','FITescola'],['con','Conhec.'],['av','Atitudes']].map(([k, n]) => `<button data-a="avtab" data-k="${k}" class="${UI.avTab === k ? 'on' : ''}">${n}</button>`).join('') + '</div>';
+  let h = `<div class="stack"><div class="seg block" role="group" aria-label="Modo de avaliar">${[['grelha','Grelha da turma'],['dominio','Aluno a aluno']].map(([k, n]) => `<button data-a="avmode" data-k="${k}" class="${(UI.avMode === 'dominio') === (k === 'dominio') ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (!als.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>Adicione alunos à turma para começar a avaliar.</p></div></div>`;
+  if (UI.avMode !== 'dominio') return h + vGrelha(t) + '</div>';
+  h += `<div class="seg block" role="group" aria-label="Domínio">` +
+    [['mat','Matérias'],['fit','FITescola'],['con','Conhec.'],['av','Atitudes']].map(([k, n]) => `<button data-a="avtab" data-k="${k}" class="${UI.avTab === k ? 'on' : ''}">${n}</button>`).join('') + '</div>';
   const v = avalOf(t.id, UI.p);
-  if (UI.avTab === 'mat' || UI.avTab === 'av' || UI.avTab === 'fit') {
-    h += `<div class="vt"><span class="hint">${UI.avView !== 'grelha' ? 'Aluno a aluno, com os descritivos.' : UI.avTab === 'fit' ? 'Turma toda: todos os testes lado a lado.' : 'Turma toda: escolha o valor e toque nos alunos.'}</span><div class="seg" role="group" aria-label="Vista">${[['grelha','Grelha'],['lista','Lista']].map(([k, n]) => `<button data-a="avview" data-k="${k}" class="${UI.avView === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>`;
-    if (UI.avView === 'grelha') return h + (UI.avTab === 'fit' ? vFitGrid(t, v, als) : vGrid(t, v, als)) + '</div>';
-  }
   if (UI.avTab === 'mat') {
     const ms = matsOf(t, UI.p);
     if (!ms.includes(UI.mat)) UI.mat = ms[0] || null;
@@ -574,7 +612,7 @@ function vAvaliar(t) {
     als.forEach(al => {
       const off = (REG[al.regime] || REG.Normal).af === 0; const cur = ((v.af || {})[al.id] || {})[UI.mat];
       h += `<div class="ev ${off ? 'off' : ''}"><div class="ev-h"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="hint" id="lvh-${esc(al.id)}">${off ? 'Dispensa total' : cur ? esc(LVN[cur]) : ''}</span></div>` +
-        (off ? '' : `<div class="lvls" role="group" aria-label="Nível de ${esc(al.nome)}">${LV.map(l => `<button class="lv ${l} ${cur === l ? 'on' : ''}" data-a="lv" data-aid="${esc(al.id)}" data-l="${l}" aria-pressed="${cur === l}">${l}</button>`).join('')}</div>`) + '</div>';
+        (off ? '' : `<div class="lvls" role="group" aria-label="Nível de ${esc(al.nome)}">${LV.map(l => `<button class="lv ${l} ${cur === l ? 'on' : ''}" data-a="lv" data-aid="${esc(al.id)}" data-l="${l}" aria-pressed="${cur === l}">${l}</button>`).join('')}</div><div class="dom" id="lvs-${esc(al.id)}"${cur ? '' : ' hidden'}>${cur ? lvSummary(t.ciclo, UI.mat, cur) : ''}</div>`) + '</div>';
     });
     return h + '</div></div>';
   }
@@ -627,93 +665,265 @@ function avatar(al, cls) {
   return `<span class="${c}" aria-hidden="true">${esc(((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase())}</span>`;
 }
 
-/* ---------- class grid: pick a value, tap the students ---------- */
+/* ---------- grelha da turma: uma tabela, toque na célula, valores na barra de baixo ---------- */
+const GN = {mat:'Matérias', fit:'FITescola', con:'Conhecimentos', av:'Atitudes'};
 const GLV = {NI:'g0', PI:'g1', I:'g1', PE:'g2', E:'g2', PA:'g3', A:'g3'};
 const GAV = ['g0', 'g1', 'g2', 'g3'];
-function gridSpec(t, v) {
-  if (UI.avTab === 'mat') {
-    const get = (al, k) => ((v.af || {})[al.id] || {})[k] || null;
-    return {key:'af', total:'AF',
-      cols: matsOf(t, UI.p).map(m => ({k:m, label:m.replace(/\s*\(.*\)$/, ''), title:m})),
-      brushes: LV.map(l => ({v:l, label:l, title:LVN[l], g:GLV[l]})),
-      parse: x => x, off: al => (REG[al.regime] || REG.Normal).af === 0, get,
-      show: (al, k) => { const x = get(al, k); return {txt:x || '', g:x ? GLV[x] : ''}; },
-      set: (al, k, val) => { v.af = v.af || {}; v.af[al.id] = v.af[al.id] || {}; if (val == null) delete v.af[al.id][k]; else v.af[al.id][k] = val; },
-      calc: al => calc(t, UI.p, al).AF};
-  }
-  const get = (al, k) => ((v.av || {})[al.id] || {})[k] ?? null;
-  return {key:'av', total:'Nota',
-    cols: Object.keys(AVW).map(k => ({k, label:{pont:'Pont.', mat:'Mat.', resp:'Resp.', emp:'Emp.', lid:'Lid.'}[k], title:AVN[k]})),
-    brushes: [0, 1, 2, 3].map(i => ({v:i, label:String(i + 1), title:'Nível ' + (i + 1), g:GAV[i]})),
-    parse: x => +x, off: () => false, get,
-    show: (al, k) => {
-      const o = get(al, k); if (o != null) return {txt:o + 1, g:GAV[o]};
-      if (k === 'pont' || k === 'mat') { const c = counts(t, UI.p, al.id); const a = idxFromCount(k === 'pont' ? c.F + c.A : c.M); return {txt:a + 1, g:'', auto:true}; }
-      return {txt:'', g:''};
-    },
-    set: (al, k, val) => { v.av = v.av || {}; v.av[al.id] = v.av[al.id] || {}; v.av[al.id][k] = val; },
-    calc: al => calc(t, UI.p, al).AV};
-}
-function vGrid(t, v, als) {
-  const sp = gridSpec(t, v), b = UI.brush[UI.avTab] ?? null;
-  let h = '';
-  if (UI.avTab === 'mat') {
-    h += `<div class="chips"><button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
-    if (!sp.cols.length) return h + `<div class="card empty"><h3>Sem matérias neste período</h3><p>As matérias entram aqui quando as indica nas aulas. Também pode adicionar uma diretamente.</p></div>`;
-    h += `<details class="desc"><summary>Descritivos PNEF</summary><dl>${sp.cols.map(c => { const d = (PNEF[t.ciclo] || []).find(x => x.m === c.k); return `<dt>${esc(c.k)}</dt><dd>${d ? ['I','E','A'].map(k => `<b>${k}</b>: ${esc(d[k] || '—')}`).join('<br>') : 'Sem descritivo neste ciclo.'}</dd>`; }).join('')}</dl><p class="hint" style="margin:0 0 12px">PI, PE e PA: cumpre pelo menos metade dos conteúdos do nível I, E ou A.</p></details>`;
-  } else {
-    h += `<details class="desc"><summary>Descritores das atitudes (1 a 4)</summary><dl>${Object.keys(AVW).map(k => `<dt>${esc(AVN[k])} · ${AVW[k] * 100}%</dt><dd>${AVD[k].map((d, i) => `<b>${i + 1}</b>: ${esc(d)}`).join('<br>')}</dd>`).join('')}</dl><p class="hint" style="margin:0 0 12px">Pontualidade e Material sem valor usam as presenças (a tracejado). O pincel substitui esse valor; apagar volta ao automático.</p></details>`;
-  }
-  const bb = sp.brushes.find(x => String(x.v) === b);
-  const undo = UNDO && UNDO.vid === v.id && UNDO.key === sp.key;
-  h += `<div class="gbar"><div class="gbr" role="group" aria-label="Valor a aplicar">${sp.brushes.map(x => `<button class="lv ${x.g} ${b === String(x.v) ? 'on' : ''}" data-a="g-brush" data-v="${x.v}" title="${esc(x.title)}" aria-pressed="${b === String(x.v)}">${esc(x.label)}</button>`).join('')}<button class="lv ${b === 'x' ? 'on' : ''}" data-a="g-brush" data-v="x" title="Apagar" aria-label="Apagar" aria-pressed="${b === 'x'}">⌫</button></div>
-    <div class="gnote"><span class="hint">${b == null ? 'Escolha um valor e toque nas células para o aplicar.' : b === 'x' ? 'A apagar: toque nas células a limpar.' : `A aplicar <b>${esc(bb ? bb.title : b)}</b>. Toque no título de uma coluna ou no nome de um aluno para preencher os vazios.`}</span>${undo ? '<button class="link" data-a="g-undo">Desfazer</button>' : ''}</div></div>`;
-  h += `<div class="tbl-wrap grid"><table class="gt"><thead><tr><th class="l sticky">Aluno</th>${sp.cols.map(c => `<th class="gh"><button data-a="g-col" data-k="${esc(c.k)}" title="${esc(c.title)}">${esc(c.label)}</button></th>`).join('')}<th>${sp.total}</th></tr></thead><tbody>`;
-  als.forEach(al => {
-    const off = sp.off(al), tot = sp.calc(al);
-    h += `<tr><td class="l sticky rowh"><button data-a="g-row" data-aid="${esc(al.id)}" title="${esc(al.nome)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nmx">${esc(al.nome)}</span></button></td>` +
-      sp.cols.map(c => { const s = off ? {txt:'', g:''} : sp.show(al, c.k); return `<td><button class="gc ${s.g}${s.auto ? ' auto' : ''}" data-a="g-cell" data-aid="${esc(al.id)}" data-k="${esc(c.k)}" aria-label="${esc(c.title)} de ${esc(al.nome)}"${off ? ' disabled' : ''}>${esc(s.txt)}</button></td>`; }).join('') +
-      `<td class="gtot ${tot != null && tot < 10 ? 'low' : ''}" id="gt-${esc(al.id)}">${off ? 'n/a' : f1(tot)}</td></tr>`;
-  });
-  return h + '</tbody></table></div>';
-}
-// FITescola em grelha: resultados são números, por isso cada célula é um campo; Enter desce para o aluno seguinte.
 const FITL = {vaivem:'Vaivém', ombros:'Ombros', senta:'Senta e alc.', abd:'Abdom.', flex:'Flexões', vel:'Veloc. 40 m', agil:'Agilid.', imp:'Impulsão'};
-function vFitGrid(t, v, als) {
-  let h = `<p class="hint">A cor mostra a zona (vermelho fora da ZS, verde ZS, azul ZA), calculada pela idade e sexo. Enter passa ao aluno seguinte. Ombros: toque para alternar Sim/Não. Para escolher a zona à mão (sem tabela de referência), use a vista Lista.</p>`;
-  h += `<div class="tbl-wrap grid"><table class="gt"><thead><tr><th class="l sticky">Aluno</th>${FIT.map(f => `<th class="gh" title="${esc(f.n)}">${esc(FITL[f.k])}${f.u ? `<br><span style="text-transform:none">${esc(f.u)}</span>` : ''}</th>`).join('')}<th>Nota</th></tr></thead><tbody>`;
+const AVL = {pont:'Pont.', mat:'Mat.', resp:'Resp.', emp:'Emp.', lid:'Lid.'};
+let SEL = null, PIN = null, FOCUS = null, ORDER = [], COLS = [];
+
+// Nível de uma matéria: o escolhido à mão ou, se houver indicadores avaliados, a média deles.
+function lvOf(v, aid, m) {
+  const man = ((v.af || {})[aid] || {})[m]; if (man) return {l:man};
+  const iv = (v.iv || {})[aid] || {}, ls = ((v.ind || {})[m] || []).map(i => iv[i.id]).filter(x => x in LVP);
+  if (!ls.length) return null;
+  const avg = ls.reduce((s, x) => s + LVP[x], 0) / ls.length;
+  return {l: LV.reduce((b, x) => Math.abs(LVP[x] - avg) < Math.abs(LVP[b] - avg) ? x : b, LV[0]), auto:true};
+}
+// O que o aluno domina e o que lhe falta, a partir dos descritivos PNEF do nível.
+function lvSummary(ciclo, m, l) {
+  const d = (PNEF[ciclo] || []).find(x => x.m === m); if (!d || !(l in LVP)) return '';
+  const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I','E'], PA:['I','E'], A:['I','E','A']}[l];
+  const part = {PI:'I', PE:'E', PA:'A'}[l];
+  const next = {NI:'I', PI:'I', I:'E', PE:'E', E:'A', PA:'A'}[l];
+  let h = '';
+  full.forEach(k => { h += `<div class="ok"><b>Domina · ${LVN[k]}</b> ${esc(d[k])}</div>`; });
+  if (part) h += `<div class="nx"><b>Em parte · ${LVN[part]}</b> já cumpre pelo menos metade: ${esc(d[part])}</div>`;
+  if (!full.length && !part) h += `<div class="nx"><b>Ainda não atinge a Introdução.</b></div>`;
+  if (next && next !== part) h += `<div class="nx"><b>Para melhorar · ${LVN[next]}</b> ${esc(d[next])}</div>`;
+  else if (part) h += `<div class="nx"><b>Para melhorar</b> completar o nível ${LVN[part]}.</div>`;
+  if (l === 'A') h += `<div class="ok"><b>Atinge o nível mais alto.</b></div>`;
+  return h;
+}
+function lvShort(l) {
+  const full = {I:'Introdução', PE:'Introdução', E:'Introdução e Elementar', PA:'Introdução e Elementar', A:'todos os níveis'}[l];
+  const next = {NI:'Introdução', PI:'completar a Introdução', I:'Elementar', PE:'completar o Elementar', E:'Avançado', PA:'completar o Avançado'}[l];
+  return (full ? `<span class="ok">Domina: ${full}</span>` : '<span class="nx">Ainda não domina a Introdução</span>') + (next ? ` · <span class="nx">Para melhorar: ${next}</span>` : '');
+}
+function regOf(t, p, aid) {
+  let pos = 0, neg = 0;
+  aulasOf(t.id).forEach(a => { if (periodOf(a.data) !== p) return; const r = (a.reg || {})[aid]; if (r) { pos += r.p || 0; neg += r.n || 0; } });
+  return {p:pos, n:neg};
+}
+
+function gCols(t, v) {
+  const cols = [], H = UI.hide || {}, fa = FOCUS && S.aulas[FOCUS];
+  if (fa || !H.mat) {
+    let ms = matsOf(t, UI.p); if (fa) ms = ms.filter(m => (fa.materias || []).includes(m));
+    ms.forEach(m => {
+      cols.push({k:'m:' + m, g:'mat', type:'lvl', m, label:m.replace(/\s*\(.*\)$/, ''), title:m});
+      ((v.ind || {})[m] || []).forEach(i => cols.push({k:'i:' + i.id, g:'mat', type:'lvl', m, ind:i, label:i.n, title:m + ' · ' + i.n, sub:true}));
+    });
+    cols.push({k:'t:AF', g:'mat', type:'calc', label:'AF', title:'Nota das matérias'});
+  }
+  if (fa) { cols.push({k:'reg', g:'av', type:'reg', label:'+/−', title:'Registos desta aula'}); return cols; }
+  if (!H.fit) { FIT.forEach(f => cols.push({k:'f:' + f.k, g:'fit', type:f.bool ? 'bool' : 'num', f, label:FITL[f.k], unit:f.u, title:f.n})); cols.push({k:'t:APF', g:'fit', type:'calc', label:'Apt.', title:'Nota da aptidão física'}); }
+  if (!H.con) cols.push({k:'con', g:'con', type:'num', label:'Conhec.', unit:t.escala === '1-5' ? '1-5' : '0-20', title:'Conhecimentos'});
+  if (!H.av) {
+    Object.keys(AVW).forEach(k => cols.push({k:'a:' + k, g:'av', type:'q4', ak:k, label:AVL[k], title:AVN[k]}));
+    cols.push({k:'reg', g:'av', type:'reg', label:'+/−', title:'Registos +/− das aulas do período'});
+    cols.push({k:'t:AV', g:'av', type:'calc', label:'Atit.', title:'Nota das atitudes'});
+  }
+  cols.push({k:'t:FIN', g:'fin', type:'calc', label:'Final', title:'Nota final'});
+  return cols;
+}
+function gCtx(t) { return {t, v:avalOf(t.id, UI.p), p:UI.p, R:{}}; }
+const gCalc = (c, al) => c.R[al.id] || (c.R[al.id] = calc(c.t, c.p, al));
+function gOff(col, al) { const R = REG[al.regime] || REG.Normal; return (col.g === 'mat' && col.type !== 'calc' && R.af === 0) || (col.g === 'fit' && col.type !== 'calc' && R.apf === 0); }
+function gEditable(col, al) { return col.type !== 'calc' && !(col.type === 'reg' && !FOCUS) && !gOff(col, al); }
+function gGet(c, col, al) {
+  const v = c.v, id = al.id, k = col.k, blank = x => x === '' || x === undefined ? null : x;
+  if (k.startsWith('m:')) return ((v.af || {})[id] || {})[col.m] || null;
+  if (k.startsWith('i:')) return ((v.iv || {})[id] || {})[col.ind.id] || null;
+  if (k.startsWith('f:')) return blank(((v.fit || {})[id] || {})[col.f.k]);
+  if (k === 'con') return blank((v.con || {})[id]);
+  if (k.startsWith('a:')) return blank(((v.av || {})[id] || {})[col.ak]);
+  if (k === 'reg') { const r = FOCUS ? ((S.aulas[FOCUS] || {}).reg || {})[id] : regOf(c.t, c.p, id); return r && (r.p || r.n) ? r : null; }
+  return null;
+}
+function gShow(c, col, al) {
+  if (gOff(col, al)) return {txt:col.type === 'calc' ? 'n/a' : '', cls:'off'};
+  const x = gGet(c, col, al);
+  if (col.type === 'calc') {
+    const r = gCalc(c, al), n = r[col.k.slice(2)];
+    if (col.k === 't:FIN') return {txt:n ?? '—', cls:'calc ' + (r.EST === 'Apto' ? 'fin-ok' : r.EST === 'Não apto' ? 'fin-bad' : 'fin-inc')};
+    return {txt:f1(n), cls:'calc' + (n != null && n < 10 ? ' low' : '')};
+  }
+  if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l], auto:d.auto} : {txt:'', cls:''}; }
+  if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
+  if (col.f) {
+    const z = zoneOf(col.f, al, ageAt(al.nasc, refDate(c.p)), c.v), zc = z != null ? 'z' + z : '';
+    if (col.f.bool) return {txt:x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '', cls:zc};
+    return x != null ? {txt:String(x).replace('.', ','), cls:zc} : z != null ? {txt:['Fora', 'ZS', 'ZA'][z], cls:zc, auto:true} : {txt:'', cls:''};
+  }
+  if (col.k === 'con') { const eq = x == null ? null : c.t.escala === '1-5' ? x * 4 : x; return {txt:x == null ? '' : String(x).replace('.', ','), cls:eq != null && eq < 10 ? 'low' : ''}; }
+  if (col.type === 'q4') {
+    if (x != null) return {txt:x + 1, cls:GAV[x]};
+    if (col.ak === 'pont' || col.ak === 'mat') { const ct = counts(c.t, c.p, al.id), a = idxFromCount(col.ak === 'pont' ? ct.F + ct.A : ct.M); return {txt:a + 1, cls:GAV[a], auto:true}; }
+    return {txt:'', cls:''};
+  }
+  if (col.type === 'reg') return {txt:x ? [x.p ? '+' + x.p : '', x.n ? '−' + x.n : ''].filter(Boolean).join(' ') : '', cls:x ? (x.p >= x.n ? 'g3' : 'g0') : ''};
+  return {txt:'', cls:''};
+}
+const gFilled = (c, col, al) => { const s = gShow(c, col, al); return s.txt !== '' && s.cls !== 'off'; };
+function gChoices(col) {
+  if (col.type === 'lvl') return LV.map(l => ({v:l, label:l, cls:GLV[l], title:LVN[l]}));
+  if (col.type === 'q4') return [0, 1, 2, 3].map(i => ({v:i, label:String(i + 1), cls:GAV[i], title:AVD[col.ak][i]}));
+  if (col.type === 'bool') return [{v:'S', label:'Sim', cls:'g3'}, {v:'N', label:'Não', cls:'g0'}];
+  if (col.type === 'reg') return [{v:-1, label:'−1', cls:'g0'}, {v:1, label:'+1', cls:'g3'}];
+  return null;
+}
+function gSnap(c, col) { UNDO = col.type === 'reg' ? {aula:FOCUS, snap:clone((S.aulas[FOCUS] || {}).reg || {})} : {vid:c.v.id, snap:clone(c.v)}; }
+// Grava um valor numa célula (val null apaga). Não faz render.
+function gSet(c, col, al, val) {
+  const v = c.v, id = al.id, k = col.k, at = (o, key) => (o[key] = o[key] || {});
+  if (k === 'reg') {
+    const a = S.aulas[FOCUS]; a.reg = a.reg || {}; const r = a.reg[id] || {p:0, n:0};
+    if (val == null) delete a.reg[id]; else { if (val > 0) r.p++; else r.n++; a.reg[id] = r; }
+    Store.save('aulas', a); return;
+  }
+  if (k.startsWith('m:')) { const o = at(at(v, 'af'), id); if (val == null) delete o[col.m]; else o[col.m] = val; }
+  else if (k.startsWith('i:')) { const o = at(at(v, 'iv'), id); if (val == null) delete o[col.ind.id]; else o[col.ind.id] = val; }
+  else if (k.startsWith('f:')) at(at(v, 'fit'), id)[col.f.k] = val;
+  else if (k === 'con') { const max = c.t.escala === '1-5' ? 5 : 20; at(v, 'con')[id] = val == null ? null : Math.max(0, Math.min(max, val)); }
+  else if (k.startsWith('a:')) at(at(v, 'av'), id)[col.ak] = val;
+  touchAval(v);
+}
+
+function gOrder(c, cols, als) {
+  if (UI.todo) { const started = cols.filter(col => col.type !== 'calc' && col.type !== 'reg' && als.some(al => gGet(c, col, al) != null || (col.m && !col.ind && lvOf(c.v, al.id, col.m))));
+    als = als.filter(al => started.some(col => !gOff(col, al) && !gFilled(c, col, al))); }
+  const so = UI.sort && cols.find(x => x.k === UI.sort.k);
+  if (so) {
+    const key = al => { const s = gShow(c, so, al); if (s.txt === '' || s.cls === 'off' || s.txt === '—') return null; return s.txt in LVP ? LVP[s.txt] : parseNum(String(s.txt).replace(/[^\d,.-]/g, '')); };
+    als = als.map(al => ({al, x:key(al)})).sort((a, b) => a.x == null ? 1 : b.x == null ? -1 : (a.x - b.x) * UI.sort.d).map(o => o.al);
+  }
+  return als;
+}
+function gLayout() { return UI.glay || (window.innerWidth < 640 ? 'coluna' : 'tabela'); }
+
+function vGrelha(t) {
+  const c = gCtx(t), cols = gCols(t, c.v), als = gOrder(c, cols, alunosOf(t));
+  COLS = cols.map(x => x.k); ORDER = als.map(x => x.id);
+  if (SEL && !COLS.includes(SEL.k)) SEL = null;
+  let h = '';
+  if (FOCUS && S.aulas[FOCUS]) { const a = S.aulas[FOCUS]; h += `<div class="note">A avaliar a aula de <b>${esc(fmtDate(a.data))}</b>${(a.materias || []).length ? ': ' + esc(a.materias.join(', ')) : ' (sem matérias marcadas)'}. Registe também +/− de participação. <button class="link" data-a="g-unfocus">Ver o período todo</button></div>`; }
+  else h += `<div class="chips">${Object.entries(GN).map(([g, n]) => `<button class="chip ${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}">${n}</button>`).join('')}<button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
+  const lay = gLayout();
+  h += `<div class="vt"><div class="seg" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+    <div class="btn-row" style="flex:none">${UNDO ? '<button class="link" data-a="g-undo">Desfazer</button>' : ''}<button class="chip ${UI.todo ? 'on' : ''}" data-a="g-todo" aria-pressed="${!!UI.todo}">Só por avaliar</button></div></div>`;
+  if (!SEL) h += `<p class="hint">Toque numa célula para lançar o valor. Toque no título de uma coluna para preencher a turma toda, ordenar, ver descritivos ou criar indicadores.</p>`;
+  if (!als.length) return h + `<div class="card empty"><h3>${UI.todo ? 'Tudo avaliado' : 'Sem alunos'}</h3><p>${UI.todo ? 'Não há alunos com avaliações em falta nas colunas já começadas.' : 'Adicione alunos à turma.'}</p></div>`;
+  return h + (lay === 'coluna' ? vColuna(c, cols, als) : vTabela(c, cols, als));
+}
+function vTabela(c, cols, als) {
+  const grp = []; cols.forEach(col => { const l = grp[grp.length - 1]; if (l && l.g === col.g) l.n++; else grp.push({g:col.g, n:1}); });
+  let h = `<div class="gwrap" id="gwrap"><table class="gt2"><thead><tr class="grp"><th class="corner" rowspan="2">Aluno <span class="muted">(${als.length})</span></th>${grp.map(x => `<th colspan="${x.n}" class="gk-${x.g}">${x.g === 'fin' ? '' : esc(GN[x.g])}</th>`).join('')}</tr>
+    <tr class="cols">${cols.map(col => `<th class="gk-${col.g}${col.sub ? ' sub' : ''}${UI.sort && UI.sort.k === col.k ? ' srt' : ''}" data-a="col-menu" data-k="${esc(col.k)}" title="${esc(col.title)}">${col.sub ? '↳ ' : ''}${esc(col.label)}${col.unit ? `<small>${esc(col.unit)}</small>` : ''}</th>`).join('')}</tr></thead><tbody>`;
   als.forEach(al => {
-    const off = (REG[al.regime] || REG.Normal).apf === 0, age = ageAt(al.nasc, refDate(UI.p)), r = (v.fit || {})[al.id] || {}, tot = calc(t, UI.p, al).APF;
-    h += `<tr><td class="l sticky rowh"><button data-a="aluno-edit" data-id="${esc(al.id)}" title="${esc(al.nome)} · ${al.sexo || '?'} · ${age ?? '?'} anos"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nmx">${esc(al.nome)}</span></button></td>` +
-      FIT.map(f => {
-        const z = off ? null : zoneOf(f, al, age, v), zc = z != null ? 'z' + z : '';
-        if (f.bool) return `<td><button class="gc fz ${zc}" data-a="fitg-bool" data-aid="${esc(al.id)}" aria-label="${esc(f.n)} de ${esc(al.nome)}"${off ? ' disabled' : ''}>${r.ombros === 'S' ? 'Sim' : r.ombros === 'N' ? 'Não' : ''}</button></td>`;
-        return `<td><input type="text" inputmode="decimal" enterkeyhint="next" class="fz ${zc}" data-in="fitg" data-aid="${esc(al.id)}" data-k="${f.k}" value="${esc(r[f.k] ?? '')}" aria-label="${esc(f.n)} de ${esc(al.nome)}"${off ? ' disabled' : ''}></td>`;
-      }).join('') + `<td class="gtot ${tot != null && tot < 10 ? 'low' : ''}" id="gt-${esc(al.id)}">${off ? 'n/a' : f1(tot)}</td></tr>`;
+    h += `<tr class="${SEL && SEL.aid === al.id ? 'rsel' : ''}"><th class="rh" data-a="aluno-edit" data-id="${esc(al.id)}" title="${esc(al.nome)}"><span class="rhi"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nmx">${esc(al.nome)}</span></span></th>` +
+      cols.map(col => { const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k; return `<td class="c ${s.cls}${s.auto ? ' auto' : ''}${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${esc(s.txt)}</td>`; }).join('') + '</tr>';
   });
-  return h + '</tbody></table></div>';
+  h += `</tbody><tfoot><tr><th>Avaliados</th>${cols.map(col => {
+    if (col.k === 't:FIN') { const n = als.filter(al => gCalc(c, al).EST === 'Apto').length; return `<td title="Aptos">${n} aptos</td>`; }
+    if (col.type === 'calc' || col.type === 'reg') return '<td></td>';
+    const el = als.filter(al => !gOff(col, al)); return `<td>${el.filter(al => gFilled(c, col, al)).length}/${el.length}</td>`;
+  }).join('')}</tr></tfoot></table></div>`;
+  return h;
 }
-function fitgUpd(aid) {
-  const t = turma(), al = (t.alunos || []).find(x => x.id === aid); if (!al) return;
-  const v = avalOf(t.id, UI.p), age = ageAt(al.nasc, refDate(UI.p));
-  FIT.forEach(f => { const el = document.querySelector(`.fz[data-aid="${CSS.escape(aid)}"]${f.bool ? '[data-a]' : `[data-k="${f.k}"]`}`); if (!el) return; const z = zoneOf(f, al, age, v); el.classList.remove('z0', 'z1', 'z2'); if (z != null) el.classList.add('z' + z); });
-  const tc = document.getElementById('gt-' + aid); if (tc) { const x = calc(t, UI.p, al).APF; tc.textContent = f1(x); tc.classList.toggle('low', x != null && x < 10); }
+function vColuna(c, cols, als) {
+  const col = cols.find(x => x.k === UI.gcol) || cols.find(x => x.type !== 'calc') || cols[0]; UI.gcol = col.k;
+  const grp = {}; cols.forEach(x => (grp[x.g] = grp[x.g] || []).push(x));
+  let h = `<div class="gcnav"><button class="btn" data-a="g-colstep" data-d="-1" aria-label="Coluna anterior">‹</button><select data-in="gcol" aria-label="Coluna">${Object.entries(grp).map(([g, xs]) => `<optgroup label="${esc(GN[g] || 'Final')}">${xs.map(x => `<option value="${esc(x.k)}"${x.k === col.k ? ' selected' : ''}>${x.sub ? '↳ ' : ''}${esc(x.title)}</option>`).join('')}</optgroup>`).join('')}</select><button class="btn" data-a="g-colstep" data-d="1" aria-label="Coluna seguinte">›</button></div>`;
+  h += `<div class="vt"><span class="hint">Deslize para o lado para mudar de coluna.</span><button class="link" data-a="col-menu" data-k="${esc(col.k)}">Preencher, ordenar…</button></div>`;
+  h += `<div class="gcl" id="gcl">${als.map(al => {
+    const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k, r = gCalc(c, al);
+    return `<button class="gcr${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${avatar(al)}<span class="who"><span class="nm">${esc(al.num ?? '')} · ${esc(al.nome)}</span><span class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}</span></span><span class="c ${s.cls}${s.auto ? ' auto' : ''}">${esc(s.txt) || '·'}</span></button>`;
+  }).join('')}</div>`;
+  return h;
 }
-function rerenderKeep() {
-  const w = document.querySelector('.tbl-wrap.grid'), sl = w ? w.scrollLeft : 0, y = window.scrollY;
-  render(); const w2 = document.querySelector('.tbl-wrap.grid'); if (w2) w2.scrollLeft = sl; window.scrollTo(0, y);
+
+// Barra de edição: valores da coluna da célula escolhida, sempre no mesmo sítio.
+function gEditor() {
+  const el = $('#ged'), t = turma();
+  const nav = $('#nav'); document.documentElement.style.setProperty('--nav-h', (nav.hidden ? 0 : nav.offsetHeight) + 'px');
+  const off = () => { el.hidden = true; el.innerHTML = ''; document.body.classList.remove('ged-on'); gFit(); };
+  if (!t || UI.tab !== 'avaliar' || UI.avMode === 'dominio' || !SEL) return off();
+  const c = gCtx(t), col = gCols(t, c.v).find(x => x.k === SEL.k), al = (t.alunos || []).find(x => x.id === SEL.aid);
+  if (!col || !al) { SEL = null; return off(); }
+  const ok = gEditable(col, al), ch = gChoices(col), cur = gGet(c, col, al);
+  let h = `<div class="ged-h">${avatar(al, 'sm')}<span class="t"><b>${esc(al.nome)}</b> <span class="muted">· ${esc(col.title)}</span></span><button class="icon-btn" data-a="g-move" data-d="-1" aria-label="Aluno anterior">↑</button><button class="icon-btn" data-a="g-move" data-d="1" aria-label="Aluno seguinte">↓</button><button class="icon-btn" data-a="g-desel" aria-label="Fechar">×</button></div>`;
+  if (!ok) h += `<p class="hint">${col.type === 'calc' ? 'Calculado automaticamente.' : col.type === 'reg' ? 'Os registos +/− lançam-se numa aula: Aulas → abrir a aula → Avaliar nesta aula.' : 'Não se aplica a este aluno (dispensa).'}</p>`;
+  else if (ch) {
+    h += `<div class="gbr" role="group" aria-label="Valor">${ch.map(x => `<button class="lv ${x.cls}${cur === x.v ? ' on' : ''}" data-a="g-set" data-v="${x.v}" title="${esc(x.title || '')}" aria-pressed="${cur === x.v}">${esc(x.label)}</button>`).join('')}<button class="lv" data-a="g-set" data-v="" title="Apagar" aria-label="Apagar">⌫</button></div>`;
+    if (col.type !== 'reg') h += `<label class="pin"><input type="checkbox" data-in="g-pin"${PIN ? ' checked' : ''}> Pincel: repetir o valor a cada toque${PIN && PIN.val != null ? ` (<b>${esc(PIN.label)}</b>)` : ''}</label>`;
+  } else {
+    let info = '';
+    if (col.f) { const age = ageAt(al.nasc, refDate(c.p)), r = fitRef(col.f.k, al.sexo, age); info = !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento para calcular a zona.' : r ? `${al.sexo === 'F' ? 'Rapariga' : 'Rapaz'}, ${age} anos: ZS ${col.f.dir > 0 ? '≥' : '≤'} ${String(r.zs).replace('.', ',')}${r.za != null ? ' · ZA ' + (col.f.dir > 0 ? '≥ ' : '≤ ') + String(r.za).replace('.', ',') : ''}` : `Sem tabela de referência para ${age ?? '?'} anos: escolha a zona na vista Aluno a aluno.`; }
+    else if (col.k === 'con' && c.t.escala === '1-5') info = 'Escala 1-5: convertida para 0-20 (×4) nos cálculos.';
+    h += `<div class="ged-num"><input id="ged-num" type="text" inputmode="decimal" enterkeyhint="next" data-in="g-num" value="${esc(cur ?? '')}" placeholder="${esc(col.unit || '')}" aria-label="${esc(col.title)} de ${esc(al.nome)}"><button class="btn primary" data-a="g-move" data-d="1">Seguinte ↓</button><button class="btn" data-a="g-set" data-v="" aria-label="Apagar">⌫</button></div>${info ? `<p class="hint">${esc(info)}</p>` : ''}`;
+  }
+  if (col.type === 'lvl') { const l = col.m && !col.ind ? (lvOf(c.v, al.id, col.m) || {}).l : cur; const sm = l ? lvSummary(c.t.ciclo, col.m, l) : ''; h += sm ? `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(l)}</summary><div class="dom">${sm}</div></details>` : `<p class="hint">${esc(col.ind ? 'Indicador de ' + col.m + '.' : '')} Escolha o nível para ver o que o aluno domina e o que lhe falta.</p>`; }
+  else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
+  el.innerHTML = `<div class="wrap">${h}</div>`; el.hidden = false; document.body.classList.add('ged-on');
+  document.documentElement.style.setProperty('--ged-h', el.offsetHeight + 'px'); gFit();
 }
-function gFill(k, aid) {
-  const t = turma(), v = avalOf(t.id, UI.p), sp = gridSpec(t, v), b = UI.brush[UI.avTab];
-  if (b == null) { toast('Escolha primeiro um valor na barra.', 'bad'); return; }
-  const val = b === 'x' ? null : sp.parse(b);
-  const snap = {vid: v.id, key: sp.key, snap: clone(v[sp.key] || {})}; let n = 0;
-  alunosOf(t).forEach(al => {
-    if (sp.off(al) || (aid && al.id !== aid)) return;
-    sp.cols.forEach(c => { if (k && c.k !== k) return; const cur = sp.get(al, c.k); if (val == null ? cur != null : cur == null) { sp.set(al, c.k, val); n++; } });
-  });
-  if (!n) { toast(val == null ? 'Não há nada para apagar.' : 'Não há células vazias para preencher.'); return; }
-  UNDO = snap; touchAval(v); rerenderKeep(); toast(n + (val == null ? ' células apagadas.' : ' células preenchidas.'));
+// A tabela ocupa o espaço visível entre o cabeçalho e as barras de baixo, para os títulos e a coluna dos nomes ficarem sempre à vista.
+function gFit() {
+  const w = $('#gwrap'); if (!w) return;
+  const ged = $('#ged'), used = $('#top').offsetHeight + ($('#nav').hidden ? 0 : $('#nav').offsetHeight) + (ged.hidden ? 0 : ged.offsetHeight) + 24;
+  w.style.maxHeight = Math.max(240, window.innerHeight - used) + 'px';
+}
+function gRefresh(focusNum) {
+  const w = $('#gwrap'), sl = w ? w.scrollLeft : 0, st = w ? w.scrollTop : 0, y = window.scrollY;
+  render();
+  const w2 = $('#gwrap'); if (w2) { w2.scrollLeft = sl; w2.scrollTop = st; } window.scrollTo(0, y);
+  const s = document.querySelector('td.c.sel, .gcr.sel'); if (s) s.scrollIntoView({block:'nearest', inline:'nearest'});
+  if (focusNum) { const i = $('#ged-num'); if (i) { i.focus(); i.select(); } }
+}
+function gHere() { const t = turma(), c = gCtx(t), col = SEL && gCols(t, c.v).find(x => x.k === SEL.k), al = SEL && (t.alunos || []).find(x => x.id === SEL.aid); return {t, c, col, al}; }
+function gMove(dr, dc, focusNum) {
+  if (!SEL) return;
+  if (dr) { const i = ORDER.indexOf(SEL.aid) + dr; if (i >= 0 && i < ORDER.length) SEL.aid = ORDER[i]; }
+  if (dc) { const i = COLS.indexOf(SEL.k) + dc; if (i >= 0 && i < COLS.length) { SEL.k = COLS[i]; if (gLayout() === 'coluna') UI.gcol = SEL.k; } }
+  const {col} = gHere(); gRefresh(focusNum && col && col.type === 'num');
+}
+// Aplica um valor à célula escolhida; sem pincel, passa ao aluno seguinte (como numa folha de cálculo).
+function gApply(val, advance) {
+  const {c, col, al} = gHere(); if (!col || !al || !gEditable(col, al)) return;
+  gSnap(c, col); gSet(c, col, al, val);
+  if (PIN && val != null && col.type !== 'reg') { PIN = {type:col.type, val, label:(gChoices(col) || []).find(x => x.v === val)?.label || String(val)}; }
+  if (advance && !PIN && col.type !== 'reg') gMove(1, 0); else gRefresh();
+}
+function gFill(k, val) {
+  const {t, c} = gHere(), col = gCols(t, c.v).find(x => x.k === k); if (!col) return 0;
+  gSnap(c, col); let n = 0;
+  alunosOf(t).forEach(al => { if (!gEditable(col, al)) return; const has = val == null ? gGet(c, col, al) != null : gFilled(c, col, al) && !gShow(c, col, al).auto; if (val == null ? has : !has) { gSet(c, col, al, val); n++; } });
+  if (!n) UNDO = null; return n;
+}
+
+function sheetCol(k) {
+  const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === k); if (!col) return;
+  const ch = gChoices(col), canEdit = col.type !== 'calc' && col.type !== 'reg';
+  let b = '<div class="form">';
+  if (col.m) {
+    const d = (PNEF[t.ciclo] || []).find(x => x.m === col.m);
+    if (col.ind) b += `<p class="hint">Indicador de <b>${esc(col.m)}</b>. A média dos indicadores dá o nível da matéria quando este não é escolhido à mão.</p>`;
+    b += `<details class="desc"${col.ind ? '' : ' open'}><summary>Descritivos PNEF · ${esc(col.m)}</summary>${d ? `<dl>${['I','E','A'].map(x => `<dt>${x} · ${LVN[x]}</dt><dd>${esc(d[x] || '—')}</dd>`).join('')}</dl>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`;
+    if (!col.ind) {
+      const inds = (c.v.ind || {})[col.m] || [], prev = UI.p > 1 ? ((avalOf(t.id, UI.p - 1).ind || {})[col.m] || []) : [];
+      b += `<div class="field"><span class="lbl">Indicadores de desempenho</span><p class="hint">Divida a matéria em indicadores (ex.: passe, manchete, jogo 2x2). Cada um ganha uma coluna; o nível da matéria passa a ser a média, a não ser que o escolha à mão.</p>
+        ${inds.length ? `<div class="list">${inds.map(i => `<div class="li"><span class="who nm">${esc(i.n)}</span><button class="btn danger" data-a="ind-del" data-m="${esc(col.m)}" data-id="${esc(i.id)}">Remover</button></div>`).join('')}</div>` : ''}
+        <div style="display:flex;gap:8px"><input type="text" id="ind-new" placeholder="Novo indicador" aria-label="Novo indicador"><button class="btn" data-a="ind-add" data-m="${esc(col.m)}">Adicionar</button></div>
+        ${!inds.length && prev.length ? `<button class="link" style="align-self:flex-start" data-a="ind-copy" data-m="${esc(col.m)}">Usar os indicadores do ${perLabel(UI.p - 1, true)} (${prev.map(i => esc(i.n)).join(', ')})</button>` : ''}</div>`;
+    }
+  }
+  if (canEdit && ch) b += `<div class="field"><span class="lbl">Preencher os vazios da turma com</span><div class="gbr">${ch.map(x => `<button class="lv ${x.cls}" data-a="col-fill" data-k="${esc(k)}" data-v="${x.v}" title="${esc(x.title || '')}">${esc(x.label)}</button>`).join('')}</div></div>`;
+  if (col.ak === 'emp') b += `<button class="btn" data-a="col-reg">Sugerir o Empenho pelos registos +/− das aulas</button>`;
+  b += `<div class="field"><span class="lbl">Ordenar os alunos</span><div class="btn-row"><button class="btn" data-a="col-sort" data-k="${esc(k)}" data-d="-1">Do maior para o menor</button><button class="btn" data-a="col-sort" data-k="${esc(k)}" data-d="1">Do menor para o maior</button>${UI.sort ? '<button class="btn" data-a="col-sort" data-d="0">Pelo n.º</button>' : ''}</div></div>`;
+  if (canEdit) b += `<button class="btn danger" data-a="col-clear" data-k="${esc(k)}">Limpar esta coluna</button>`;
+  openSheet(col.title, b + '</div>');
 }
 
 function vPauta(t) {
@@ -785,6 +995,7 @@ function sheetAula(a) {
     <div class="field"><span class="lbl">Matérias da aula</span><div class="chips">${(MATS[t.ciclo] || GR).map(m => `<button class="chip ${a.materias.includes(m) ? 'on' : ''}" data-a="d-mat" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div></div>
     <div class="field"><label for="d-sum">Sumário</label><textarea id="d-sum" data-in="d-sum" placeholder="Ex.: Voleibol: passe e manchete em situação de 2x2. Condição física: resistência.">${esc(a.sumario)}</textarea>
     ${last ? `<button class="link" style="align-self:flex-start" data-a="d-last">Copiar o sumário da lição anterior</button>` : ''}</div>
+    <button class="btn block" data-a="aula-aval">Avaliar nesta aula: níveis e registos +/−</button>
     <div class="field"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Presenças</span><button class="link" data-a="d-allp">Todos presentes</button></div>
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>
     <div class="list">${alunosOf(t).map(al => { const s = a.presencas[al.id] || 'P'; return `<div class="pr"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="ps" role="group" aria-label="Presença de ${esc(al.nome)}">${PS.map(k => `<button class="${k} ${s === k ? 'on' : ''}" data-a="d-pres" data-aid="${esc(al.id)}" data-s="${k}" title="${PSN[k]}" aria-pressed="${s === k}">${k}</button>`).join('')}</span></div>`; }).join('') || '<div class="empty">Sem alunos na turma.</div>'}</div></div>
@@ -802,6 +1013,7 @@ function sheetAluno(al) {
     const r = calc(t, UI.p, al);
     const lv = Object.entries(r.lv);
     resumo += `<p class="hint">${perLabel(UI.p, true)}: ${lv.length ? lv.map(([m, l]) => esc(m) + ' ' + l).join(' · ') : 'sem matérias avaliadas'}${r.missing.length ? ' · Falta: ' + r.missing.join(', ') : ''}</p></div>`;
+    if (lv.length) resumo += `<div class="field"><span class="lbl">O que domina e onde melhorar · ${perLabel(UI.p, true)}</span>${lv.map(([m, l]) => { const sm = lvSummary(t.ciclo, m, l); return `<details class="desc"><summary>${esc(m)} · ${l} <span class="muted small">(${esc(LVN[l])})</span></summary>${sm ? `<div class="dom" style="max-height:none;margin-bottom:12px">${sm}</div>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`; }).join('')}</div>`;
   }
   const body = `<div class="form">
     <div class="foto-ed"><span id="a-foto">${avatar(al, 'lg')}</span><div class="btn-row"><button class="btn" data-a="foto-one">${S.fotos[al.id] ? 'Trocar fotografia' : 'Fotografia'}</button><button class="btn ghost" data-a="foto-rm"${S.fotos[al.id] ? '' : ' hidden'}>Remover</button></div></div>
@@ -841,8 +1053,8 @@ function sheetMatAdd() {
 
 /* ---------- actions ---------- */
 const A = {
-  'tab': el => { UI.tab = el.dataset.t; render(); window.scrollTo(0, 0); },
-  'per': el => { UI.p = +el.dataset.p; render(); },
+  'tab': el => { UI.tab = el.dataset.t; if (UI.tab !== 'avaliar') SEL = null; render(); window.scrollTo(0, 0); },
+  'per': el => { UI.p = +el.dataset.p; FOCUS = null; SEL = null; UNDO = null; render(); },
   'sh-close': () => closeSheet(),
   'avtab': el => { UI.avTab = el.dataset.k; render(); },
   'demo': () => { makeDemo(); },
@@ -868,9 +1080,9 @@ const A = {
   'd-pres': el => { UI.draft.presencas[el.dataset.aid] = el.dataset.s; el.parentNode.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b === el); b.setAttribute('aria-pressed', b === el); }); },
   'd-allp': () => { const d = UI.draft; Object.keys(d.presencas).forEach(k => d.presencas[k] = 'P'); (turma().alunos || []).forEach(al => d.presencas[al.id] = 'P'); document.querySelectorAll('.ps button').forEach(b => b.classList.toggle('on', b.dataset.s === 'P')); },
   'd-last': () => { const t = turma(); const last = aulasOf(t.id).filter(x => x.id !== UI.draft.id && x.sumario).pop(); if (last) { $('#d-sum').value = last.sumario; UI.draft.sumario = last.sumario; if (!UI.draft.materias.length) { UI.draft.materias = (last.materias || []).slice(); sheetAula(UI.draft); } } },
-  'aula-save': () => {
+  'aula-save': quiet => {
     const d = UI.draft; d.sumario = $('#d-sum').value.trim(); d.data = $('#d-data').value || today();
-    S.aulas[d.id] = d; Store.save('aulas', d); const p = periodOf(d.data); closeSheet(); if (p !== UI.p) UI.p = p; render(); toast('Aula guardada.');
+    S.aulas[d.id] = d; Store.save('aulas', d); const p = periodOf(d.data); closeSheet(); if (p !== UI.p) UI.p = p; if (quiet === true) return d; render(); toast('Aula guardada.');
   },
   'aula-del': el => { if (!armed(el, 'Toque de novo para eliminar')) return; const id = UI.draft.id; delete S.aulas[id]; Store.del('aulas', id); closeSheet(); render(); toast('Aula eliminada.'); },
   'aluno-new': () => { const t = turma(); const n = Math.max(0, ...(t.alunos || []).map(a => +a.num || 0)) + 1; sheetAluno({id: uid(), num: n, proc: '', nome: '', sexo: '', nasc: '', regime: 'Normal', obs: ''}); },
@@ -916,6 +1128,7 @@ const A = {
     touchAval(v);
     el.parentNode.querySelectorAll('button').forEach(b => { const s = on && b === el; b.classList.toggle('on', s); b.setAttribute('aria-pressed', s); });
     const hEl = document.getElementById('lvh-' + aid); if (hEl) hEl.textContent = on ? LVN[l] : '';
+    const sEl = document.getElementById('lvs-' + aid); if (sEl) { const sm = on ? lvSummary(t.ciclo, UI.mat, l) : ''; sEl.innerHTML = sm; sEl.hidden = !sm; }
   },
   'fit-sel': el => { UI.fit = el.dataset.k; render(); },
   'fit-bool': el => { const v = fitSet(el.dataset.aid, 'ombros', ((avalOf(turma().id, UI.p).fit || {})[el.dataset.aid] || {}).ombros === el.dataset.v ? '' : el.dataset.v); render(); },
@@ -941,23 +1154,47 @@ const A = {
     UI.turma = Object.keys(S.turmas)[0] || null; render(); toast('Cópia importada.');
   },
   'xlsx': () => exportXlsx(),
-  'avview': el => { UI.avView = el.dataset.k; render(); },
-  'g-brush': el => { const b = el.dataset.v; UI.brush[UI.avTab] = UI.brush[UI.avTab] === b ? null : b; rerenderKeep(); },
-  'g-cell': el => {
-    const t = turma(), v = avalOf(t.id, UI.p), sp = gridSpec(t, v), b = UI.brush[UI.avTab];
-    if (b == null) { toast('Escolha primeiro um valor na barra.', 'bad'); return; }
-    const al = (t.alunos || []).find(x => x.id === el.dataset.aid); if (!al) return;
-    sp.set(al, el.dataset.k, b === 'x' ? null : sp.parse(b)); touchAval(v);
-    const s = sp.show(al, el.dataset.k); el.className = 'gc ' + s.g + (s.auto ? ' auto' : ''); el.textContent = s.txt;
-    const tc = document.getElementById('gt-' + al.id); if (tc) { const x = sp.calc(al); tc.textContent = f1(x); tc.classList.toggle('low', x != null && x < 10); }
+  'avmode': el => { UI.avMode = el.dataset.k; SEL = null; render(); },
+  'cell': el => {
+    const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === el.dataset.k), al = (t.alunos || []).find(x => x.id === el.dataset.aid); if (!col || !al) return;
+    SEL = {aid:al.id, k:col.k};
+    if (PIN && PIN.val != null && PIN.type === col.type && gEditable(col, al)) { gSnap(c, col); gSet(c, col, al, PIN.val); }
+    gRefresh(col.type === 'num' && gEditable(col, al) && !matchMedia('(pointer:coarse)').matches);
   },
-  'g-col': el => gFill(el.dataset.k, null),
-  'g-row': el => gFill(null, el.dataset.aid),
-  'g-undo': () => { const t = turma(), v = avalOf(t.id, UI.p); if (!UNDO || UNDO.vid !== v.id) return; v[UNDO.key] = UNDO.snap; UNDO = null; touchAval(v); rerenderKeep(); toast('Desfeito.'); },
-  'fitg-bool': el => {
-    const aid = el.dataset.aid, cur = ((avalOf(turma().id, UI.p).fit || {})[aid] || {}).ombros || '';
-    const nx = {'':'S', S:'N', N:''}[cur]; fitSet(aid, 'ombros', nx); el.textContent = nx === 'S' ? 'Sim' : nx === 'N' ? 'Não' : ''; fitgUpd(aid);
+  'g-set': el => { const {col} = gHere(); if (!col) return; const raw = el.dataset.v; gApply(raw === '' ? null : col.type === 'q4' || col.type === 'reg' ? +raw : raw, true); },
+  'g-move': el => gMove(+el.dataset.d, 0, true),
+  'g-desel': () => { SEL = null; PIN = null; gRefresh(); },
+  'g-undo': () => {
+    if (!UNDO) return;
+    if (UNDO.aula) { const a = S.aulas[UNDO.aula]; if (a) { a.reg = UNDO.snap; Store.save('aulas', a); } }
+    else { S.aval[UNDO.vid] = UNDO.snap; Store.save('aval', UNDO.snap); }
+    UNDO = null; gRefresh(); toast('Desfeito.');
   },
+  'g-grp': el => { UI.hide[el.dataset.g] = !UI.hide[el.dataset.g]; gRefresh(); },
+  'g-lay': el => { UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
+  'g-todo': () => { UI.todo = !UI.todo; gRefresh(); },
+  'g-colstep': el => gColStep(+el.dataset.d),
+  'g-unfocus': () => { FOCUS = null; SEL = null; render(); },
+  'col-menu': el => sheetCol(el.dataset.k),
+  'col-fill': el => { const t = turma(), col = gCols(t, avalOf(t.id, UI.p)).find(x => x.k === el.dataset.k); const raw = el.dataset.v; const n = gFill(el.dataset.k, col.type === 'q4' ? +raw : raw); closeSheet(); gRefresh(); toast(n ? n + ' alunos preenchidos.' : 'Não há vazios nesta coluna.'); },
+  'col-clear': el => { if (!armed(el, 'Toque de novo para limpar')) return; const n = gFill(el.dataset.k, null); closeSheet(); gRefresh(); toast(n ? n + ' valores apagados.' : 'A coluna já estava vazia.'); },
+  'col-sort': el => { const d = +el.dataset.d; UI.sort = d ? {k:el.dataset.k, d} : null; closeSheet(); gRefresh(); },
+  'col-reg': () => {
+    const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === 'a:emp'); gSnap(c, col); let n = 0;
+    alunosOf(t).forEach(al => { if (gGet(c, col, al) != null) return; const r = regOf(t, UI.p, al.id), tot = r.p + r.n; if (!tot) return; const q = r.p / tot; gSet(c, col, al, q < .25 ? 0 : q < .5 ? 1 : q < .75 ? 2 : 3); n++; });
+    closeSheet(); gRefresh(); toast(n ? 'Empenho sugerido para ' + n + ' alunos (só os que estavam vazios).' : 'Não há registos +/− para os alunos sem Empenho.');
+  },
+  'ind-add': el => {
+    const n = ($('#ind-new').value || '').trim(); if (!n) { $('#ind-new').focus(); return; }
+    const t = turma(), v = avalOf(t.id, UI.p), m = el.dataset.m; v.ind = v.ind || {}; (v.ind[m] = v.ind[m] || []).push({id:uid(), n}); touchAval(v); render(); sheetCol('m:' + m); $('#ind-new').focus();
+  },
+  'ind-del': el => {
+    if (!armed(el, 'Apagar avaliações?')) return;
+    const t = turma(), v = avalOf(t.id, UI.p), m = el.dataset.m, id = el.dataset.id; v.ind[m] = (v.ind[m] || []).filter(i => i.id !== id); if (!v.ind[m].length) delete v.ind[m];
+    Object.values(v.iv || {}).forEach(o => delete o[id]); touchAval(v); render(); sheetCol('m:' + m);
+  },
+  'ind-copy': el => { const t = turma(), v = avalOf(t.id, UI.p), m = el.dataset.m, prev = (avalOf(t.id, UI.p - 1).ind || {})[m] || []; v.ind = v.ind || {}; v.ind[m] = prev.map(i => ({id:uid(), n:i.n})); touchAval(v); render(); sheetCol('m:' + m); },
+  'aula-aval': () => { const d = A['aula-save'](true); if (!d) return; FOCUS = d.id; SEL = null; UI.tab = 'avaliar'; UI.avMode = 'grelha'; render(); window.scrollTo(0, 0); },
   'xls-import': () => { if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; } $('#file-xls').click(); },
   'xls-model': () => {
     if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
@@ -1001,7 +1238,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
-  if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; render(); } }
+  if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UI.sort = null; render(); } }
   else if (k === 'd-data') { UI.draft.data = el.value || today(); }
   else if (k === 'avo') { const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; v.av = v.av || {}; v.av[aid] = v.av[aid] || {}; v.av[aid][el.dataset.k] = el.value === '' ? null : +el.value; touchAval(v); updAV(aid); }
   else if (k === 'cfg-ano') { CFG.ano = el.value.trim(); Store.save('cfg', CFG); }
@@ -1011,6 +1248,8 @@ document.addEventListener('change', e => {
   else if (k === 'imp-dest') { IMP.dest = el.value; if (el.value !== '__new' && el.value !== '__split') { const t = S.turmas[el.value], m = impTurmas().find(x => norm(x) === norm(t.nome)); IMP.filter = m || ''; } sheetImport(true); }
   else if (k === 'imp-filter') { IMP.filter = el.value; sheetImport(true); }
   else if (k === 'imp-ciclo') { IMP.newCiclo = el.value; }
+  else if (k === 'g-pin') { PIN = el.checked ? {val:null} : null; gEditor(); }
+  else if (k === 'gcol') { UI.gcol = el.value; if (SEL) SEL.k = el.value; gRefresh(); }
   else if (k === 'foto-as') { FOTOS[+el.dataset.i].aid = el.value; const n = FOTOS.filter(x => x.aid).length; $('#fotos-go').textContent = 'Guardar ' + n + ' fotografias'; }
 });
 document.addEventListener('input', e => {
@@ -1025,8 +1264,12 @@ document.addEventListener('input', e => {
     const max = t.escala === '1-5' ? 5 : 20; if (val != null) val = Math.max(0, Math.min(max, val));
     v.con = v.con || {}; v.con[aid] = val; touchAval(v);
     const q = document.getElementById('ceq-' + aid); if (q) q.textContent = t.escala === '1-5' && val != null ? f1(val * 4) : '';
-  } else if (k === 'fitg') {
-    fitSet(el.dataset.aid, el.dataset.k, parseNum(el.value)); fitgUpd(el.dataset.aid);
+  } else if (k === 'g-num') {
+    // grava enquanto escreve e atualiza só a célula; Enter passa ao aluno seguinte
+    const {c, col, al} = gHere(); if (!col || !al || !gEditable(col, al)) return;
+    if (!UNDO || UNDO.cell !== SEL.aid + col.k) { gSnap(c, col); UNDO.cell = SEL.aid + col.k; }
+    gSet(c, col, al, parseNum(el.value)); const s = gShow(c, col, al), cell = document.querySelector('td.c.sel, .gcr.sel .c');
+    if (cell) { cell.textContent = s.txt || (cell.tagName === 'SPAN' ? '·' : ''); cell.className = (cell.tagName === 'TD' ? 'c sel ' : 'c ') + s.cls + (s.auto ? ' auto' : ''); }
   } else if (k === 'imp-tname') {
     IMP.newName = el.value;
   } else if (k === 'fitref') {
@@ -1046,10 +1289,42 @@ $('#file-import').addEventListener('change', e => {
 });
 
 document.addEventListener('keydown', e => {
-  const el = e.target; if (e.key !== 'Enter' || !el.dataset || el.dataset.in !== 'fitg') return;
-  e.preventDefault(); const all = [...document.querySelectorAll(`input[data-in="fitg"][data-k="${el.dataset.k}"]:not(:disabled)`)];
-  const nx = all[all.indexOf(el) + 1]; if (nx) { nx.focus(); nx.select(); } else el.blur();
+  if (!SEL || UI.tab !== 'avaliar' || UI.avMode === 'dominio' || !$('#sheet').hidden) return;
+  const tg = e.target, inNum = tg && tg.id === 'ged-num';
+  if (tg && /^(INPUT|SELECT|TEXTAREA)$/.test(tg.tagName) && !inNum) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); A['g-undo'](); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const go = (dr, dc) => { e.preventDefault(); gMove(dr, dc, true); };
+  if (e.key === 'Enter') return go(e.shiftKey ? -1 : 1, 0);
+  if (e.key === 'Tab') return go(0, e.shiftKey ? -1 : 1);
+  if (e.key === 'ArrowUp') return go(-1, 0);
+  if (e.key === 'ArrowDown') return go(1, 0);
+  if (e.key === 'Escape') { e.preventDefault(); if (inNum) tg.blur(); else A['g-desel'](); return; }
+  if (inNum) return;
+  if (e.key === 'ArrowLeft') return go(0, -1);
+  if (e.key === 'ArrowRight') return go(0, 1);
+  const {col, al} = gHere(); if (!col || !al || !gEditable(col, al)) return;
+  if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); return gApply(null, false); }
+  if (col.type === 'num' && /^[\d.,]$/.test(e.key)) { e.preventDefault(); const i = $('#ged-num'); if (i) { i.focus(); i.value = e.key; i.dispatchEvent(new Event('input', {bubbles:true})); } return; }
+  const ch = gChoices(col) || []; let val;
+  if (/^[1-9]$/.test(e.key) && ch[+e.key - 1] && col.type !== 'reg') val = ch[+e.key - 1].v;
+  else if (col.type === 'bool' && /^[sn]$/i.test(e.key)) val = e.key.toUpperCase();
+  else if (col.type === 'reg' && (e.key === '+' || e.key === '-')) val = e.key === '+' ? 1 : -1;
+  if (val !== undefined) { e.preventDefault(); gApply(val, true); }
 });
+function gColStep(d) {
+  const t = turma(), cols = gCols(t, avalOf(t.id, UI.p)), i = cols.findIndex(x => x.k === UI.gcol), n = cols[Math.max(0, Math.min(cols.length - 1, i + d))];
+  if (!n || n.k === UI.gcol) return; UI.gcol = n.k; if (SEL) SEL.k = n.k; gRefresh();
+}
+// Uma coluna de cada vez: deslizar para o lado muda de coluna.
+let SW = null;
+document.addEventListener('touchstart', e => { SW = e.target.closest && e.target.closest('#gcl') ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : null; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (!SW) return; const t = e.changedTouches[0], dx = t.clientX - SW.x, dy = t.clientY - SW.y; SW = null;
+  if (Math.abs(dx) > 60 && Math.abs(dy) < 45) gColStep(dx < 0 ? 1 : -1);
+});
+window.addEventListener('resize', () => gFit());
+document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('domd')) { UI.domOpen = e.target.open; saveUI(); const g = $('#ged'); document.documentElement.style.setProperty('--ged-h', g.offsetHeight + 'px'); gFit(); } }, true);
 $('#file-xls').addEventListener('change', async e => {
   const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
   try {
