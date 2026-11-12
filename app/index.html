@@ -33,6 +33,7 @@
   --r:12px;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --hm1:#fff; --hm3:#0D131A; --hm4:#0D131A;
   --bg:#0D131A; --surface:#161F29; --surface-2:#1B2531; --ink:#E5EBF2; --muted:#93A1B2; --line:#27323F;
   --accent:#6E97F2; --accent-ink:#0A1222; --accent-soft:#1C2B47;
   --ok:#55C487; --ok-soft:#173326; --bad:#F2776C; --bad-soft:#3A1E1D; --warn:#E3B356; --warn-soft:#352915;
@@ -42,6 +43,7 @@
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
+  --hm1:#fff; --hm3:#0D131A; --hm4:#0D131A;
   --bg:#0D131A; --surface:#161F29; --surface-2:#1B2531; --ink:#E5EBF2; --muted:#93A1B2; --line:#27323F;
   --accent:#6E97F2; --accent-ink:#0A1222; --accent-soft:#1C2B47;
   --ok:#55C487; --ok-soft:#173326; --bad:#F2776C; --bad-soft:#3A1E1D; --warn:#E3B356; --warn-soft:#352915;
@@ -294,6 +296,14 @@ table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-con
 .ged-num input{flex:1;font-size:20px;text-align:center;font-family:var(--f-display);font-weight:700}
 .pin{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .pin input{width:20px;height:20px}
+.dom ul{margin:2px 0 6px;padding-left:18px;display:grid;gap:2px}
+.cctx{font-weight:600;font-size:12.5px;color:var(--muted)}
+.dom li.cg{list-style:none;margin-left:-14px}
+.dom li.cg ul{padding-left:18px;margin:2px 0}
+.cl{max-height:30vh;overflow:auto;padding:6px 2px 2px;display:flex;flex-direction:column;gap:2px}
+.clh{display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-bottom:1px solid var(--line);padding-bottom:2px}
+.cli{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:5px 0;cursor:pointer}
+.cli input{width:20px;height:20px;flex:none;margin:0}
 .domd summary{font-size:13px;font-weight:600;cursor:pointer;padding:2px 0}
 .domd summary .ok{color:var(--ok)} .domd summary .nx{color:var(--warn)}
 .domd .dom{margin-top:6px;max-height:24vh}
@@ -347,13 +357,35 @@ details.vtab .tbl-wrap{margin-top:8px}
 .eq-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .eq-h i{width:12px;height:12px;border-radius:3px;flex:none}
 .eq-a{display:flex;align-items:center;gap:8px;font-size:14px}
+/* AE, documents, self-assessment */
+.aebox{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;font-size:13.5px}
+.pill.ae0,.ae0.pill{background:var(--bad-soft);color:var(--bad)} .pill.ae1,.ae1.pill{background:var(--accent-soft);color:var(--accent)} .pill.ae2,.ae2.pill{background:var(--ok-soft);color:var(--ok)}
+.aecell{font-family:var(--f-display);font-weight:700;letter-spacing:.02em}
+.pa{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:4px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;margin:0 1px;padding:0 3px}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.doc{display:flex;flex-direction:column;gap:4px;text-align:left}
+.doc b{font-family:var(--f-display);font-size:18px}
+.aopt{display:flex;flex-direction:column;gap:4px}
+.aopt button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 10px;text-align:left;font-size:13.5px}
+.aopt button b{font-family:var(--f-display);margin-right:6px}
+.aopt button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.sug{display:flex;flex-wrap:wrap;gap:5px}
+.sug button{border:1px dashed var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:12.5px;color:var(--muted);text-align:left}
+.smg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.sm{display:flex;flex-direction:column;gap:2px}
+table.hmap td,table.hmap th{padding:6px 6px;font-size:12.5px}
+table.hmap td{font-family:var(--f-display);font-weight:700;border:2px solid var(--surface)}
+table.hmap td.nm{font-family:var(--f-body);font-weight:600}
+.hm0{background:var(--surface-2);color:var(--muted)}
+.hm1{background:var(--q1);color:var(--hm1,#13202D)} .hm2{background:var(--q2);color:#fff} .hm3{background:var(--q3);color:var(--hm3,#fff)} .hm4{background:var(--q4);color:var(--hm4,#fff)}
+.cons-a{display:flex;flex-direction:column;gap:6px}
 /* report (always printed in light colors) */
 #print{display:none}
 body.printing{overflow:hidden}
 body.printing #print{display:block;position:fixed;inset:0;z-index:80;overflow:auto;background:#DDE2E8}
 .pbar{position:sticky;top:0;display:flex;gap:8px;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line);z-index:2}
 .pbar .sp{flex:1}
-.rel{--ink:#13202D; --muted:#5A6879; --line:#D8DFE7; --surface:#FFFFFF; --surface-2:#F4F6F8; --ok:#1C7C46; --warn:#9C620E; --bad:#BF352D; --accent:#1C55CF; --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100; --v5:#e87ba4; --v6:#008300; --v7:#6250d6; --v8:#e34948; --q1:#86b6ef; --q2:#3987e5; --q3:#1c5cab; --q4:#0d366b; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#C9D0D8;
+.rel{--hm1:#13202D; --hm3:#fff; --hm4:#fff; --ink:#13202D; --muted:#5A6879; --line:#D8DFE7; --surface:#FFFFFF; --surface-2:#F4F6F8; --ok:#1C7C46; --warn:#9C620E; --bad:#BF352D; --accent:#1C55CF; --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100; --v5:#e87ba4; --v6:#008300; --v7:#6250d6; --v8:#e34948; --q1:#86b6ef; --q2:#3987e5; --q3:#1c5cab; --q4:#0d366b; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#C9D0D8;
   color-scheme:light;background:#fff;color:var(--ink);max-width:190mm;margin:16px auto;padding:12mm;box-shadow:0 4px 18px rgba(0,0,0,.15);font-size:12.5px;line-height:1.45}
 .rel h1{font-size:26px} .rel h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border-bottom:1.5px solid var(--accent);padding-bottom:3px;margin:16px 0 8px}
 .rel-h{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
@@ -547,6 +579,7 @@ function touchAval(v) { S.aval[v.id] = v; Store.save('aval', v); }
 function matsOf(t, p) {
   const set = new Set(avalOf(t.id, p).materias || []);
   aulasOf(t.id).forEach(a => { if (periodOf(a.data) === p) (a.materias || []).forEach(m => set.add(m)); });
+  Object.values(avalOf(t.id, p).af || {}).forEach(o => Object.keys(o).forEach(m => set.add(m)));
   const order = MATS[t.ciclo] || GR; return [...set].sort((a, b) => order.indexOf(a) - order.indexOf(b));
 }
 function counts(t, p, aid) {
@@ -713,7 +746,7 @@ function vAvaliar(t) {
     als.forEach(al => {
       const off = (REG[al.regime] || REG.Normal).af === 0; const cur = ((v.af || {})[al.id] || {})[UI.mat];
       h += `<div class="ev ${off ? 'off' : ''}"><div class="ev-h"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="hint" id="lvh-${esc(al.id)}">${off ? 'Dispensa total' : cur ? esc(LVN[cur]) : ''}</span></div>` +
-        (off ? '' : `<div class="lvls" role="group" aria-label="Nível de ${esc(al.nome)}">${LV.map(l => `<button class="lv ${l} ${cur === l ? 'on' : ''}" data-a="lv" data-aid="${esc(al.id)}" data-l="${l}" aria-pressed="${cur === l}">${l}</button>`).join('')}</div><div class="dom" id="lvs-${esc(al.id)}"${cur ? '' : ' hidden'}>${cur ? lvSummary(t.ciclo, UI.mat, cur) : ''}</div>`) + '</div>';
+        (off ? '' : `<div class="lvls" role="group" aria-label="Nível de ${esc(al.nome)}">${LV.map(l => `<button class="lv ${l} ${cur === l ? 'on' : ''}" data-a="lv" data-aid="${esc(al.id)}" data-l="${l}" aria-pressed="${cur === l}">${l}</button>`).join('')}</div><div class="dom" id="lvs-${esc(al.id)}"${cur ? '' : ' hidden'}>${cur ? lvSummary(t.ciclo, UI.mat, cur, tksOf(v, al.id, UI.mat)) : ''}</div>`) + '</div>';
     });
     return h + '</div></div>';
   }
@@ -783,24 +816,74 @@ function lvOf(v, aid, m) {
   return {l: LV.reduce((b, x) => Math.abs(LVP[x] - avg) < Math.abs(LVP[b] - avg) ? x : b, LV[0]), auto:true};
 }
 // O que o aluno domina e o que lhe falta, a partir dos descritivos PNEF do nível.
-function lvSummary(ciclo, m, l) {
-  const d = (PNEF[ciclo] || []).find(x => x.m === m); if (!d || !(l in LVP)) return '';
-  const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I','E'], PA:['I','E'], A:['I','E','A']}[l];
-  const part = {PI:'I', PE:'E', PA:'A'}[l];
-  const next = {NI:'I', PI:'I', I:'E', PE:'E', E:'A', PA:'A'}[l];
-  let h = '';
-  full.forEach(k => { h += `<div class="ok"><b>Domina · ${LVN[k]}</b> ${esc(d[k])}</div>`; });
-  if (part) h += `<div class="nx"><b>Em parte · ${LVN[part]}</b> já cumpre pelo menos metade: ${esc(d[part])}</div>`;
-  if (!full.length && !part) h += `<div class="nx"><b>Ainda não atinge a Introdução.</b></div>`;
-  if (next && next !== part) h += `<div class="nx"><b>Para melhorar · ${LVN[next]}</b> ${esc(d[next])}</div>`;
-  else if (part) h += `<div class="nx"><b>Para melhorar</b> completar o nível ${LVN[part]}.</div>`;
-  if (l === 'A') h += `<div class="ok"><b>Atinge o nível mais alto.</b></div>`;
+/* ---------- competências: cada descritivo PNEF partido em ações observáveis ---------- */
+// Corta-se onde começa uma nova ação (verbo); as enumerações ficam juntas e o contexto ("Em jogo 4x4…") passa a cabeçalho.
+const CVERB = new Set('executa desloca-se desliza combina recebe desmarca-se realiza cria aplica mantém lança remata salta participa passa dança serve coordena segue trava inicia defende nada faz dá dribla opta finaliza finta corre flutua associa apresenta apresenta-as aproveita arranca desenha curva posiciona-se conhece compõe reproduz agarra marca elabora progride bate desempenha aperfeiçoa conduz patina devolve coopera identifica varia alterna especializa-se lê otimiza domina distingue analisa orienta interpreta calcula planeia organiza enquadra-se dificulta ocupa preenche seleciona escolhe utiliza assegura mergulha joga respeita cumpre'.split(' '));
+const CCTX = /^(em |no |na |nos |nas |após |a par|a pares|ao |sem |como |durante |depois |numa |num )/i;
+function splitTop(s, sep) { const out = []; let d = 0, cur = ''; for (let i = 0; i < s.length; i++) { const c = s[i]; if (c === '(') d++; else if (c === ')') d--; if (!d && s.startsWith(sep, i)) { out.push(cur); cur = ''; i += sep.length - 1; continue; } cur += c; } out.push(cur); return out.map(x => x.trim()).filter(Boolean); }
+const fw = x => x.trim().replace(/^e\s+/, '').split(/\s+/)[0].toLowerCase();
+const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+const COMPC = {};
+function compsOf(ciclo, m) {
+  const key = ciclo + '|' + m; if (COMPC[key]) return COMPC[key];
+  const d = (PNEF[ciclo] || []).find(x => x.m === m), out = [];
+  if (d) ['I', 'E', 'A'].forEach(k => { let n = 0;
+    splitTop(String(d[k] || '').replace(/\.\s*$/, ''), ';').forEach(cl => {
+      let ctx = '', segs, list = false;
+      const co = splitTop(cl, ': ');
+      if (co.length > 1 && co[0].length < 140) { ctx = co[0]; segs = splitTop(co.slice(1).join(': '), ', '); list = true; }
+      else {
+        segs = splitTop(cl, ', ');
+        if (segs.length > 1 && CCTX.test(segs[0]) && segs[0].split(/\s+/).every(w => !CVERB.has(w.toLowerCase()))) ctx = segs.shift();
+        const g = segs.findIndex((x, i) => i > 0 && /ndo$/.test(fw(x)) && segs.length - i - 1 >= 2 && segs.slice(i + 1).every(y => !CVERB.has(fw(y))));
+        if (g > 0) { ctx = (ctx ? ctx + ', ' : '') + segs.slice(0, g).join(', ') + ', ' + fw(segs[g]); segs = [segs[g].replace(/^\S+\s+/, ''), ...segs.slice(g + 1)]; list = true; }
+      }
+      const items = [];
+      segs.forEach(x => { x = x.replace(/^e\s+/, ''); if (items.length && (list ? /ndo$/.test(fw(x)) : !CVERB.has(fw(x)))) items[items.length - 1] += ', ' + x; else items.push(x); });
+      items.forEach(x => out.push({k, id:k + (n++), ctx:ctx ? cap(ctx) : '', txt:cap(x)}));
+    });
+  });
+  return COMPC[key] = out;
+}
+const tksOf = (v, aid, m) => ((v.comp || {})[aid] || {})[m];
+// Agrupa por contexto; um contexto com uma só competência fica na própria linha, para não parecer que abrange as seguintes.
+function compList(cs) {
+  const gs = []; cs.forEach(c => { const g = gs[gs.length - 1]; if (g && g.ctx === c.ctx && c.ctx) g.xs.push(c); else gs.push({ctx:c.ctx, xs:[c]}); });
+  let h = '<ul>'; gs.forEach(g => { if (g.ctx && g.xs.length > 1) h += `<li class="cg"><span class="cctx">${esc(g.ctx)}:</span><ul>${g.xs.map(c => `<li>${esc(c.txt)}</li>`).join('')}</ul></li>`; else g.xs.forEach(c => { h += `<li>${g.ctx ? `<span class="cctx">${esc(g.ctx)}:</span> ` + esc(c.txt.charAt(0).toLowerCase() + c.txt.slice(1)) : esc(c.txt)}</li>`; }); });
+  return h + '</ul>';
+}
+// O que domina e o que falta: pelas competências assinaladas ou, sem elas, pelo nível escolhido.
+function compSplit(ciclo, m, l, ticks) {
+  const cs = compsOf(ciclo, m); if (!cs.length) return null;
+  if (ticks && Object.values(ticks).some(Boolean)) {
+    const low = ['I', 'E', 'A'].find(k => cs.some(c => c.k === k && !ticks[c.id]));
+    return {dom:cs.filter(c => ticks[c.id]), mel:low ? cs.filter(c => c.k === low && !ticks[c.id]) : [], parcial:false, exato:true};
+  }
+  if (!(l in LVP)) return null;
+  const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I', 'E'], PA:['I', 'E'], A:['I', 'E', 'A']}[l], part = {PI:'I', PE:'E', PA:'A'}[l], next = {NI:'I', I:'E', E:'A'}[l];
+  return {dom:cs.filter(c => full.includes(c.k)), mel:cs.filter(c => c.k === (part || next)), parcial:!!part, exato:false};
+}
+function lvSummary(ciclo, m, l, ticks) {
+  const x = compSplit(ciclo, m, l, ticks); if (!x) return '';
+  let h = x.dom.length ? `<div class="ok"><b>Domina</b>${compList(x.dom)}</div>` : '<div class="nx"><b>Ainda não domina as competências de base desta matéria.</b></div>';
+  h += x.mel.length ? `<div class="nx"><b>Para melhorar</b>${x.parcial ? ' <span class="hint">(já realiza parte destas competências)</span>' : ''}${compList(x.mel)}</div>` : '<div class="ok"><b>Domina todas as competências previstas para esta matéria.</b></div>';
   return h;
 }
-function lvShort(l) {
-  const full = {I:'Introdução', PE:'Introdução', E:'Introdução e Elementar', PA:'Introdução e Elementar', A:'todos os níveis'}[l];
-  const next = {NI:'Introdução', PI:'completar a Introdução', I:'Elementar', PE:'completar o Elementar', E:'Avançado', PA:'completar o Avançado'}[l];
-  return (full ? `<span class="ok">Domina: ${full}</span>` : '<span class="nx">Ainda não domina a Introdução</span>') + (next ? ` · <span class="nx">Para melhorar: ${next}</span>` : '');
+function lvShort(ciclo, m, l, ticks) {
+  const x = compSplit(ciclo, m, l, ticks); if (!x) return '';
+  const f = x.mel[0] ? x.mel[0].txt : '';
+  return `<span class="ok">Domina ${x.dom.length} ${x.dom.length === 1 ? 'competência' : 'competências'}</span> · <span class="nx">${x.mel.length ? `Para melhorar ${x.mel.length}: ${esc(f.length > 70 ? f.slice(0, 68) + '…' : f)}` : 'Domina todas'}</span>`;
+}
+// Nível a partir das competências assinaladas (PI, PE, PA = pelo menos metade do nível).
+function lvFromTicks(ciclo, m, ticks) {
+  const cs = compsOf(ciclo, m), f = k => { const xs = cs.filter(c => c.k === k); return xs.length ? xs.filter(c => ticks[c.id]).length / xs.length : 0; };
+  const fI = f('I'), fE = f('E'), fA = f('A');
+  return fI < 1 ? (fI >= .5 ? 'PI' : 'NI') : fE < 1 ? (fE >= .5 ? 'PE' : 'I') : fA < 1 ? (fA >= .5 ? 'PA' : 'E') : 'A';
+}
+function compCheck(ciclo, m, ticks) {
+  const cs = compsOf(ciclo, m); ticks = ticks || {};
+  return ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return ''; const all = xs.every(c => ticks[c.id]); let last = null;
+    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${esc(c.txt)}</span></label>`; }).join(''); }).join('');
 }
 function regOf(t, p, aid) {
   let pos = 0, neg = 0;
@@ -965,9 +1048,14 @@ function gEditor() {
     else if (col.k === 'con' && c.t.escala === '1-5') info = 'Escala 1-5: convertida para 0-20 (×4) nos cálculos.';
     h += `<div class="ged-num"><input id="ged-num" type="text" inputmode="decimal" enterkeyhint="next" data-in="g-num" value="${esc(cur ?? '')}" placeholder="${esc(col.unit || '')}" aria-label="${esc(col.title)} de ${esc(al.nome)}"><button class="btn primary" data-a="g-move" data-d="1">Seguinte ↓</button><button class="btn" data-a="g-set" data-v="" aria-label="Apagar">⌫</button></div>${info ? `<p class="hint">${esc(info)}</p>` : ''}`;
   }
-  if (col.type === 'lvl') { const l = col.m && !col.ind ? (lvOf(c.v, al.id, col.m) || {}).l : cur; const sm = l ? lvSummary(c.t.ciclo, col.m, l) : ''; h += sm ? `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(l)}</summary><div class="dom">${sm}</div></details>` : `<p class="hint">${esc(col.ind ? 'Indicador de ' + col.m + '.' : '')} Escolha o nível para ver o que o aluno domina e o que lhe falta.</p>`; }
+  if (col.type === 'lvl' && col.m && !col.ind && compsOf(c.t.ciclo, col.m).length) {
+    const l = (lvOf(c.v, al.id, col.m) || {}).l, tk = tksOf(c.v, al.id, col.m), sm = lvSummary(c.t.ciclo, col.m, l, tk), ex = tk && Object.values(tk).some(Boolean);
+    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk)}</div></details>`;
+  } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem descritivo PNEF para esta matéria neste ciclo.'}</p>`;
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
+  const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
   el.innerHTML = `<div class="wrap">${h}</div>`; el.hidden = false; document.body.classList.add('ged-on');
+  const sc2 = el.querySelector('.cl'); if (sc2) sc2.scrollTop = st;
   document.documentElement.style.setProperty('--ged-h', el.offsetHeight + 'px'); gFit();
 }
 // A tabela ocupa o espaço visível entre o cabeçalho e as barras de baixo, para os títulos e a coluna dos nomes ficarem sempre à vista.
@@ -1008,6 +1096,8 @@ function sheetCol(k) {
   const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === k); if (!col) return;
   const ch = gChoices(col), canEdit = col.type !== 'calc' && col.type !== 'reg';
   let b = '<div class="form">';
+  if (col.m && !col.ind) b += aeBox(t);
+  if (col.k === 'con' && AE[anoOf(t)]) b += `<div class="aebox"><b>Conhecimentos · Aprendizagens Essenciais do ${anoOf(t)}.º ano</b>${AE[anoOf(t)].con.map(x => `<div>• ${esc(x)}</div>`).join('')}<div><span class="ae1 pill">Proficiente</span> ${AE_CON_P}</div><div><span class="ae2 pill">${esc(aeTop(AE[anoOf(t)]))}</span> ${AE_CON_E}</div></div>`;
   if (col.m) {
     const d = (PNEF[t.ciclo] || []).find(x => x.m === col.m);
     if (col.ind) b += `<p class="hint">Indicador de <b>${esc(col.m)}</b>. A média dos indicadores dá o nível da matéria quando este não é escolhido à mão.</p>`;
@@ -1031,27 +1121,21 @@ function vPauta(t) {
   const als = alunosOf(t); const ms = matsOf(t, UI.p);
   const rows = als.map(al => ({al, r: calc(t, UI.p, al)}));
   const nA = rows.filter(x => x.r.EST === 'Apto').length, nN = rows.filter(x => x.r.EST === 'Não apto').length, nI = rows.length - nA - nN;
-  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Relatórios']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Documentos']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (UI.pview === 'graf') return `<div class="stack">${seg}${vGraficos(t)}</div>`;
-  if (UI.pview === 'rel') return `<div class="stack">${seg}${vRelList(t)}</div>`;
+  if (UI.pview === 'rel') return `<div class="stack">${seg}${vDocs(t)}</div>`;
   let h = `<div class="stack">${seg}<div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
   h += `<div class="tiles"><div class="tile"><b>${rows.length}</b><span>Alunos</span></div><div class="tile ok"><b>${nA}</b><span>Aptos</span></div><div class="tile bad"><b>${nN}</b><span>Não aptos</span></div><div class="tile"><b>${nI}</b><span>Incompletos</span></div></div>`;
   if (!rows.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>A pauta aparece quando a turma tiver alunos.</p></div></div>`;
   const cell = (x, cls) => `<td class="${x != null && x < 10 ? 'low' : ''} ${cls || ''}">${f1(x)}</td>`;
-  h += `<div class="tbl-wrap"><table><thead><tr><th>Nº</th><th class="l">Aluno</th><th>AF</th><th>Apt.</th><th>Con.</th><th>Atit.</th><th>Final</th>${t.ciclo !== 'S' ? '<th>' + nivelLbl(t) + '</th>' : ''}<th>Estado</th><th>F</th></tr></thead><tbody>`;
+  h += `<div class="tbl-wrap"><table><thead><tr><th>Nº</th><th class="l">Aluno</th><th>AF</th><th>Apt.</th><th>Con.</th><th>Atit.</th><th>Final</th>${t.ciclo !== 'S' ? '<th>' + nivelLbl(t) + '</th>' : ''}<th>Estado</th>${AE[anoOf(t)] ? '<th title="Aprendizagens Essenciais: atividades físicas / aptidão física / conhecimentos">AE</th>' : ''}<th>F</th></tr></thead><tbody>`;
   rows.forEach(({al, r}) => {
-    h += `<tr class="click" data-a="aluno-edit" data-id="${esc(al.id)}"><td>${esc(al.num ?? '')}</td><td class="l nm">${esc(al.nome)}</td>${r.afOn ? cell(r.AF) : '<td class="muted">n/a</td>'}${r.apfOn ? cell(r.APF) : '<td class="muted">n/a</td>'}${cell(r.CON)}${cell(r.AV)}<td class="fin ${r.FIN != null && r.FIN < 10 ? 'low' : ''}">${r.FIN ?? '—'}</td>${t.ciclo !== 'S' ? `<td><b>${esc(nivel(t, r.FIN) ?? '—')}</b></td>` : ''}<td><span class="pill ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : 'inc'}">${r.EST}</span></td><td>${r.c.F || ''}</td></tr>`;
+    h += `<tr class="click" data-a="aluno-edit" data-id="${esc(al.id)}"><td>${esc(al.num ?? '')}</td><td class="l nm">${esc(al.nome)}</td>${r.afOn ? cell(r.AF) : '<td class="muted">n/a</td>'}${r.apfOn ? cell(r.APF) : '<td class="muted">n/a</td>'}${cell(r.CON)}${cell(r.AV)}<td class="fin ${r.FIN != null && r.FIN < 10 ? 'low' : ''}">${r.FIN ?? '—'}</td>${t.ciclo !== 'S' ? `<td><b>${esc(nivel(t, r.FIN) ?? '—')}</b></td>` : ''}<td><span class="pill ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : 'inc'}">${r.EST}</span></td>${(ae => ae ? `<td class="aecell" title="${esc('Atividades físicas: ' + aeLbl(ae, ae.af) + ' · Aptidão física: ' + aeLbl(ae, ae.apf) + ' · Conhecimentos: ' + aeLbl(ae, ae.con))}">${[ae.af, ae.apf, ae.con].map(x => `<span class="${aeCls(x)} pill">${aeShort(ae, x)}</span>`).join(' ')}</td>` : '')(aeOf(t, al, UI.p))}<td>${r.c.F || ''}</td></tr>`;
   });
   h += `</tbody></table></div>`;
   h += `<p class="hint">Regra da grelha: se algum domínio aplicável ficar abaixo de 10, a nota final fica limitada a 9 (Não apto). Toque num aluno para ver o detalhe.</p>`;
   h += `<button class="btn primary block" data-a="xlsx">Exportar pauta, sumários e presenças (Excel)</button></div>`;
   return h;
-}
-
-function vRelList(t) {
-  const als = alunosOf(t);
-  return `<div class="card"><p style="margin:0 0 10px">Relatório individual do ${esc(perLabel(UI.p, true))}: classificação por domínio, o que domina e onde melhorar em cada matéria, FITescola, atitudes, assiduidade, evolução e observações. Abre pronto a imprimir ou a guardar em PDF (A4).</p><button class="btn primary block" data-a="rel-all">Relatórios da turma toda (${als.length})</button>${CFG.escola ? '' : '<p class="hint" style="margin:8px 0 0">Indique o nome da escola e do professor em Mais → Escola e relatórios.</p>'}</div>
-    <div class="list">${als.map(al => { const r = calc(t, UI.p, al); return `<button class="li" data-a="rel-one" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}${(avalOf(t.id, UI.p).obs || {})[al.id] ? ' · com observação' : ''}</div></span><span class="end muted">Relatório ›</span></button>`; }).join('')}</div>`;
 }
 
 function vMais(t) {
@@ -1079,7 +1163,9 @@ function vMais(t) {
   const nv = CFG.niv || [4, 10, 14, 18];
   h += `<div class="sec-h"><h2>Escola e relatórios</h2></div><div class="card form">
     <div class="grid2"><div class="field"><label for="cfg-escola">Escola / agrupamento</label><input type="text" id="cfg-escola" data-in="cfg-txt" data-k="escola" value="${esc(CFG.escola || '')}"></div><div class="field"><label for="cfg-prof">Professor(a)</label><input type="text" id="cfg-prof" data-in="cfg-txt" data-k="prof" value="${esc(CFG.prof || '')}"></div></div>
-    <div class="field"><span class="lbl">Conversão da classificação 0–20 em nível 1–5 (2.º e 3.º ciclos) e menção (1.º ciclo)</span><div class="tbl-wrap"><table class="ref"><thead><tr><th>Nível 2 a partir de</th><th>Nível 3</th><th>Nível 4</th><th>Nível 5</th></tr></thead><tbody><tr>${nv.map((x, i) => `<td><input type="text" inputmode="decimal" data-in="cfg-niv" data-i="${i}" value="${x}" aria-label="Limite do nível ${i + 2}"></td>`).join('')}</tr></tbody></table></div><p class="hint" style="margin:0">Por defeito: 1 (0–3), 2 (4–9), 3 (10–13), 4 (14–17), 5 (18–20). Ajuste aos critérios aprovados na sua escola.</p></div></div>`;
+    <div class="field"><span class="lbl">Conversão da classificação 0–20 em nível 1–5 (2.º e 3.º ciclos) e menção (1.º ciclo)</span><div class="tbl-wrap"><table class="ref"><thead><tr><th>Nível 2 a partir de</th><th>Nível 3</th><th>Nível 4</th><th>Nível 5</th></tr></thead><tbody><tr>${nv.map((x, i) => `<td><input type="text" inputmode="decimal" data-in="cfg-niv" data-i="${i}" value="${x}" aria-label="Limite do nível ${i + 2}"></td>`).join('')}</tr></tbody></table></div><p class="hint" style="margin:0">Por defeito: 1 (0–3), 2 (4–9), 3 (10–13), 4 (14–17), 5 (18–20). Ajuste aos critérios aprovados na sua escola.</p></div>
+    <div class="field"><span class="lbl">Aprendizagens Essenciais · Conhecimentos (a escala das AE é descritiva; indique a partir de que classificação 0–20 considera)</span><div class="grid2">${['Proficiente', 'Elevado / Avançado'].map((n, i) => `<div class="field"><label for="aecon-${i}">${n} a partir de</label><input type="text" inputmode="decimal" id="aecon-${i}" data-in="cfg-aecon" data-i="${i}" value="${(CFG.aeCon || [10, 14])[i]}"></div>`).join('')}</div></div>
+    <button class="btn" data-a="doc-crit">Critérios de avaliação (imprimir ou PDF)</button></div>`;
   h += `<div class="sec-h"><h2>Cópia de segurança</h2></div><div class="card form">
     <p class="note">${esc(storageNote())}</p>
     ${Store.mode === 'local' ? `<p class="hint">Última cópia: ${lastBackup() ? esc(fmtDate(lastBackup(), {day:'numeric', month:'long', year:'numeric'})) : 'nunca'}. Guarde o ficheiro no OneDrive ou no email.</p>` : ''}
@@ -1110,6 +1196,7 @@ function sheetAula(a) {
     <div class="field"><span class="lbl">Lição</span><div class="licao" style="padding-top:8px">N.º <span class="num-t">${n}</span> <span class="muted small" style="font-family:var(--f-body);font-weight:500">· ${perLabel(periodOf(a.data), true)}</span></div></div></div>
     <div class="field"><span class="lbl">Matérias da aula</span><div class="chips">${(MATS[t.ciclo] || GR).map(m => `<button class="chip ${a.materias.includes(m) ? 'on' : ''}" data-a="d-mat" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div></div>
     <div class="field"><label for="d-sum">Sumário</label><textarea id="d-sum" data-in="d-sum" placeholder="Ex.: Voleibol: passe e manchete em situação de 2x2. Condição física: resistência.">${esc(a.sumario)}</textarea>
+    <div class="sug">${[...a.materias.flatMap(m => SUMB[m] || []), ...SUMG].map(x => `<button data-a="d-sug" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     ${last ? `<button class="link" style="align-self:flex-start" data-a="d-last">Copiar o sumário da lição anterior</button>` : ''}</div>
     <button class="btn block" data-a="aula-aval">Avaliar nesta aula: níveis e registos +/−</button>
     <div class="field"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Presenças</span><button class="link" data-a="d-allp">Todos presentes</button></div>
@@ -1129,7 +1216,7 @@ function sheetAluno(al) {
     const r = calc(t, UI.p, al);
     const lv = Object.entries(r.lv);
     resumo += `<p class="hint">${perLabel(UI.p, true)}: ${lv.length ? lv.map(([m, l]) => esc(m) + ' ' + l).join(' · ') : 'sem matérias avaliadas'}${r.missing.length ? ' · Falta: ' + r.missing.join(', ') : ''}</p></div>`;
-    if (lv.length) resumo += `<div class="field"><span class="lbl">O que domina e onde melhorar · ${perLabel(UI.p, true)}</span>${lv.map(([m, l]) => { const sm = lvSummary(t.ciclo, m, l); return `<details class="desc"><summary>${esc(m)} · ${l} <span class="muted small">(${esc(LVN[l])})</span></summary>${sm ? `<div class="dom" style="max-height:none;margin-bottom:12px">${sm}</div>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`; }).join('')}</div>`;
+    if (lv.length) resumo += `<div class="field"><span class="lbl">O que domina e onde melhorar · ${perLabel(UI.p, true)}</span>${lv.map(([m, l]) => { const sm = lvSummary(t.ciclo, m, l, tksOf(avalOf(t.id, UI.p), al.id, m)); return `<details class="desc"><summary>${esc(m)} · ${l} <span class="muted small">(${esc(LVN[l])})</span></summary>${sm ? `<div class="dom" style="max-height:none;margin-bottom:12px">${sm}</div>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`; }).join('')}</div>`;
     const evo = CFG.per.slice(0, CFG.nper).map((_, i) => calc(t, i + 1, al)), ser = [{name:'Final', color:'var(--v1)', vals:evo.map(x => x.FIN)}, {name:'Matérias', color:'var(--v2)', vals:evo.map(x => x.AF)}, {name:'Apt. física', color:'var(--v3)', vals:evo.map(x => x.APF)}, {name:'Atitudes', color:'var(--v7)', vals:evo.map(x => x.AV)}];
     if (evo.some(x => x.FIN != null || x.AF != null || x.APF != null)) resumo += fig('Evolução por período', 'Escala 0–20; a linha tracejada marca os 10', chLine(evo.map((_, i) => perLabel(i + 1)), ser, {h:180, label:'Evolução por período'}) + legend(ser.map(x => ({name:x.name, color:x.color}))));
   }
@@ -1143,7 +1230,12 @@ function sheetAluno(al) {
     <div class="field"><label for="a-reg">Regime</label><select id="a-reg" data-in="a-reg">${Object.keys(REG).map(k => `<option${al.regime === k ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
     <div class="field"><label for="a-obs">Observações</label><textarea id="a-obs" data-in="a-obs" placeholder="Atestado, cuidados de saúde, notas...">${esc(al.obs || '')}</textarea></div>
     ${resumo}
-    ${isNew ? '' : `<div class="field"><label for="a-relobs">Observação do ${esc(perLabel(UI.p, true))} (aparece no relatório)</label><textarea id="a-relobs" placeholder="Ex.: Evoluiu no passe e na manchete; deve trabalhar a resistência aeróbia.">${esc((avalOf(t.id, UI.p).obs || {})[al.id] || '')}</textarea></div><button class="btn" data-a="rel-one" data-id="${esc(al.id)}">Relatório do aluno (imprimir ou PDF)</button>`}</div>`;
+    ${isNew ? '' : `<div class="field"><label for="a-relobs">Observação do ${esc(perLabel(UI.p, true))} (aparece no relatório)</label><textarea id="a-relobs" placeholder="Ex.: Evoluiu no passe e na manchete; deve trabalhar a resistência aeróbia.">${esc((avalOf(t.id, UI.p).obs || {})[al.id] || '')}</textarea><div class="sug"><button data-a="obs-sug" style="border-style:solid;color:var(--accent);font-weight:600">Sugerir a partir dos dados</button>${OBSB.map((o, i) => `<button data-a="obs-add" data-i="${i}">${esc(o)}</button>`).join('')}</div></div>
+    ${fig('Comparação com a turma', perLabel(UI.p, true) + ' · barra do aluno e traço da média', chCompare(compareRows(t, UI.p, al)))}
+    ${(fe => fe ? fig('Aptidão física ao longo do ano', 'Resultados por período e linha da Zona Saudável', fe) : '')(chFitEvo(t, al))}
+    ${(ae => ae ? `<div class="aebox"><b>Aprendizagens Essenciais · ${ae.ano}.º ano</b><div>Atividades físicas: <span class="pill ${aeCls(ae.af)}">${esc(aeLbl(ae, ae.af))}</span> · Aptidão física: <span class="pill ${aeCls(ae.apf)}">${esc(aeLbl(ae, ae.apf))}</span> · Conhecimentos: <span class="pill ${aeCls(ae.con)}">${esc(aeLbl(ae, ae.con))}</span></div><div class="hint">Matérias consideradas: ${ae.sel.length ? ae.sel.map(c => esc(c.m) + ' ' + c.l).join(' · ') : '—'}</div></div>` : '')(aeOf(t, al, UI.p))}
+    <div class="field"><span class="lbl">Autoavaliação</span>${autoCompare(t, UI.p, al) || '<p class="hint" style="margin:0">Ainda sem autoavaliação neste período.</p>'}<button class="btn" data-a="auto-open" data-id="${esc(al.id)}">${(avalOf(t.id, UI.p).auto || {})[al.id] ? 'Rever a autoavaliação' : 'Autoavaliação do aluno'}</button></div>
+    <button class="btn primary" data-a="rel-one" data-id="${esc(al.id)}">Relatório do aluno (imprimir ou PDF)</button>`}</div>`;
   const foot = (isNew ? '' : `<button class="btn danger" data-a="aluno-del">Remover</button>`) + `<button class="btn primary" data-a="aluno-save">Guardar</button>`;
   openSheet(isNew ? 'Novo aluno' : al.nome, body, foot);
 }
@@ -1152,6 +1244,7 @@ function sheetTurma(x) {
   const isNew = !S.turmas[x.id]; UI.draft = x;
   const body = `<div class="form">
     <div class="field"><label for="t-nome">Nome da turma</label><input type="text" id="t-nome" data-in="t-nome" value="${esc(x.nome)}" placeholder="Ex.: 7.º B"></div>
+    <div class="field"><label for="t-ano">Ano de escolaridade (para as Aprendizagens Essenciais)</label><select id="t-ano" data-in="t-ano"><option value="">—</option>${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => `<option value="${n}"${+(x.ano || guessAno(x.nome)) === n ? ' selected' : ''}>${n}.º ano</option>`).join('')}</select></div>
     <div class="field"><label for="t-ciclo">Ciclo (define as matérias e os descritivos)</label><select id="t-ciclo" data-in="t-ciclo">${Object.entries(CICLOS).map(([k, n]) => `<option value="${k}"${x.ciclo === k ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
     <div class="field"><span class="lbl">Escala de Conhecimentos</span><div class="seg block">${['0-20','1-5'].map(s => `<button data-a="t-escala" data-s="${s}" class="${x.escala === s ? 'on' : ''}">${s}</button>`).join('')}</div></div>
     <div class="field"><span class="lbl">Horário semanal (tempos de Educação Física)</span>${(x.horario || []).map((hh, i) => `<div class="pl-ed"><select data-in="hor" data-i="${i}" data-k="d" aria-label="Dia">${[1, 2, 3, 4, 5, 6].map(d => `<option value="${d}"${+hh.d === d ? ' selected' : ''}>${DIAS[d]}</option>`).join('')}</select><input type="time" data-in="hor" data-i="${i}" data-k="h" value="${esc(hh.h || '')}" aria-label="Hora"><button class="icon-btn" data-a="hor-del" data-i="${i}" aria-label="Remover">×</button></div>`).join('')}<button class="btn" style="align-self:flex-start" data-a="hor-add">+ Tempo letivo</button></div>
@@ -1182,9 +1275,9 @@ const A = {
   'turma-edit': el => sheetTurma(clone(S.turmas[el.dataset.id])),
   't-escala': el => { UI.draft.escala = el.dataset.s; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
   'turma-save': () => {
-    const x = UI.draft; x.nome = ($('#t-nome').value || '').trim(); x.ciclo = $('#t-ciclo').value;
+    const x = UI.draft; x.nome = ($('#t-nome').value || '').trim(); x.ciclo = $('#t-ciclo').value; x.ano = +$('#t-ano').value || null;
     if (!x.nome) { toast('Escreva o nome da turma.', 'bad'); $('#t-nome').focus(); return; }
-    const prev = S.turmas[x.id]; x.horario = (x.horario || []).filter(hh => hh.h); S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala, horario:x.horario}) : x;
+    const prev = S.turmas[x.id]; x.horario = (x.horario || []).filter(hh => hh.h); S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala, horario:x.horario, ano:x.ano}) : x;
     Store.save('turmas', S.turmas[x.id]); UI.turma = x.id; if (!prev) UI.tab = 'alunos'; closeSheet(); render(); toast(prev ? 'Turma guardada.' : 'Turma criada. Adicione os alunos.');
   },
   'turma-del': el => {
@@ -1248,7 +1341,7 @@ const A = {
     touchAval(v);
     el.parentNode.querySelectorAll('button').forEach(b => { const s = on && b === el; b.classList.toggle('on', s); b.setAttribute('aria-pressed', s); });
     const hEl = document.getElementById('lvh-' + aid); if (hEl) hEl.textContent = on ? LVN[l] : '';
-    const sEl = document.getElementById('lvs-' + aid); if (sEl) { const sm = on ? lvSummary(t.ciclo, UI.mat, l) : ''; sEl.innerHTML = sm; sEl.hidden = !sm; }
+    const sEl = document.getElementById('lvs-' + aid); if (sEl) { const sm = on ? lvSummary(t.ciclo, UI.mat, l, tksOf(v, aid, UI.mat)) : ''; sEl.innerHTML = sm; sEl.hidden = !sm; }
   },
   'fit-sel': el => { UI.fit = el.dataset.k; render(); },
   'fit-bool': el => { const v = fitSet(el.dataset.aid, 'ombros', ((avalOf(turma().id, UI.p).fit || {})[el.dataset.aid] || {}).ombros === el.dataset.v ? '' : el.dataset.v); render(); },
@@ -1366,8 +1459,8 @@ const A = {
   'pl-del': el => { UI.draft.splice(+el.dataset.i, 1); planoRender(); },
   'pl-save': () => { const t = turma(); t.plano = t.plano || {}; t.plano[UI.p] = UI.draft.filter(u => u.m && u.n > 0); Store.save('turmas', t); closeSheet(); render(); toast('Plano guardado.'); },
   'hoje-go': el => { UI.turma = el.dataset.id; FOCUS = null; SEL = null; UI.tab = 'aulas'; UI.p = periodOf(today()); render(); const t = turma(), a = aulasOf(t.id).filter(x => x.data === today()).pop(); if (a) A['aula-edit']({dataset:{id:a.id}}); else A['aula-new'](); },
-  'hor-add': () => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; (d.horario = d.horario || []).push({d:Math.min(5, Math.max(1, new Date().getDay())), h:''}); sheetTurma(d); },
-  'hor-del': el => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; d.horario.splice(+el.dataset.i, 1); sheetTurma(d); },
+  'hor-add': () => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; d.ano = +$('#t-ano').value || null; (d.horario = d.horario || []).push({d:Math.min(5, Math.max(1, new Date().getDay())), h:''}); sheetTurma(d); },
+  'hor-del': el => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; d.ano = +$('#t-ano').value || null; d.horario.splice(+el.dataset.i, 1); sheetTurma(d); },
   'pview': el => { UI.pview = el.dataset.k; render(); },
   'rel-one': el => { relObs(el.dataset.id); const t = turma(), al = (t.alunos || []).find(x => x.id === el.dataset.id); if (al) printRel(t, UI.p, [al]); },
   'rel-all': () => { const t = turma(); printRel(t, UI.p, alunosOf(t)); },
@@ -1385,6 +1478,26 @@ const A = {
     for (const k of ['turmas', 'aulas', 'aval', 'fotos']) Object.values(d[k] || {}).forEach(o => { const cur = S[k][o.id]; if (!cur || (o._u || 0) > (cur._u || 0)) { S[k][o.id] = o; Store.save(k, o, true); n++; } });
     if (!UI.turma) UI.turma = Object.keys(S.turmas)[0] || null; render(); toast(n ? n + ' registos atualizados a partir da cópia.' : 'Este aparelho já tinha tudo o que está na cópia.');
   },
+  'comp-all': el => compSet(id => id[0] === el.dataset.k, el.dataset.v === '1'),
+  'doc-rel-all': () => { const t = turma(); printRel(t, UI.p, alunosOf(t)); },
+  'doc-crit': () => printDoc('Critérios de avaliação', criteriosHtml(turma())),
+  'doc-plan': () => { const t = turma(); printDoc('Planificação anual · ' + t.nome, planHtml(t)); },
+  'cons-open': () => sheetConselho(),
+  'doc-cons': () => { const t = turma(); closeSheet(); printDoc('Conselho de turma · ' + t.nome, conselhoHtml(t, UI.p)); },
+  'med-add': el => { const ta = document.querySelector(`textarea[data-in="med"][data-aid="${CSS.escape(el.dataset.aid)}"]`), x = MEDB[+el.dataset.i]; ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + x; ta.dispatchEvent(new Event('input', {bubbles:true})); },
+  'auto-first': () => { const als = alunosOf(turma()); if (!als.length) { toast('A turma não tem alunos.', 'bad'); return; } sheetAuto(als[0].id); },
+  'auto-open': el => { relObs(el.dataset.id); sheetAuto(el.dataset.id); },
+  'auto-lv': el => { const d = UI.draft; d.lv[el.dataset.m] = d.lv[el.dataset.m] === el.dataset.l ? undefined : el.dataset.l; d.txt = $('#auto-txt').value; autoRender(); },
+  'auto-av': el => { const d = UI.draft, k = el.dataset.k, i = +el.dataset.i; d.av[k] = d.av[k] === i ? undefined : i; d.txt = $('#auto-txt').value; autoRender(); },
+  'auto-save': el => {
+    const t = turma(), v = avalOf(t.id, UI.p), d = UI.draft; d.txt = $('#auto-txt').value.trim(); v.auto = v.auto || {};
+    v.auto[d.aid] = {lv:JSON.parse(JSON.stringify(d.lv)), av:JSON.parse(JSON.stringify(d.av)), txt:d.txt, d:today()}; touchAval(v);
+    if (el.dataset.next) { const als = alunosOf(t), i = als.findIndex(x => x.id === d.aid); sheetAuto(als[i + 1].id); $('#sheet .sh-b').scrollTop = 0; toast('Guardado. Agora: ' + als[i + 1].nome.split(' ')[0] + '.'); }
+    else { closeSheet(); render(); toast('Autoavaliação guardada.'); }
+  },
+  'obs-sug': el => { const ta = $('#a-relobs'), t = turma(), al = UI.draft; if (ta.value.trim() && !armed(el, 'Substituir o texto?')) return; ta.value = obsSugest(t, UI.p, (t.alunos || []).find(x => x.id === al.id) || al) || 'Sem dados suficientes para sugerir.'; ta.focus(); },
+  'obs-add': el => { const ta = $('#a-relobs'), x = OBSB[+el.dataset.i]; ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + x.replace('assíduo(a)', UI.draft.sexo === 'F' ? 'assídua' : UI.draft.sexo === 'M' ? 'assíduo' : 'assíduo(a)'); },
+  'd-sug': el => { const ta = $('#d-sum'); ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + el.dataset.t; UI.draft.sumario = ta.value; },
   'xls-import': () => { if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; } $('#file-xls').click(); },
   'xls-model': () => {
     if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
@@ -1398,7 +1511,7 @@ const A = {
     let first = null, nNew = 0, nUpd = 0;
     plan.forEach(g => {
       if (!g.list.length) return;
-      let t = g.t; if (!t) { t = {id: uid(), nome: g.nome.trim(), ciclo: g.ciclo, escala: '0-20', alunos: []}; S.turmas[t.id] = t; }
+      let t = g.t; if (!t) { t = {id: uid(), nome: g.nome.trim(), ciclo: g.ciclo, ano: guessAno(g.nome), escala: '0-20', alunos: []}; S.turmas[t.id] = t; }
       t.alunos = t.alunos || []; let n = Math.max(0, ...t.alunos.map(a => +a.num || 0));
       g.list.forEach(x => {
         const ex = findAluno(t, x);
@@ -1419,6 +1532,13 @@ const A = {
   'foto-one': () => $('#file-foto1').click(),
   'foto-rm': el => { DFOTO = ''; $('#a-foto').innerHTML = avatar({nome: UI.draft.nome || $('#a-nome').value}, 'lg'); el.hidden = true; }
 };
+function compSet(match, on) {
+  const {c, col, al} = gHere(); if (!col || !al || !col.m) return;
+  gSnap(c, col); const v = c.v; v.comp = v.comp || {}; v.comp[al.id] = v.comp[al.id] || {}; const tk = v.comp[al.id][col.m] = v.comp[al.id][col.m] || {};
+  compsOf(c.t.ciclo, col.m).forEach(x => { if (match(x.id)) { if (on) tk[x.id] = true; else delete tk[x.id]; } });
+  if (Object.keys(tk).length) { v.af = v.af || {}; v.af[al.id] = v.af[al.id] || {}; v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } else delete v.comp[al.id][col.m];
+  touchAval(v); UI.domOpen = true; gRefresh();
+}
 function relObs(aid) { const ro = $('#a-relobs'); if (!ro || !UI.draft || UI.draft.id !== aid) return; const v = avalOf(turma().id, UI.p), x = ro.value.trim(); v.obs = v.obs || {}; if (x) v.obs[aid] = x; else delete v.obs[aid]; touchAval(v); }
 function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; v.fit[aid][k] = val; touchAval(v); return v; }
 function updAV(aid) { const t = turma(); const al = (t.alunos || []).find(x => x.id === aid); const el = document.getElementById('avn-' + aid); if (al && el) el.textContent = f1(calc(t, UI.p, al).AV); }
@@ -1439,6 +1559,9 @@ document.addEventListener('change', e => {
   else if (k === 'imp-dest') { IMP.dest = el.value; if (el.value !== '__new' && el.value !== '__split') { const t = S.turmas[el.value], m = impTurmas().find(x => norm(x) === norm(t.nome)); IMP.filter = m || ''; } sheetImport(true); }
   else if (k === 'imp-filter') { IMP.filter = el.value; sheetImport(true); }
   else if (k === 'imp-ciclo') { IMP.newCiclo = el.value; }
+  else if (k === 'comp') { compSet(id => id === el.dataset.id, el.checked); }
+  else if (k === 'cons-all') { UI.consAll = el.checked; sheetConselho(); }
+  else if (k === 'cfg-aecon') { const x = parseNum(el.value); CFG.aeCon = (CFG.aeCon || [10, 14]).slice(); if (x != null) CFG.aeCon[+el.dataset.i] = x; Store.save('cfg', CFG); }
   else if (k === 'eq') { const E = UI.eq; E[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.dataset.k === 'n' ? +el.value : el.value; E.res = null; $('#eq-out').innerHTML = eqHtml(); }
   else if (k === 'pl') { const u = UI.draft[+el.dataset.i]; u[el.dataset.k] = el.dataset.k === 'n' ? Math.max(1, Math.min(60, parseInt(el.value, 10) || 1)) : el.value; }
   else if (k === 'hor') { UI.draft.horario[+el.dataset.i][el.dataset.k] = el.value; }
@@ -1466,6 +1589,8 @@ document.addEventListener('input', e => {
     if (!UNDO || UNDO.cell !== SEL.aid + col.k) { gSnap(c, col); UNDO.cell = SEL.aid + col.k; }
     gSet(c, col, al, parseNum(el.value)); const s = gShow(c, col, al), cell = document.querySelector('td.c.sel, .gcr.sel .c');
     if (cell) { cell.textContent = s.txt || (cell.tagName === 'SPAN' ? '·' : ''); cell.className = (cell.tagName === 'TD' ? 'c sel ' : 'c ') + s.cls + (s.auto ? ' auto' : ''); }
+  } else if (k === 'med') {
+    const v = avalOf(turma().id, UI.p), x = el.value.trim(); v.med = v.med || {}; if (x) v.med[el.dataset.aid] = x; else delete v.med[el.dataset.aid]; touchAval(v);
   } else if (k === 'imp-tname') {
     IMP.newName = el.value;
   } else if (k === 'fitref') {
@@ -1829,9 +1954,28 @@ function vGraficos(t) {
     const d = ks.map(k => { const n = rows.filter(x => nivel(t, x.r.FIN) === k).length; return {label:String(k), v:n, tip:`${nivelLbl(t)} ${k}: ${n} ${n === 1 ? 'aluno' : 'alunos'}`}; });
     h += fig(t.ciclo === '1' ? 'Menções' : 'Níveis', `${rows.filter(x => x.r.FIN != null).length} de ${rows.length} alunos com classificação`, chColumns(d, {label:'Distribuição dos níveis'}) + tableView([nivelLbl(t), 'Alunos'], d.map(x => [x.label, x.v])));
   }
+  // Mapa da turma
+  if (ms.length) h += fig('Mapa da turma', 'Nível de cada aluno em cada matéria', chMapa(t, p) + legend(LVB.map((b, i) => ({name:b.name, color:`var(--q${i + 1})`}))));
+  // Aprendizagens Essenciais
+  const aes = als.map(al => aeOf(t, al, p));
+  if (aes[0]) {
+    const A = aes[0].A, keys = [{k:0, name:'Não atinge', color:'var(--st-crit)'}, {k:1, name:'Proficiente', color:'var(--q2)'}, {k:2, name:aeTop(A), color:'var(--q4)'}, {k:'n', name:'Sem dados', color:'var(--v-none)'}];
+    const rs = [['Atividades físicas', 'af'], ['Aptidão física', 'apf'], ['Conhecimentos', 'con']].map(([l, k]) => { const c = {}; aes.forEach(a => { const x = a[k] == null ? 'n' : a[k]; if (x !== 'na') c[x] = (c[x] || 0) + 1; }); return {label:l, c}; });
+    h += fig(`Aprendizagens Essenciais · ${aes[0].ano}.º ano`, 'Situação de cada aluno até ao ' + perLabel(p, true) + ' (DGE, março de 2026)', chStack(rs, keys, {id:'ae'}) + legend(keys) + tableView(['Domínio', ...keys.map(k => k.name)], rs.map(r => [r.label, ...keys.map(k => r.c[k.k] || 0)])));
+  }
   // 2. Estado
   const st = {}; rows.forEach(x => st[x.r.EST] = (st[x.r.EST] || 0) + 1);
   h += fig('Situação da turma', perLabel(p, true), chStack([{label:'Turma', c:st}], STK, {id:'st'}) + legend(STK.map(k => ({name:k.name + ' · ' + (st[k.k] || 0), color:k.color}))));
+  // Evolução da turma ao longo do ano
+  const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1), allr = ps.map(i => als.map(al => calc(t, i, al)));
+  if (allr.filter(rs => rs.some(r => r.FIN != null || r.AF != null)).length >= 2) {
+    const mk = k => allr.map(rs => { const xs = rs.map(r => r[k]).filter(x => x != null); return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null; });
+    const ser = [{name:'Final', color:'var(--v1)', vals:mk('FIN')}, {name:'Matérias', color:'var(--v2)', vals:mk('AF')}, {name:'Apt. física', color:'var(--v3)', vals:mk('APF')}, {name:'Atitudes', color:'var(--v7)', vals:mk('AV')}];
+    h += fig('Evolução da turma', 'Médias por período, escala 0–20', chLine(ps.map(i => perLabel(i)), ser, {label:'Evolução das médias da turma'}) + legend(ser));
+    const pct = f => allr.map(rs => { const xs = rs.filter(f(true)); return xs.length ? Math.round(rs.filter(f(false)).length / xs.length * 100) : null; });
+    const s2 = [{name:'Aptos', color:'var(--st-good)', vals:pct(all => r => all ? r.FIN != null : r.EST === 'Apto')}, {name:'Vaivém na ZS', color:'var(--v1)', vals:pct(all => r => all ? r.zones.vaivem != null : r.zones.vaivem >= 1)}];
+    h += fig('Aptos e aptidão aeróbia', 'Percentagem dos alunos com dados, por período', chLine(ps.map(i => perLabel(i)), s2, {max:100, ref:50, label:'Percentagem de aptos e de alunos na Zona Saudável do vaivém'}) + legend(s2));
+  }
   // 3. Médias por domínio
   const mean = k => { const xs = rows.map(x => x.r[k]).filter(x => x != null); return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null; };
   const dm = [['Matérias (AF)', 'AF'], ['Aptidão física', 'APF'], ['Conhecimentos', 'CON'], ['Atitudes', 'AV'], ['Final', 'FIN']].map(([l, k]) => ({label:l, v:mean(k)}));
@@ -1862,14 +2006,19 @@ function relHtml(t, p, al) {
   let h = `<section class="rel"><header class="rel-h"><div><div class="rel-k">Educação Física · Relatório de avaliação</div><div class="rel-s">${esc(CFG.escola || 'Escola')} · Ano letivo ${esc(CFG.ano)} · ${esc(perLabel(p, true))}</div></div><div class="rel-s">${esc(fmtDate(today(), {day:'numeric', month:'long', year:'numeric'}))}</div></header>
     <div class="rel-id">${ph}<div><h1>${esc(al.nome)}</h1><div class="rel-s">N.º ${esc(al.num ?? '—')} · Turma ${esc(t.nome)} · ${esc(CICLOS[t.ciclo])}${al.regime && al.regime !== 'Normal' ? ' · ' + esc(al.regime) : ''}</div></div>
     <div class="rel-fin ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : ''}"><b>${r.FIN ?? '—'}</b><span>${nv != null ? esc(nivelLbl(t) + ' ' + nv) : 'Classificação'}</span><span>${esc(r.EST)}</span></div></div>`;
-  h += `<h2>Classificação por domínio</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Peso</th><th>Classificação (0–20)</th></tr></thead><tbody>${[['Atividades físicas (matérias)', R.af, r.AF, r.afOn], ['Aptidão física', R.apf, r.APF, r.apfOn], ['Conhecimentos', R.con, r.CON, true], ['Atitudes e valores', R.av, r.AV, true]].map(([n, w, x, on]) => `<tr><td class="l">${n}</td><td>${Math.round(w * 100)} %</td><td>${on ? (x == null ? '—' : nf(x)) : 'Não aplicável'}</td></tr>`).join('')}</tbody></table>`;
+  h += `<h2>Classificação por domínio</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Peso</th><th>Classificação (0–20)</th><th>Perfil dos Alunos</th></tr></thead><tbody>${[['Atividades físicas (matérias)', R.af, r.AF, r.afOn, 'af'], ['Aptidão física', R.apf, r.APF, r.apfOn, 'apf'], ['Conhecimentos', R.con, r.CON, true, 'con'], ['Atitudes e valores', R.av, r.AV, true, 'resp']].map(([n, w, x, on, k]) => `<tr><td class="l">${n}</td><td>${Math.round(w * 100)} %</td><td>${on ? (x == null ? '—' : nf(x)) : 'Não aplicável'}</td><td>${k === 'resp' ? paTags('resp') + paTags('emp') : paTags(k)}</td></tr>`).join('')}</tbody></table>`;
+  { const keep = CHW; CHW = 640; h += `<h2>Comparação com a turma</h2>` + chCompare(compareRows(t, p, al)); CHW = keep; }
+  const ae = aeOf(t, al, p);
+  if (ae) h += `<h2>Aprendizagens Essenciais · ${ae.ano}.º ano</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th class="l">Proficiente</th><th class="l">${esc(aeTop(ae.A))}</th><th>Situação</th></tr></thead><tbody><tr><td class="l"><b>Atividades físicas</b></td><td class="l">${esc(afTxt(ae.A.af.p))}</td><td class="l">${esc(afTxt(ae.A.af.e))}</td><td><b>${esc(aeLbl(ae, ae.af))}</b></td></tr><tr><td class="l"><b>Aptidão física</b></td><td class="l">ZS em 1 teste aeróbio e 2 neuromusculares</td><td class="l">ZS em 1 teste aeróbio e 4 neuromusculares</td><td><b>${esc(aeLbl(ae, ae.apf))}</b></td></tr><tr><td class="l"><b>Conhecimentos</b></td><td class="l">${AE_CON_P}</td><td class="l">${AE_CON_E}</td><td><b>${esc(aeLbl(ae, ae.con))}</b></td></tr></tbody></table><p class="rel-s">Matérias consideradas (melhores níveis do ano): ${ae.sel.length ? ae.sel.map(c => esc(c.m) + ' ' + c.l).join(' · ') : '—'}. Aptidão física: ${ae.aero ? 'vaivém na Zona Saudável' : 'vaivém fora da Zona Saudável ou sem registo'}; ${ae.neuro} ${ae.neuro === 1 ? 'teste neuromuscular' : 'testes neuromusculares'} na Zona Saudável. Fonte: Aprendizagens Essenciais de Educação Física (DGE, março de 2026).</p>`;
   const lv = Object.entries(r.lv);
-  if (r.afOn) h += `<h2>Matérias: o que domina e onde melhorar</h2>` + (lv.length ? lv.map(([m, l]) => `<div class="rel-m"><div class="rel-mh"><b>${esc(m)}</b><span class="rel-sc">${LV.map(x => `<i class="${x === l ? 'on' : ''}">${x}</i>`).join('')}</span><span>${esc(LVN[l])}</span></div><div class="dom">${lvSummary(t.ciclo, m, l) || 'Sem descritivo neste ciclo.'}</div></div>`).join('') : '<p class="rel-s">Sem matérias avaliadas neste período.</p>');
+  if (r.afOn) h += `<h2>Matérias: o que domina e onde melhorar</h2>` + (lv.length ? lv.map(([m, l]) => `<div class="rel-m"><div class="rel-mh"><b>${esc(m)}</b><span class="rel-sc">${LV.map(x => `<i class="${x === l ? 'on' : ''}">${x}</i>`).join('')}</span><span>${esc(LVN[l])}</span></div><div class="dom">${lvSummary(t.ciclo, m, l, tksOf(v, al.id, m)) || 'Sem descritivo neste ciclo.'}</div></div>`).join('') : '<p class="rel-s">Sem matérias avaliadas neste período.</p>');
   if (r.apfOn) { const fv = (v.fit || {})[al.id] || {}; h += `<h2>Aptidão física (FITescola)</h2><table class="rel-t"><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), val = fv[f.k]; if (z == null && (val == null || val === '')) return ''; return `<tr><td class="l">${esc(f.n)}</td><td>${f.bool ? (val === 'S' ? 'Sim' : val === 'N' ? 'Não' : '—') : val == null || val === '' ? '—' : esc(String(val).replace('.', ',') + ' ' + f.u)}</td><td>${z != null ? esc(ZN[z]) : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('') || '<tr><td class="l" colspan="4">Sem testes registados.</td></tr>'}</tbody></table>`; }
   h += `<h2>Atitudes e valores</h2><table class="rel-t"><tbody>${Object.keys(AVW).map(k => `<tr><td class="l" style="width:28%"><b>${esc(AVN[k])}</b></td><td class="l">${r.ix[k] != null ? esc(AVD[k][r.ix[k]]) : '—'}</td></tr>`).join('')}</tbody></table>`;
+  if (r.apfOn) { const fe = chFitEvo(t, al, 300); if (fe && CFG.per.slice(0, CFG.nper).some((_, i) => i + 1 < p)) h += `<h2>Aptidão física ao longo do ano</h2>` + fe; }
   h += `<h2>Assiduidade</h2><div class="rel-as">${[['Aulas', aul], ['Faltas', r.c.F], ['Atrasos', r.c.A], ['Sem material', r.c.M], ['Dispensas da prática', r.c.D]].map(([n, x]) => `<div><b>${x}</b><span>${n}</span></div>`).join('')}</div>`;
   const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1).filter(i => i <= p);
   if (ps.length > 1) { const cs = ps.map(i => calc(t, i, al)); CHW = 640; h += `<h2>Evolução</h2>` + chLine(ps.map(i => perLabel(i)), [{name:'Final', color:'var(--v1)', vals:cs.map(c => c.FIN)}, {name:'Matérias', color:'var(--v2)', vals:cs.map(c => c.AF)}, {name:'Apt. física', color:'var(--v3)', vals:cs.map(c => c.APF)}, {name:'Atitudes', color:'var(--v7)', vals:cs.map(c => c.AV)}], {h:170, label:'Evolução por período'}); CHW = null; }
+  { const ac = autoCompare(t, p, al); if (ac) h += `<h2>Autoavaliação</h2>` + ac; }
   h += `<h2>Observações</h2><div class="rel-obs">${(v.obs || {})[al.id] ? esc(v.obs[al.id]).replace(/\n/g, '<br>') : '&nbsp;'}</div>
     <div class="rel-sig"><div><span>O professor${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Tomei conhecimento (Encarregado de Educação)</span></div></div></section>`;
   return h;
@@ -2007,7 +2156,7 @@ function vPlano(t) {
   if (!pl.length) return `<button class="card" data-a="plano-edit" style="text-align:left"><b>Planear o ${esc(perLabel(UI.p, true))}</b><p class="hint" style="margin:4px 0 0">Indique as unidades didáticas e o número de aulas de cada uma: as aulas novas já vêm com a matéria certa e vê aqui o que falta dar.</p></button>`;
   const rows = pl.map(u => { const d = dadasOf(t, UI.p, u.m); return {u, d}; });
   const tot = rows.reduce((s, x) => s + Math.min(x.d, x.u.n), 0), prev = rows.reduce((s, x) => s + x.u.n, 0);
-  return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><button class="link" data-a="plano-edit">Editar</button></div>
+  return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><span><button class="link" data-a="doc-plan">Imprimir</button> · <button class="link" data-a="plano-edit">Editar</button></span></div>
     <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
     <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p></div>`;
 }
@@ -2058,11 +2207,273 @@ function sheetGrupo() {
   openSheet('Painel de todas as turmas · ' + perLabel(UI.p), `<div class="stack">${b}</div>`, `<button class="btn primary" data-a="grupo-xlsx">Exportar para Excel</button>`);
 }
 
+/* ---------- Aprendizagens Essenciais de Educação Física (DGE, versão de março de 2026) ---------- */
+// Fonte: documentos oficiais da DGE para o 5.º–9.º ano e 10.º–12.º ano. As tabelas de níveis de desempenho,
+// as regras de seleção das matérias para a avaliação e as matérias mínimas a lecionar estão transcritas de lá.
+const SUBN = {JOG:'Jogos', JDC:'Jogos Desportivos Coletivos', GIN:'Ginástica', ATL:'Atletismo', ARE:'Atividades Rítmicas Expressivas', PAT:'Patinagem', RAQ:'Raquetas', OUT:'Outras'};
+const SUBD = {'Voleibol':'JDC', 'Basquetebol':'JDC', 'Andebol':'JDC', 'Futebol':'JDC', 'Softbol':'JDC', 'Ginástica de Solo':'GIN', 'Ginástica de Aparelhos (Trampolins)':'GIN', 'Ginástica Acrobática':'GIN', 'Atletismo':'ATL', 'Dança':'ARE', 'Danças Sociais':'ARE', 'Danças Tradicionais':'ARE', 'Patinagem':'PAT', 'Badminton':'RAQ', 'Ténis de Mesa':'RAQ', 'Judo/Luta':'OUT', 'Orientação':'OUT', 'Natação':'OUT', 'Jogos Tradicionais Populares':'OUT'};
+// Subdomínio de uma matéria para a avaliação: até ao 9.º ano as Raquetas contam em "Outras"; no 5.º ano os Jogos Tradicionais contam em "Jogos".
+function subOf(m, ano, lec) { let s = SUBD[m] || 'OUT'; if (s === 'RAQ' && ano < (lec ? 9 : 10)) s = 'OUT'; if (s === 'OUT' && m === 'Jogos Tradicionais Populares' && ano === 5) s = 'JOG'; return s; }
+const AE_APF = 'Desenvolver capacidades motoras evidenciando aptidão aeróbia e aptidão neuromuscular, enquadradas na Zona Saudável de Aptidão Física do programa FITescola®, para a sua idade e sexo.';
+const AE_CON_P = 'Identifica os conceitos em diferentes contextos.', AE_CON_E = 'Explica e aplica, com rigor e clareza, os conceitos em diferentes contextos.';
+const SEL3 = {g:[[['JDC'], 2], [['GIN'], 1], [['ATL', 'ARE', 'PAT', 'OUT'], 3, true]], n:6, fb:['GIN', 'OUT'], txt:'2 matérias dos Jogos Desportivos Coletivos, 1 da Ginástica e 3 de subdomínios diferentes (Atletismo, ARE, Patinagem e Outras); na impossibilidade de avaliar algum subdomínio, mais uma da Ginástica ou de Outras.'};
+const SELS = {g:[[['JDC'], 2], [['GIN'], 1], [['ARE'], 1], [['ATL', 'PAT', 'RAQ', 'OUT'], 2, true]], n:6, fb:['GIN', 'OUT'], txt:'2 matérias dos Jogos Desportivos Coletivos, 1 da Ginástica, 1 das ARE e 2 de subdomínios diferentes (Atletismo, Patinagem, Raquetas e Outras).'};
+const SEL2 = n => ({distinct:true, n, fb:['GIN', 'OUT'], txt:`${n} matérias, todas de subdomínios diferentes; na impossibilidade de avaliar algum subdomínio, mais uma da Ginástica ou de Outras.`});
+const AE = {
+  5:{af:{p:[0, 3], e:[0, 5]}, sel:SEL2(5), lec:{JDC:2, JOG:1, GIN:1, ATL:1, ARE:1, PAT:1, OUT:1},
+     con:['Identificar as capacidades físicas: resistência, força, velocidade, flexibilidade, agilidade e coordenação (geral), de acordo com as características do esforço realizado.']},
+  6:{af:{p:[0, 4], e:[0, 6]}, sel:SEL2(6), lec:{JDC:2, GIN:2, ATL:1, ARE:1, PAT:1, OUT:1},
+     con:['Identificar as capacidades físicas: resistência, força, velocidade, flexibilidade, agilidade e coordenação (geral), de acordo com as características do esforço realizado.', 'Interpretar as principais adaptações do funcionamento do seu organismo durante a atividade física.']},
+  7:{af:{p:[0, 5], e:[1, 5]}, sel:SEL3, lec:{JDC:3, GIN:2, ATL:1, ARE:1, PAT:1, OUT:1},
+     con:['Relacionar aptidão física e saúde e identificar os benefícios do exercício físico para a saúde: relaciona Aptidão Física e Saúde; identifica os fatores associados a um estilo de vida saudável; distingue o conceito de Desporto e de Educação Física.', 'Interpretar a dimensão sociocultural dos desportos na atualidade e ao longo dos tempos, nomeadamente os jogos olímpicos e paralímpicos.']},
+  8:{af:{p:[0, 6], e:[2, 4]}, sel:SEL3, lec:{JDC:3, GIN:2, ATL:1, ARE:1, PAT:1, OUT:1},
+     con:['Relacionar aptidão física e saúde e identificar os fatores associados a um estilo de vida saudável, nomeadamente o desenvolvimento das capacidades motoras.', 'Identificar e interpretar os valores olímpicos e paralímpicos, compreendendo a sua importância para a construção de uma sociedade moderna e inclusiva.']},
+  9:{af:{p:[1, 5], e:[3, 3]}, top:'Avançado', sel:SEL3, lec:{JDC:3, GIN:2, ARE:2, ATL:1, PAT:1, RAQ:1, OUT:1},
+     con:['Relacionar aptidão física e saúde e identificar os fatores associados a um estilo de vida saudável, nomeadamente o desenvolvimento das capacidades motoras, a composição corporal, a alimentação, o repouso, a higiene, afetividade e a qualidade do meio ambiente.', 'Interpretar a dimensão sociocultural dos desportos e da atividade física na atualidade e ao longo dos tempos, identificando fenómenos associados a limitações e possibilidades de prática dos desportos e das atividades físicas tais como: o sedentarismo e a evolução tecnológica, a poluição, o urbanismo e a industrialização, relacionando-os com a evolução das sociedades.']},
+  10:{af:{p:[1, 5], e:[3, 3]}, top:'Avançado', sel:SELS, lec:{JDC:3, GIN:2, ARE:2, ATL:1, PAT:1, RAQ:1, OUT:1},
+     con:['Relacionar a Aptidão Física e Saúde, identificando os fatores associados a um estilo de vida saudável, nomeadamente o desenvolvimento das capacidades motoras, a composição corporal, a alimentação, o repouso, a higiene, a afetividade e a qualidade do meio ambiente.', 'Interpretar a dimensão sociocultural dos desportos e da atividade física na atualidade e ao longo dos tempos, identificando fenómenos associados a limitações e possibilidades de prática dos desportos e das atividades físicas tais como: o sedentarismo e a evolução tecnológica, a poluição, o urbanismo e a industrialização, relacionando-os com a evolução das sociedades.', 'Realizar a prestação de socorro a uma vítima de paragem cardiorrespiratória, no contexto das atividades físicas ou outras, e interpretá-la como uma ação essencial, reveladora de responsabilidade individual e coletiva (cadeia de sobrevivência, exame primário da vítima, contacto com o 112, Suporte Básico de Vida e Desfibrilhação Automática Externa segundo o algoritmo do European Resuscitation Council, desobstrução da via aérea).']},
+  11:{af:{p:[2, 4], e:[4, 2]}, sel:SELS,
+     con:['Identificar os métodos e meios de treino mais adequados ao desenvolvimento ou manutenção das diversas capacidades motoras.', 'Conhecer e interpretar os fatores de saúde e risco associados à prática das atividades físicas utilizando esse conhecimento de modo a garantir a realização de atividade física em segurança, nomeadamente: dopagem e riscos de vida e/ou saúde; doenças e lesões; condições materiais, de equipamentos e de orientação do treino.']},
+  12:{af:{p:[3, 3], e:[5, 1]}, sel:{g:[[['JDC'], 2], [['GIN', 'ATL'], 1], [['ARE'], 1], [['PAT', 'RAQ', 'OUT'], 2, true]], n:6, fb:['PAT', 'RAQ', 'OUT'], txt:'2 matérias dos Jogos Desportivos Coletivos, 1 da Ginástica ou do Atletismo, 1 das ARE e 2 de subdomínios diferentes (Patinagem, Raquetas e Outras); na impossibilidade de avaliar algum subdomínio obrigatório, uma outra matéria dos subdomínios opcionais.'},
+     con:['Identificar e utilizar os métodos e meios de treino mais adequados ao desenvolvimento ou manutenção das diversas capacidades motoras, de acordo com a sua aptidão atual e o estilo de vida, cuidando o doseamento da intensidade e duração do esforço, respeitando em todas as situações os princípios básicos do treino.', 'Analisar criticamente aspetos gerais da ética na participação nas Atividades Físicas Desportivas, relacionando os interesses sociais, económicos, políticos e outros com algumas das suas “perversões”, nomeadamente: especialização precoce e exclusão ou abandono precoces; violência (dos espectadores e dos atletas) vs. espírito desportivo; corrupção vs. verdade desportiva.']}
+};
+const aeTop = A => A.top || 'Elevado';
+const afTxt = ([e, i]) => (e ? `nível ELEMENTAR em ${e} ${e === 1 ? 'matéria' : 'matérias'} e ` : '') + `nível INTRODUÇÃO em ${i} ${i === 1 ? 'matéria' : 'matérias'}, de diferentes subdomínios`;
+function guessAno(nome) { const m = /(\d{1,2})/.exec(String(nome || '')); const n = m ? +m[1] : 0; return n >= 1 && n <= 12 ? n : null; }
+const anoOf = t => +t.ano || guessAno(t.nome);
+function aeSelect(lv, ano) {
+  const A = AE[ano], cand = Object.entries(lv).filter(([, l]) => l in LVP).map(([m, l]) => ({m, l, s:subOf(m, ano), p:LVP[l]})).sort((a, b) => b.p - a.p), sel = [];
+  if (A.sel.distinct) { const used = new Set(); cand.forEach(c => { if (sel.length < A.sel.n && !used.has(c.s)) { sel.push(c); used.add(c.s); } }); }
+  else { const gs = A.sel.g.map(([subs, n, dis]) => ({subs, n, dis, used:new Set(), k:0})); cand.forEach(c => { const g = gs.find(g => g.k < g.n && g.subs.includes(c.s) && !(g.dis && g.used.has(c.s))); if (g) { g.k++; g.used.add(c.s); sel.push(c); } }); }
+  cand.forEach(c => { if (sel.length < A.sel.n && !sel.includes(c) && A.sel.fb.includes(c.s)) sel.push(c); });
+  return sel.sort((a, b) => b.p - a.p);
+}
+// Situação do aluno face às AE do ano: 2 = Elevado/Avançado, 1 = Proficiente, 0 = não atinge, null = sem dados, 'na' = não aplicável.
+function aeOf(t, al, p) {
+  const ano = anoOf(t), A = AE[ano]; if (!A) return null;
+  const lv = {}, z = {};
+  for (let i = 1; i <= p; i++) {
+    const v = avalOf(t.id, i);
+    new Set([...Object.keys((v.af || {})[al.id] || {}), ...Object.keys(v.ind || {})]).forEach(m => { const x = lvOf(v, al.id, m); if (x && (!lv[m] || LVP[x.l] > LVP[lv[m]])) lv[m] = x.l; });
+    const r = calc(t, i, al); FIT.forEach(f => { if (r.zones[f.k] != null) z[f.k] = r.zones[f.k]; });
+  }
+  const sel = aeSelect(lv, ano), nE = sel.filter(c => c.p >= LVP.E).length, nI = sel.filter(c => c.p >= LVP.I).length, ok = ([e, i]) => nE >= e && nI >= e + i;
+  const aero = z.vaivem != null && z.vaivem >= 1, neuro = FIT.filter(f => f.k !== 'vaivem' && z[f.k] != null && z[f.k] >= 1).length;
+  const con = calc(t, p, al).CON, cc = CFG.aeCon || [10, 14], R = REG[al.regime] || REG.Normal;
+  return {ano, A, sel, lv, nE, nI, aero, neuro,
+    af:!R.af ? 'na' : Object.keys(lv).length ? (ok(A.af.e) ? 2 : ok(A.af.p) ? 1 : 0) : null,
+    apf:!R.apf ? 'na' : Object.keys(z).length ? (aero && neuro >= 4 ? 2 : aero && neuro >= 2 ? 1 : 0) : null,
+    con:con == null ? null : con >= cc[1] ? 2 : con >= cc[0] ? 1 : 0};
+}
+const aeLbl = (ae, x) => x === 'na' ? 'Não aplicável' : x == null ? 'Sem dados' : x === 2 ? aeTop(ae.A) : x === 1 ? 'Proficiente' : 'Não atinge';
+const aeShort = (ae, x) => x === 'na' ? 'n/a' : x == null ? '—' : x === 2 ? aeTop(ae.A)[0] : x === 1 ? 'P' : 'NA';
+const aeCls = x => x === 2 ? 'ae2' : x === 1 ? 'ae1' : x === 0 ? 'ae0' : '';
+function aeBox(t) {
+  const ano = anoOf(t), A = AE[ano];
+  if (!A) return `<p class="hint">Aprendizagens Essenciais: indique o ano de escolaridade da turma (5.º ao 12.º) em Mais → turma.</p>`;
+  return `<div class="aebox"><b>Aprendizagens Essenciais · ${ano}.º ano</b> <span class="muted small">(DGE, março de 2026)</span>
+    <div><span class="ae1 pill">Proficiente</span> ${esc(afTxt(A.af.p))}.</div><div><span class="ae2 pill">${esc(aeTop(A))}</span> ${esc(afTxt(A.af.e))}.</div>
+    <div class="hint">Para a avaliação contam os melhores níveis: ${esc(A.sel.txt)}</div></div>`;
+}
+
+/* ---------- Perfil dos Alunos à Saída da Escolaridade Obrigatória ---------- */
+const PA = {A:'Linguagens e textos', B:'Informação e comunicação', C:'Raciocínio e resolução de problemas', D:'Pensamento crítico e pensamento criativo', E:'Relacionamento interpessoal', F:'Desenvolvimento pessoal e autonomia', G:'Bem-estar, saúde e ambiente', H:'Sensibilidade estética e artística', I:'Saber científico, técnico e tecnológico', J:'Consciência e domínio do corpo'};
+// Proposta de ligação dos domínios e critérios às áreas de competência (o grupo de EF pode ajustar nos critérios da escola).
+const PAD = {af:'C D E H J', apf:'G J', con:'A B G I', pont:'F', mat:'F', resp:'E', emp:'F', lid:'E F'};
+const paTags = k => PAD[k].split(' ').map(x => `<span class="pa" title="${esc(PA[x])}">${x}</span>`).join('');
+
+/* ---------- mais gráficos ---------- */
+// Mapa da turma: alunos × matérias, cor pelo patamar do nível.
+function chMapa(t, p) {
+  const als = alunosOf(t), ms = matsOf(t, p), v = avalOf(t.id, p); if (!ms.length) return '';
+  const bin = l => LVB.findIndex(b => b.ls.includes(l)) + 1;
+  return `<div class="tbl-wrap"><table class="hmap"><thead><tr><th class="l">Aluno</th>${ms.map(m => `<th title="${esc(m)}">${esc(m.replace(/\s*\(.*\)$/, '').replace('Ginástica', 'Gin.').replace('Danças', 'D.'))}</th>`).join('')}</tr></thead><tbody>${als.map(al => `<tr><td class="l nm">${esc(al.num ?? '')} · ${esc(al.nome)}</td>${ms.map(m => { const x = lvOf(v, al.id, m), b = x ? bin(x.l) : 0; return `<td class="hm${b}" title="${esc(al.nome + ' · ' + m + ': ' + (x ? x.l + ' (' + LVN[x.l] + ')' : 'sem nível'))}">${x ? x.l : ''}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+// Aluno face à média da turma: barra do aluno e traço da média.
+function chCompare(rows, o = {}) {
+  const W = chartW(), lw = Math.min(140, W * .34), rh = 22, gap = 14, H = rows.length * (rh + gap) + 20, bw = W - lw - 44, x = v => lw + v / 20 * bw;
+  let b = [0, 5, 10, 15, 20].map(v => `<line x1="${x(v)}" x2="${x(v)}" y1="0" y2="${H - 18}" class="${v === 10 ? 'vref' : 'vgrid'}"/><text x="${x(v)}" y="${H - 4}" class="vax" text-anchor="middle">${v}</text>`).join('');
+  rows.forEach((r, i) => {
+    const yy = i * (rh + gap) + 6;
+    b += `<text x="${lw - 8}" y="${yy + rh / 2 + 4}" class="vlab" text-anchor="end">${esc(r.label)}</text>`;
+    if (r.v != null) b += `<path d="${rightRound(x(0), yy, Math.max(1, x(r.v) - x(0)), rh, 4)}" fill="var(--v1)"/><text x="${x(r.v) + 6}" y="${yy + rh / 2 + 4}" class="vval">${nf(r.v)}</text>`;
+    if (r.m != null) b += `<line x1="${x(r.m)}" x2="${x(r.m)}" y1="${yy - 4}" y2="${yy + rh + 4}" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>`;
+    b += `<rect x="0" y="${yy - 6}" width="${W}" height="${rh + 12}" fill="transparent" data-tip="${esc(`${r.label}: aluno ${r.v == null ? '—' : nf(r.v)} · média da turma ${r.m == null ? '—' : nf(r.m)}`)}"/>`;
+  });
+  return svg(W, H, o.label || 'Aluno face à média da turma', b) + `<div class="vleg"><span><i style="background:var(--v1)"></i>Aluno</span><span><i style="background:var(--ink);width:3px;height:12px;border-radius:1px"></i>Média da turma</span></div>`;
+}
+function compareRows(t, p, al) {
+  const r = calc(t, p, al), rs = alunosOf(t).map(x => calc(t, p, x)), mean = k => { const xs = rs.map(x => x[k]).filter(x => x != null); return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null; };
+  return [['Matérias', 'AF'], ['Aptidão física', 'APF'], ['Conhecimentos', 'CON'], ['Atitudes', 'AV'], ['Final', 'FIN']].map(([l, k]) => ({label:l, v:r[k], m:mean(k)}));
+}
+// FITescola ao longo do ano: um pequeno gráfico por teste, com a linha da Zona Saudável.
+function chFitEvo(t, al, small) {
+  const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1), out = [];
+  FIT.filter(f => !f.bool).forEach(f => {
+    const vals = ps.map(i => { const x = ((avalOf(t.id, i).fit || {})[al.id] || {})[f.k]; return x == null || x === '' ? null : +x; });
+    if (vals.filter(x => x != null).length < 1) return;
+    const ref = fitRef(f.k, al.sexo, ageAt(al.nasc, refDate(UI.p))), max = Math.max(...vals.filter(x => x != null), ref ? ref.zs : 0) * 1.15 || 1;
+    const keep = CHW; CHW = small || Math.min(330, chartW());
+    out.push(`<div class="sm"><div class="small"><b>${esc(f.n)}</b> <span class="muted">${esc(f.u)}${ref ? ` · ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}` : ''}</span></div>${chLine(ps.map(i => perLabel(i)), [{name:f.n, color:'var(--v3)', vals}], {h:140, max:Math.ceil(max), ref:ref ? ref.zs : -1, label:f.n + ' ao longo do ano'})}</div>`);
+    CHW = keep;
+  });
+  return out.length ? `<div class="smg">${out.join('')}</div>` : '';
+}
+
+/* ---------- autoavaliação do aluno ---------- */
+function sheetAuto(aid) {
+  const t = turma(), al = (t.alunos || []).find(x => x.id === aid); if (!al) return;
+  const v = avalOf(t.id, UI.p); UI.draft = Object.assign({aid, lv:{}, av:{}, txt:''}, clone((v.auto || {})[aid] || {})); UI.draft.aid = aid;
+  autoRender(true);
+}
+function autoRender(open) {
+  const t = turma(), d = UI.draft, al = (t.alunos || []).find(x => x.id === d.aid), ms = matsOf(t, UI.p), als = alunosOf(t), i = als.findIndex(x => x.id === d.aid);
+  const body = `<div class="form auto"><div class="foto-ed">${avatar(al, 'lg')}<div><h3 style="font-size:22px">${esc(al.nome)}</h3><p class="hint" style="margin:4px 0 0">Autoavaliação · ${esc(perLabel(UI.p, true))}. Responde com sinceridade: serve para conversares com o professor sobre o que já sabes fazer e o que queres melhorar.</p></div></div>
+    ${ms.map(m => `<div class="field"><span class="lbl">${esc(m)}: que nível achas que tens?</span><div class="lvls">${LV.map(l => `<button class="lv ${l}${d.lv[m] === l ? ' on' : ''}" data-a="auto-lv" data-m="${esc(m)}" data-l="${l}" title="${esc(LVN[l])}">${l}</button>`).join('')}</div><span class="hint">${d.lv[m] ? esc(LVN[d.lv[m]]) : 'NI: ainda não atinjo a Introdução · I: Introdução · E: Elementar · A: Avançado · P = parte do nível'}</span></div>`).join('') || '<p class="hint">Ainda não há matérias neste período.</p>'}
+    ${Object.keys(AVW).map(k => `<div class="field"><span class="lbl">${esc(AVN[k])}</span><div class="aopt">${AVD[k].map((x, j) => `<button class="${d.av[k] === j ? 'on' : ''}" data-a="auto-av" data-k="${k}" data-i="${j}"><b>${j + 1}</b> ${esc(x)}</button>`).join('')}</div></div>`).join('')}
+    <div class="field"><label for="auto-txt">O que queres melhorar e como?</label><textarea id="auto-txt" placeholder="Ex.: Quero melhorar a manchete no voleibol, treinando nos intervalos.">${esc(d.txt || '')}</textarea></div></div>`;
+  const foot = `<button class="btn" data-a="auto-save">Guardar</button>${i < als.length - 1 ? `<button class="btn primary" data-a="auto-save" data-next="1">Guardar e passar a ${esc(als[i + 1].nome.split(' ')[0])}</button>` : ''}`;
+  if (open) openSheet('Autoavaliação', body, foot); else { const y = $('#sheet .sh-b').scrollTop; updSheet(body, foot); $('#sheet .sh-b').scrollTop = y; }
+}
+function autoCompare(t, p, al) {
+  const a = (avalOf(t.id, p).auto || {})[al.id]; if (!a) return '';
+  const r = calc(t, p, al), ms = [...new Set([...Object.keys(a.lv || {}), ...Object.keys(r.lv)])];
+  const diff = (x, y) => x == null || y == null ? '' : x === y ? '=' : LVP[x] > LVP[y] ? '▲' : '▼';
+  return `<table class="rel-t auto-t"><thead><tr><th class="l">Matéria / critério</th><th>Aluno</th><th>Professor</th><th></th></tr></thead><tbody>${ms.map(m => `<tr><td class="l">${esc(m)}</td><td>${esc((a.lv || {})[m] || '—')}</td><td>${esc(r.lv[m] || '—')}</td><td>${diff((a.lv || {})[m], r.lv[m])}</td></tr>`).join('')}${Object.keys(AVW).map(k => { const x = (a.av || {})[k], y = r.ix[k]; return `<tr><td class="l">${esc(AVN[k])}</td><td>${x != null ? x + 1 : '—'}</td><td>${y != null ? y + 1 : '—'}</td><td>${x == null || y == null ? '' : x === y ? '=' : x > y ? '▲' : '▼'}</td></tr>`; }).join('')}</tbody></table>${a.txt ? `<p class="small"><b>O aluno escreveu:</b> ${esc(a.txt)}</p>` : ''}<p class="hint">▲ o aluno avalia-se acima do professor · ▼ abaixo · = igual.</p>`;
+}
+
+/* ---------- banco de sumários e de observações ---------- */
+const SUMB = {
+  'Voleibol':['Voleibol: toque de dedos e manchete em situação de exercício a pares.', 'Voleibol: serviço por baixo e receção em manchete; jogo 2x2 em campo reduzido.', 'Voleibol: jogo 4x4 com rotação; ocupação do espaço e cobertura.', 'Voleibol: remate em apoio e em salto após passe alto.'],
+  'Basquetebol':['Basquetebol: drible de progressão e mudanças de direção.', 'Basquetebol: passe e corte; lançamento na passada.', 'Basquetebol: jogo 3x3 em meio campo; desmarcação e defesa individual.', 'Basquetebol: contra-ataque e ressalto; jogo 5x5.'],
+  'Andebol':['Andebol: passe e receção em deslocamento; remate em apoio.', 'Andebol: remate em salto junto à área; ação do guarda-redes.', 'Andebol: jogo 5x5; contra-ataque e defesa individual.', 'Andebol: desmarcação e criação de linhas de passe em jogo reduzido.'],
+  'Futebol':['Futebol: receção, condução e passe em situação de exercício.', 'Futebol: remate e finta; jogo 4x4 com guarda-redes.', 'Futebol: desmarcação, largura e profundidade; jogo 5x5.', 'Futebol: marcação e recuperação da posse; jogo 7x7.'],
+  'Ginástica de Solo':['Ginástica de solo: cambalhota à frente e à retaguarda.', 'Ginástica de solo: apoio facial invertido e roda.', 'Ginástica de solo: avião, ponte e elementos de ligação.', 'Ginástica de solo: construção e apresentação de uma sequência gímnica.'],
+  'Ginástica de Aparelhos (Trampolins)':['Ginástica de aparelhos: salto em extensão e engrupado no mini-trampolim.', 'Ginástica de aparelhos: salto de eixo e entre-mãos no boque/plinto.', 'Ginástica de aparelhos: corrida de balanço, chamada e receção em segurança.'],
+  'Ginástica Acrobática':['Ginástica acrobática: pegas, montes e desmontes em segurança.', 'Ginástica acrobática: figuras a pares e em trio; funções de base e volante.', 'Ginástica acrobática: construção de uma coreografia com música.'],
+  'Atletismo':['Atletismo: corrida de velocidade; partida de pé e de tacos.', 'Atletismo: salto em altura (técnica de tesoura/Fosbury Flop).', 'Atletismo: salto em comprimento; corrida de balanço, chamada e impulsão.', 'Atletismo: lançamento do peso; corrida de estafetas.'],
+  'Dança':['Dança: exploração do espaço e do ritmo; sequências de movimento.', 'Dança: criação de uma pequena coreografia em grupo.'],
+  'Danças Sociais':['Danças sociais: posição fechada e aberta; condução e seguimento.', 'Danças sociais: passo básico de merengue e rumba quadrada.', 'Danças sociais: valsa lenta e foxtrot; alinhamento e progressão.'],
+  'Danças Tradicionais':['Danças tradicionais: passos base e formações em roda.', 'Danças tradicionais: aprendizagem de uma dança regional e do seu contexto cultural.'],
+  'Badminton':['Badminton: pega, posição base e clear.', 'Badminton: serviço curto e comprido; lob e amorti.', 'Badminton: jogo de singulares; deslocamentos e recuperação da posição base.'],
+  'Ténis de Mesa':['Ténis de mesa: pega e batimentos de direita e de esquerda.', 'Ténis de mesa: serviço curto e comprido; jogo de singulares.'],
+  'Judo/Luta':['Luta: quedas e regras de segurança; luta no solo.', 'Judo: pegas, desequilíbrios e projeções simples.'],
+  'Patinagem':['Patinagem: posição base, deslize e travagem em T.', 'Patinagem: curvas, deslize para trás e meia volta.', 'Patinagem: percurso com obstáculos e composição a pares.'],
+  'Natação':['Natação: respiração, flutuação e deslize.', 'Natação: crawl e costas; coordenação de braços, pernas e respiração.'],
+  'Orientação':['Orientação: leitura do mapa e orientação do mapa com bússola.', 'Orientação: percurso no espaço escolar com cartão de controlo.'],
+  'Softbol':['Softbol: receção com luva e lançamento por cima do ombro.', 'Softbol: batimento e corrida entre bases; jogo reduzido.'],
+  'Jogos Tradicionais Populares':['Jogos tradicionais: aprendizagem e prática de jogos regionais e do seu contexto.']
+};
+const SUMG = ['Aquecimento geral e específico.', 'Avaliação inicial.', 'Avaliação formativa.', 'Condição física: resistência aeróbia.', 'Condição física: força (circuito de estações).', 'Condição física: flexibilidade e retorno à calma.', 'FITescola: aplicação do teste do vaivém.', 'FITescola: abdominais, flexões de braços e senta e alcança.', 'Conhecimentos: aptidão física e saúde.'];
+const OBSB = ['Revela empenho e persistência nas tarefas propostas.', 'Coopera com os colegas e respeita as regras.', 'Deve ser mais pontual e assíduo(a).', 'Deve trazer sempre o material adequado à prática.', 'Deve melhorar a concentração e o cumprimento das regras de segurança.', 'Ajuda os colegas e assume a liderança quando solicitado.', 'Deve praticar atividade física regular fora da escola.', 'Evoluiu de forma consistente ao longo do período.'];
+const CAPN = {vaivem:'a resistência aeróbia (vaivém)', abd:'a força abdominal', flex:'a força dos membros superiores', senta:'a flexibilidade dos membros inferiores', ombros:'a flexibilidade dos ombros', imp:'a força explosiva dos membros inferiores', vel:'a velocidade', agil:'a agilidade'};
+const lista = xs => xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' e ' + xs[xs.length - 1];
+// Rascunho de observação a partir dos dados do aluno; o professor revê e ajusta.
+function obsSugest(t, p, al) {
+  const r = calc(t, p, al), f = al.sexo === 'F', o = [];
+  if (r.EST === 'Apto') o.push(r.FIN >= 14 ? 'Revela um muito bom desempenho em Educação Física.' : 'Revela um desempenho satisfatório em Educação Física.');
+  else if (r.EST === 'Não apto') o.push('Ainda não atinge os objetivos essenciais da disciplina.');
+  const lv = Object.entries(r.lv), forte = lv.filter(([, l]) => LVP[l] >= LVP.E).map(([m]) => m), fraco = lv.filter(([, l]) => LVP[l] < LVP.I).map(([m]) => m);
+  if (forte.length) o.push(`Destaca-se em ${lista(forte)}.`);
+  if (fraco.length) o.push(`Deve melhorar em ${lista(fraco)}, onde ainda não atinge o nível Introdução.`);
+  const fz = FIT.filter(x => r.zones[x.k] === 0).map(x => CAPN[x.k]); if (fz.length) o.push(`Na aptidão física, deve melhorar ${lista(fz)}.`);
+  if (r.c.F >= 3) o.push(`Deve ser mais assídu${f ? 'a' : 'o'}.`); else if (r.ix.pont != null && r.ix.pont <= 1) o.push('Deve ser mais pontual.');
+  if (r.ix.mat != null && r.ix.mat <= 1) o.push('Deve trazer sempre o material adequado à prática.');
+  if (r.ix.emp != null && r.ix.emp <= 1) o.push('Deve empenhar-se mais e persistir perante as dificuldades.');
+  if (r.ix.resp != null && r.ix.resp <= 1) o.push('Deve respeitar mais os colegas e os materiais.');
+  if (r.ix.lid === 3) o.push('É um exemplo para os colegas, ajudando e tomando a iniciativa.');
+  return o.join(' ');
+}
+
+/* ---------- documentos imprimíveis ---------- */
+function docHead(title, sub) { return `<header class="rel-h"><div><div class="rel-k">${esc(title)}</div><div class="rel-s">${esc(CFG.escola || 'Escola')} · Ano letivo ${esc(CFG.ano)}${sub ? ' · ' + esc(sub) : ''}</div></div><div class="rel-s">${esc(fmtDate(today(), {day:'numeric', month:'long', year:'numeric'}))}</div></header>`; }
+function printDoc(label, html) {
+  $('#print').innerHTML = `<div class="pbar noprint"><b>${esc(label)}</b><span class="sp"></span><button class="btn primary" data-a="print-go">Imprimir / Guardar PDF</button><button class="btn" data-a="print-close">Fechar</button></div>` + html;
+  document.body.classList.add('printing'); $('#print').scrollTop = 0;
+}
+// Critérios de avaliação de Educação Física (para alunos e encarregados de educação).
+function criteriosHtml(t) {
+  const ano = t ? anoOf(t) : null, A = AE[ano];
+  let h = `<section class="rel">${docHead('Educação Física · Critérios de avaliação', t ? 'Turma ' + t.nome + (ano ? ' · ' + ano + '.º ano' : '') : '')}`;
+  h += `<p>A avaliação em Educação Física tem como referência as <b>Aprendizagens Essenciais</b> (DGE) e os <b>Programas Nacionais de Educação Física</b>, e contribui para as áreas de competência do <b>Perfil dos Alunos à Saída da Escolaridade Obrigatória</b>. É contínua: a classificação de cada período tem em conta todo o trabalho realizado até esse momento.</p>`;
+  h += `<h2>Domínios e ponderações</h2><table class="rel-t"><thead><tr><th class="l">Regime</th><th>Atividades físicas</th><th>Aptidão física</th><th>Conhecimentos</th><th>Atitudes e valores</th></tr></thead><tbody>${Object.entries(REG).map(([k, r]) => `<tr><td class="l"><b>${esc(k)}</b></td>${['af', 'apf', 'con', 'av'].map(x => `<td>${r[x] ? Math.round(r[x] * 100) + ' %' : '—'}</td>`).join('')}</tr>`).join('')}</tbody></table>
+    <p class="rel-s">Áreas de competência do Perfil dos Alunos mobilizadas: Atividades físicas ${paTags('af')} · Aptidão física ${paTags('apf')} · Conhecimentos ${paTags('con')} · Atitudes ${paTags('resp')}${paTags('emp')}.</p>
+    <p class="rel-s">Se a classificação de algum domínio aplicável for inferior a 10 valores, a classificação final do período não pode ser superior a 9 (não apto).</p>`;
+  if (A) {
+    h += `<h2>Aprendizagens Essenciais · ${ano}.º ano</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th class="l">Proficiente</th><th class="l">${esc(aeTop(A))}</th></tr></thead><tbody>
+      <tr><td class="l"><b>Atividades físicas</b></td><td class="l">Demonstra as competências de ${esc(afTxt(A.af.p))}.</td><td class="l">Demonstra as competências de ${esc(afTxt(A.af.e))}.</td></tr>
+      <tr><td class="l"><b>Aptidão física</b></td><td class="l">Alcança a Zona Saudável do FITescola® em 1 teste de aptidão aeróbia e 2 testes de aptidão neuromuscular.</td><td class="l">Alcança a Zona Saudável do FITescola® em 1 teste de aptidão aeróbia e 4 testes de aptidão neuromuscular.</td></tr>
+      <tr><td class="l"><b>Conhecimentos</b></td><td class="l">${AE_CON_P}</td><td class="l">${AE_CON_E}</td></tr></tbody></table>
+      <p class="rel-s"><b>Matérias consideradas</b> (melhores níveis de cada aluno): ${esc(A.sel.txt)}</p>
+      <p class="rel-s"><b>Conhecimentos do ${ano}.º ano:</b> ${A.con.map(esc).join(' ')}</p><p class="rel-s"><b>Aptidão física:</b> ${esc(AE_APF)}</p>`;
+  }
+  h += `<h2>Atividades físicas: níveis por matéria</h2><table class="rel-t"><thead><tr>${LV.map(l => `<th>${l}</th>`).join('')}</tr></thead><tbody><tr>${LV.map(l => `<td>${LVP[l]}</td>`).join('')}</tr><tr>${LV.map(l => `<td class="small">${esc(LVN[l])}</td>`).join('')}</tr></tbody></table><p class="rel-s">A classificação das atividades físicas é a média dos níveis das matérias avaliadas no período. Os níveis Introdução (I), Elementar (E) e Avançado (A) seguem os descritivos dos programas; "parte do nível" (PI, PE, PA) significa cumprir pelo menos metade dos conteúdos desse nível. Quando a matéria é avaliada por indicadores, o nível resulta da média dos indicadores.</p>`;
+  h += `<h2>Aptidão física (FITescola®)</h2><p class="rel-s">Cada teste é situado na Zona Saudável ou na Zona Atlética de acordo com a idade e o sexo (tabelas FITescola®). Pontos: ${FIT.map(f => `${esc(f.n)} ${f.pts.join('/')}`).join(' · ')} (fora da ZS / ZS / ZA). Classificação: soma dos pontos + 5, até 20.</p>`;
+  h += `<h2>Atitudes e valores</h2><table class="rel-t"><thead><tr><th class="l">Critério (peso)</th>${[1, 2, 3, 4].map(n => `<th class="l">${n}</th>`).join('')}</tr></thead><tbody>${Object.keys(AVW).map(k => `<tr><td class="l"><b>${esc(AVN[k])}</b> (${AVW[k] * 100} %) ${paTags(k)}</td>${AVD[k].map(d => `<td class="l small">${esc(d)}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="rel-s">Níveis 1 a 4 correspondem a ${AVS.map(x => String(x).replace('.', ',')).join(', ')} valores. A pontualidade e o material resultam dos registos das aulas.</p>`;
+  const nv = CFG.niv || [4, 10, 14, 18];
+  h += `<h2>Classificação final</h2><table class="rel-t"><thead><tr><th class="l">0–20 valores</th><th>0–${nv[0] - 1 < 0 ? 0 : String(nv[0]).replace('.', ',')}</th><th>${String(nv[0]).replace('.', ',')}–${String(nv[1]).replace('.', ',')}</th><th>${String(nv[1]).replace('.', ',')}–${String(nv[2]).replace('.', ',')}</th><th>${String(nv[2]).replace('.', ',')}–${String(nv[3]).replace('.', ',')}</th><th>${String(nv[3]).replace('.', ',')}–20</th></tr></thead><tbody><tr><td class="l">Nível (2.º e 3.º ciclos)</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><td class="l">Menção (1.º ciclo)</td><td colspan="2">Insuficiente</td><td>Suficiente</td><td>Bom</td><td>Muito Bom</td></tr></tbody></table><p class="rel-s">No ensino secundário a classificação é expressa de 0 a 20 valores. Os limites indicados são os aprovados pelo grupo de Educação Física.</p>`;
+  h += `<h2>Perfil dos Alunos: áreas de competência</h2><p class="rel-s">${Object.entries(PA).map(([k, n]) => `<b>${k}</b> ${esc(n)}`).join(' · ')}</p>`;
+  return h + `<div class="rel-sig"><div><span>O(A) professor(a)${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Tomei conhecimento (Encarregado de Educação)</span></div></div></section>`;
+}
+// Síntese para o conselho de turma.
+const MEDB = ['Diferenciação pedagógica em aula (tarefas ajustadas ao nível).', 'Tutoria entre pares em grupos heterogéneos.', 'Plano individual de melhoria da aptidão física.', 'Reforço da comunicação com o encarregado de educação.', 'Acompanhamento da assiduidade e da pontualidade.', 'Atividades de enriquecimento (Desporto Escolar).', 'Medidas universais de suporte à aprendizagem e à inclusão (Decreto-Lei n.º 54/2018).'];
+function flagsOf(t, p, al) {
+  const r = calc(t, p, al), ae = aeOf(t, al, p), out = [];
+  if (r.c.F >= 3) out.push(r.c.F + ' faltas');
+  if (r.EST === 'Não apto') out.push('Não apto');
+  if (ae && ae.af === 0) out.push('AE: não atinge nas atividades físicas');
+  if (ae && ae.apf === 0) out.push('AE: não atinge na aptidão física');
+  if (p > 1) { const a = calc(t, p - 1, al).zones.vaivem, b = r.zones.vaivem; if (a != null && b != null && b < a) out.push('desceu de zona no vaivém'); }
+  if (al.regime && al.regime !== 'Normal') out.push(al.regime);
+  return out;
+}
+function conselhoHtml(t, p) {
+  const als = alunosOf(t), rows = als.map(al => ({al, r:calc(t, p, al), ae:aeOf(t, al, p), fl:flagsOf(t, p, al)})), v = avalOf(t.id, p);
+  const fins = rows.map(x => x.r.FIN).filter(x => x != null), media = fins.length ? fins.reduce((s, x) => s + x, 0) / fins.length : null;
+  let h = `<section class="rel">${docHead('Educação Física · Síntese para o conselho de turma', 'Turma ' + t.nome + ' · ' + perLabel(p, true))}
+    <div class="rel-as">${[['Alunos', rows.length], ['Aptos', rows.filter(x => x.r.EST === 'Apto').length], ['Não aptos', rows.filter(x => x.r.EST === 'Não apto').length], ['Média final', media == null ? '—' : nf(media)], ['Faltas', rows.reduce((s, x) => s + x.r.c.F, 0)]].map(([n, x]) => `<div><b>${x}</b><span>${n}</span></div>`).join('')}</div>`;
+  if (rows[0] && rows[0].ae) { const A = rows[0].ae; h += `<h2>Aprendizagens Essenciais · ${A.ano}.º ano</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Não atinge</th><th>Proficiente</th><th>${esc(aeTop(A.A))}</th><th>Sem dados</th></tr></thead><tbody>${[['Atividades físicas', 'af'], ['Aptidão física', 'apf'], ['Conhecimentos', 'con']].map(([n, k]) => `<tr><td class="l">${n}</td>${[0, 1, 2, null].map(x => `<td>${rows.filter(r => r.ae && r.ae[k] === x).length}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
+  h += `<h2>Alunos</h2><table class="rel-t cons"><thead><tr><th>N.º</th><th class="l">Nome</th><th>F/A/M</th><th>Final</th>${t.ciclo !== 'S' ? `<th>${nivelLbl(t)}</th>` : ''}<th>AE (AF/Apt/Con)</th><th class="l">Situações a sinalizar</th><th class="l">Medidas propostas</th></tr></thead><tbody>${rows.map(({al, r, ae, fl}) => `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td><td>${r.c.F}/${r.c.A}/${r.c.M}</td><td><b>${r.FIN ?? '—'}</b></td>${t.ciclo !== 'S' ? `<td>${esc(nivel(t, r.FIN) ?? '—')}</td>` : ''}<td>${ae ? [ae.af, ae.apf, ae.con].map(x => aeShort(ae, x)).join(' / ') : '—'}</td><td class="l small">${esc(fl.join('; '))}</td><td class="l small">${esc((v.med || {})[al.id] || '')}</td></tr>`).join('')}</tbody></table>
+    <p class="rel-s">AE: P = Proficiente, ${rows[0] && rows[0].ae ? esc(aeTop(rows[0].ae.A)[0] + ' = ' + aeTop(rows[0].ae.A)) : 'E = Elevado'}, NA = não atinge, — = sem dados. F/A/M = faltas, atrasos e aulas sem material no período.</p>`;
+  return h + `<div class="rel-sig"><div><span>O(A) professor(a)${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Data</span></div></div></section>`;
+}
+function sheetConselho() {
+  const t = turma(), p = UI.p, v = avalOf(t.id, p), als = alunosOf(t), fl = als.map(al => ({al, f:flagsOf(t, p, al)})), sh = UI.consAll ? fl : fl.filter(x => x.f.length);
+  openSheet('Conselho de turma · ' + perLabel(p), `<div class="form"><p class="hint">Situações detetadas automaticamente e medidas propostas para cada aluno. Toque numa sugestão para a acrescentar.</p>
+    <label class="pin"><input type="checkbox" data-in="cons-all"${UI.consAll ? ' checked' : ''}> Mostrar todos os alunos (${als.length}); sinalizados: ${fl.filter(x => x.f.length).length}</label>
+    ${sh.map(({al, f}) => `<div class="card cons-a"><div class="ev-h">${avatar(al, 'sm')}<span class="nm"><b>${esc(al.nome)}</b></span></div>${f.length ? `<p class="small" style="margin:6px 0;color:var(--bad)">${esc(f.join(' · '))}</p>` : ''}<textarea data-in="med" data-aid="${esc(al.id)}" placeholder="Medidas propostas" style="min-height:64px">${esc((v.med || {})[al.id] || '')}</textarea><div class="chips">${MEDB.map((m, i) => `<button class="chip" data-a="med-add" data-aid="${esc(al.id)}" data-i="${i}">${esc(m.replace(/\s*\(.*\)\.?$/, '').replace(/\.$/, ''))}</button>`).join('')}</div></div>`).join('') || '<p class="muted">Nenhum aluno sinalizado neste período.</p>'}</div>`,
+    `<button class="btn primary" data-a="doc-cons">Imprimir síntese</button>`);
+}
+// Planificação anual da turma, com verificação das matérias mínimas das AE.
+function planHtml(t) {
+  const ano = anoOf(t), A = AE[ano], ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1);
+  let h = `<section class="rel">${docHead('Educação Física · Planificação anual', 'Turma ' + t.nome + (ano ? ' · ' + ano + '.º ano' : ''))}`;
+  h += `<table class="rel-t"><thead><tr><th class="l">Período</th><th class="l">Unidade didática (matéria)</th><th class="l">Subdomínio</th><th>Aulas previstas</th><th>Aulas dadas</th></tr></thead><tbody>${ps.map(p => { const pl = planOf(t, p); return pl.length ? pl.map((u, i) => `<tr>${i ? '' : `<td class="l" rowspan="${pl.length}"><b>${esc(perLabel(p, true))}</b><br><span class="rel-s">${esc(fmtDate(CFG.per[p - 1].ini, {day:'numeric', month:'short'}))} – ${esc(fmtDate(CFG.per[p - 1].fim, {day:'numeric', month:'short'}))}</span></td>`}<td class="l">${esc(u.m)}</td><td class="l">${esc(SUBN[subOf(u.m, ano || 7, true)])}</td><td>${u.n}</td><td>${dadasOf(t, p, u.m)}</td></tr>`).join('') : `<tr><td class="l"><b>${esc(perLabel(p, true))}</b></td><td class="l rel-s" colspan="4">Sem unidades planeadas.</td></tr>`; }).join('')}</tbody></table>`;
+  const prev = ps.reduce((s, p) => s + planOf(t, p).reduce((a, u) => a + u.n, 0), 0); h += `<p class="rel-s">Total: ${prev} aulas previstas.</p>`;
+  if (A && A.lec) {
+    const ms = [...new Set(ps.flatMap(p => planOf(t, p).map(u => u.m)))], cnt = {}; ms.forEach(m => { const s = subOf(m, ano, true); cnt[s] = (cnt[s] || 0) + 1; });
+    h += `<h2>Matérias mínimas a lecionar no ${ano}.º ano (Aprendizagens Essenciais)</h2><table class="rel-t"><thead><tr><th class="l">Subdomínio</th><th>Mínimo</th><th>Planeado</th><th>Situação</th></tr></thead><tbody>${Object.entries(A.lec).map(([s, n]) => `<tr><td class="l">${esc(SUBN[s])}</td><td>${n}</td><td>${cnt[s] || 0}</td><td>${(cnt[s] || 0) >= n ? '✓ Cumpre' : '⚠ Em falta ' + (n - (cnt[s] || 0))}</td></tr>`).join('')}</tbody></table><p class="rel-s">Quando não for possível lecionar algum subdomínio, as AE preveem mais uma matéria da Ginástica ou de Outras. Deve ser garantida a lecionação de todas as matérias nucleares ao longo do ciclo.</p>`;
+  }
+  if (A) h += `<h2>Metas do ${ano}.º ano</h2><p class="rel-s"><b>Atividades físicas:</b> proficiente com ${esc(afTxt(A.af.p))}; ${esc(aeTop(A).toLowerCase())} com ${esc(afTxt(A.af.e))}.</p><p class="rel-s"><b>Aptidão física:</b> ${esc(AE_APF)}</p><p class="rel-s"><b>Conhecimentos:</b> ${A.con.map(esc).join(' ')}</p>`;
+  return h + `<div class="rel-sig"><div><span>O(A) professor(a)${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Data</span></div></div></section>`;
+}
+function vDocs(t) {
+  const als = alunosOf(t);
+  return `<div class="docs">${[
+    ['doc-rel-all', 'Relatórios individuais', `Um por aluno: classificação, o que domina e onde melhorar, Aprendizagens Essenciais, FITescola, atitudes, assiduidade, evolução, autoavaliação e observações (${als.length} alunos).`],
+    ['doc-crit', 'Critérios de avaliação', 'Para entregar a alunos e encarregados de educação: domínios, ponderações, Aprendizagens Essenciais do ano, níveis, atitudes e conversão em níveis 1–5.'],
+    ['cons-open', 'Conselho de turma', 'Síntese da turma com situações sinalizadas automaticamente e as medidas propostas para cada aluno.'],
+    ['doc-plan', 'Planificação anual', 'Unidades didáticas por período e verificação das matérias mínimas das Aprendizagens Essenciais.'],
+    ['auto-first', 'Autoavaliação dos alunos', 'Cada aluno avalia-se no telemóvel do professor, aluno a aluno; a comparação com a avaliação do professor entra no relatório.']
+  ].map(([a, n, d]) => `<button class="card doc" data-a="${a}"><b>${n}</b><span class="hint">${d}</span></button>`).join('')}</div>${CFG.escola ? '' : '<p class="hint">Indique o nome da escola e do professor em Mais → Escola e relatórios: aparecem no cabeçalho dos documentos.</p>'}
+  <div class="sec-h"><h2>Relatório de um aluno</h2></div><div class="list">${als.map(al => { const r = calc(t, UI.p, al), au = (avalOf(t.id, UI.p).auto || {})[al.id]; return `<button class="li" data-a="rel-one" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}${(avalOf(t.id, UI.p).obs || {})[al.id] ? ' · observação' : ''}${au ? ' · autoavaliação' : ''}</div></span><span class="end muted">Relatório ›</span></button>`; }).join('')}</div>`;
+}
+
 /* ---------- demo ---------- */
 function makeDemo() {
   let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
   const nomes = [['Alice Ferreira','F','2013-03-14'],['Bernardo Lopes','M','2013-06-02'],['Carolina Matos','F','2012-11-21'],['Diogo Antunes','M','2013-01-09'],['Eva Rodrigues','F','2013-08-30'],['Francisco Pires','M','2013-04-17'],['Gabriela Nunes','F','2013-10-05'],['Henrique Sá','M','2012-12-12'],['Inês Carvalho','F','2013-02-27'],['João Teixeira','M','2013-09-19'],['Leonor Batista','F','2013-05-08'],['Martim Gomes','M','2013-07-23'],['Matilde Fonseca','F','2013-11-30'],['Rodrigo Vieira','M','2013-03-03']];
-  const t = {id: uid(), nome: 'Exemplo 7.º X', ciclo: '3', escala: '0-20', exemplo: true, alunos: nomes.map(([nome, sexo, nasc], i) => ({id: uid(), num: i + 1, nome, sexo, nasc, regime: i === 6 ? 'Dispensa Parcial 1' : 'Normal', obs: i === 6 ? 'Exemplo: atestado médico (joelho) até dezembro.' : ''}))};
+  const t = {id: uid(), nome: 'Exemplo 7.º X', ciclo: '3', ano: 7, escala: '0-20', exemplo: true, alunos: nomes.map(([nome, sexo, nasc], i) => ({id: uid(), num: i + 1, nome, sexo, nasc, regime: i === 6 ? 'Dispensa Parcial 1' : 'Normal', obs: i === 6 ? 'Exemplo: atestado médico (joelho) até dezembro.' : ''}))};
   S.turmas[t.id] = t; Store.save('turmas', t);
   const plan = [['2026-09-16',['Voleibol'],'Apresentação. Normas de funcionamento das aulas. Voleibol: toque de dedos em situação de exercício a pares.'],['2026-09-18',['Voleibol'],'Voleibol: toque de dedos e manchete. Jogo 2x2 em campo reduzido.'],['2026-09-23',['Atletismo'],'Aptidão física: aplicação do teste do vaivém (FITescola).'],['2026-09-25',['Voleibol'],'Voleibol: serviço por baixo. Jogo 2x2.'],['2026-09-30',['Ginástica de Solo'],'Ginástica de solo: rolamento à frente e à retaguarda. Testes de abdominais e flexões.'],['2026-10-02',['Ginástica de Solo'],'Ginástica de solo: apoio facial invertido. Sequência gímnica simples.'],['2026-10-07',['Voleibol'],'Voleibol: jogo 4x4. Avaliação formativa.'],['2026-10-09',['Ginástica de Solo','Voleibol'],'Ginástica de solo: roda. Voleibol: jogo 4x4.'],['2026-10-14',['Atletismo'],'Atletismo: corrida de velocidade, partida baixa. Teste senta e alcança.'],['2026-10-16',['Atletismo'],'Atletismo: salto em comprimento, chamada e impulsão.']];
   plan.forEach(([data, materias, sumario], i) => {
