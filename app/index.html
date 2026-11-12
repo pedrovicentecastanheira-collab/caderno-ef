@@ -25,6 +25,7 @@
   --accent:#1C55CF; --accent-ink:#FFFFFF; --accent-soft:#E1E9FA;
   --ok:#1C7C46; --ok-soft:#DCF0E3; --bad:#BF352D; --bad-soft:#F8E0DD;
   --warn:#9C620E; --warn-soft:#F6EAD2; --mat:#7142B8; --mat-soft:#ECE3F8; --dis:#647283; --dis-soft:#E5E9EE;
+  --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100; --v5:#e87ba4; --v6:#008300; --v7:#6250d6; --v8:#e34948; --q1:#86b6ef; --q2:#3987e5; --q3:#1c5cab; --q4:#0d366b; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#C9D0D8;
   --shadow:0 1px 2px rgba(19,32,45,.06),0 6px 18px rgba(19,32,45,.07);
   --scrim:rgba(14,22,32,.45);
   --f-display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
@@ -36,6 +37,7 @@
   --accent:#6E97F2; --accent-ink:#0A1222; --accent-soft:#1C2B47;
   --ok:#55C487; --ok-soft:#173326; --bad:#F2776C; --bad-soft:#3A1E1D; --warn:#E3B356; --warn-soft:#352915;
   --mat:#B592F2; --mat-soft:#2B2140; --dis:#95A2B1; --dis-soft:#232D38;
+  --v1:#3987e5; --v2:#d95926; --v3:#199e70; --v4:#c98500; --v5:#d55181; --v6:#008300; --v7:#9085e9; --v8:#e66767; --q1:#184f95; --q2:#2a78d6; --q3:#6da7ec; --q4:#b7d3f6; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#3A4553;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --scrim:rgba(0,0,0,.6);
   color-scheme:dark;
 }}
@@ -44,6 +46,7 @@
   --accent:#6E97F2; --accent-ink:#0A1222; --accent-soft:#1C2B47;
   --ok:#55C487; --ok-soft:#173326; --bad:#F2776C; --bad-soft:#3A1E1D; --warn:#E3B356; --warn-soft:#352915;
   --mat:#B592F2; --mat-soft:#2B2140; --dis:#95A2B1; --dis-soft:#232D38;
+  --v1:#3987e5; --v2:#d95926; --v3:#199e70; --v4:#c98500; --v5:#d55181; --v6:#008300; --v7:#9085e9; --v8:#e66767; --q1:#184f95; --q2:#2a78d6; --q3:#6da7ec; --q4:#b7d3f6; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#3A4553;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); --scrim:rgba(0,0,0,.6);
   color-scheme:dark;
 }
@@ -298,6 +301,98 @@ table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-con
 .dom b{font-family:var(--f-display);letter-spacing:.02em}
 .dom .ok{color:var(--ok)} .dom .nx{color:var(--warn)}
 body.ged-on #main{padding-bottom:calc(84px + var(--ged-h,160px) + env(safe-area-inset-bottom,0px))}
+/* charts */
+.vfig{margin:0;display:flex;flex-direction:column;gap:10px}
+.vfig figcaption{display:flex;flex-direction:column;gap:2px}
+svg.viz{display:block;max-width:100%;height:auto;overflow:visible}
+.vgrid{stroke:var(--line);stroke-width:1}
+.vbase{stroke:var(--muted);stroke-width:1}
+.vref{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.vax{fill:var(--muted);font-size:11px;font-family:var(--f-body)}
+.vlab{fill:var(--ink);font-size:12.5px;font-family:var(--f-body)}
+.vval{fill:var(--ink);font-size:12.5px;font-weight:600;font-family:var(--f-body)}
+.vleg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink)}
+.vleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+details.vtab summary{font-size:12.5px;color:var(--accent);font-weight:600;cursor:pointer}
+details.vtab .tbl-wrap{margin-top:8px}
+#vtip{position:fixed;z-index:90;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;max-width:260px;box-shadow:var(--shadow)}
+/* home: today, alerts, plan */
+.hoje .chips{margin-top:6px}
+.alerts{display:flex;flex-direction:column;gap:6px}
+.alrt{display:flex;gap:10px;align-items:flex-start;border:0;background:var(--surface-2);border-radius:10px;padding:8px 10px;text-align:left;font-size:13.5px;width:100%}
+.alrt .ai{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff;background:var(--muted)}
+.alrt.bad .ai{background:var(--bad)} .alrt.warn .ai{background:var(--warn)}
+.plan{display:flex;flex-direction:column;gap:8px}
+.pl-r{display:grid;grid-template-columns:minmax(90px,38%) 1fr 44px;gap:10px;align-items:center;font-size:13.5px}
+.pl-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.pl-b{height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.pl-b i{display:block;height:100%;background:var(--v1);border-radius:0 4px 4px 0}
+.pl-v{text-align:right;color:var(--muted);font-weight:600}
+.pl-ed{display:grid;grid-template-columns:1fr 92px 40px;gap:8px;align-items:center}
+/* tools */
+.tool{display:flex;flex-direction:column;gap:12px}
+.tbig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center;display:flex;flex-direction:column;gap:4px}
+.tbig b{font-family:var(--f-display);font-size:64px;line-height:1;font-variant-numeric:tabular-nums}
+.tbig span{color:var(--muted);font-weight:600}
+.tprog{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;margin-top:6px}
+.tprog i{display:block;height:100%;background:var(--accent);width:0}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.tst{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px;min-height:52px;text-align:left}
+.tst .nm{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tst b{font-family:var(--f-display);font-size:18px}
+.tst.done{background:var(--ok-soft);border-color:var(--ok)}
+.li.on{background:var(--accent-soft)}
+.eqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:4px}
+.eq{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:6px}
+.eq-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.eq-h i{width:12px;height:12px;border-radius:3px;flex:none}
+.eq-a{display:flex;align-items:center;gap:8px;font-size:14px}
+/* report (always printed in light colors) */
+#print{display:none}
+body.printing{overflow:hidden}
+body.printing #print{display:block;position:fixed;inset:0;z-index:80;overflow:auto;background:#DDE2E8}
+.pbar{position:sticky;top:0;display:flex;gap:8px;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line);z-index:2}
+.pbar .sp{flex:1}
+.rel{--ink:#13202D; --muted:#5A6879; --line:#D8DFE7; --surface:#FFFFFF; --surface-2:#F4F6F8; --ok:#1C7C46; --warn:#9C620E; --bad:#BF352D; --accent:#1C55CF; --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100; --v5:#e87ba4; --v6:#008300; --v7:#6250d6; --v8:#e34948; --q1:#86b6ef; --q2:#3987e5; --q3:#1c5cab; --q4:#0d366b; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#C9D0D8;
+  color-scheme:light;background:#fff;color:var(--ink);max-width:190mm;margin:16px auto;padding:12mm;box-shadow:0 4px 18px rgba(0,0,0,.15);font-size:12.5px;line-height:1.45}
+.rel h1{font-size:26px} .rel h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border-bottom:1.5px solid var(--accent);padding-bottom:3px;margin:16px 0 8px}
+.rel-h{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.rel-k{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.rel-s{color:var(--muted);font-size:12px}
+.rel-id{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center}
+.rel-id img,.rph{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--surface-2);display:grid;place-items:center;font-family:var(--f-display);font-size:30px;font-weight:700;color:var(--accent)}
+.rel-fin{border:2px solid var(--line);border-radius:12px;padding:8px 16px;text-align:center;display:flex;flex-direction:column;min-width:110px}
+.rel-fin b{font-family:var(--f-display);font-size:40px;line-height:1}
+.rel-fin span{font-size:12px;color:var(--muted);font-weight:600}
+.rel-fin.ok{border-color:var(--ok)} .rel-fin.ok b{color:var(--ok)} .rel-fin.bad{border-color:var(--bad)} .rel-fin.bad b{color:var(--bad)}
+.rel-t{width:100%;border-collapse:collapse;font-size:12.5px;break-inside:avoid}
+.rel-t th,.rel-t td{border:1px solid var(--line);padding:5px 8px;text-align:center;white-space:normal}
+.rel-t th{background:var(--surface-2);font-size:11px}
+.rel-t .l{text-align:left}
+.rel h2{break-after:avoid}
+.rel-m{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px;break-inside:avoid}
+.rel-mh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.rel-mh b{font-size:14px}
+.rel-sc{display:inline-flex;gap:2px}
+.rel-sc i{font-style:normal;font-family:var(--f-display);font-weight:700;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.rel-sc i.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.rel .dom{max-height:none;background:var(--surface-2)}
+.rel-as{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;break-inside:avoid}
+.rel-as div{border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center;display:flex;flex-direction:column}
+.rel-as b{font-family:var(--f-display);font-size:22px}
+.rel-as span{font-size:11px;color:var(--muted)}
+.rel-obs{border:1px solid var(--line);border-radius:8px;min-height:64px;padding:8px 10px}
+.rel-sig{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px;break-inside:avoid}
+.rel-sig div{border-top:1px solid var(--ink);padding-top:4px;font-size:11.5px;color:var(--muted)}
+@media print{
+  body.printing{overflow:visible;background:#fff}
+  body.printing > *:not(#print){display:none!important}
+  body.printing #print{position:static;overflow:visible;background:#fff}
+  .noprint{display:none!important}
+  .rel{margin:0;padding:0;box-shadow:none;max-width:none;break-after:page}
+  .rel:last-child{break-after:auto}
+  @page{size:A4;margin:12mm}
+}
 @media (prefers-reduced-motion: no-preference){ .sh{animation:up .18s ease-out} @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}} }
 @media (max-width:380px){ .ps{grid-template-columns:repeat(5,34px)} .ps button{height:36px} .seg button{padding:6px 7px} }
 </style>
@@ -312,6 +407,8 @@ body.ged-on #main{padding-bottom:calc(84px + var(--ged-h,160px) + env(safe-area-
 <div id="ged" hidden></div>
 <div id="sheet" hidden></div>
 <div id="toast" role="status" hidden></div>
+<div id="vtip" role="tooltip" hidden></div>
+<div id="print"></div>
 <input type="file" id="file-import" accept=".json,application/json" hidden>
 <input type="file" id="file-xls" accept=".xlsx,.xls,.xlsm,.ods,.csv,.txt" hidden>
 <input type="file" id="file-fotos" accept="image/*" multiple hidden>
@@ -401,7 +498,8 @@ const Store = {
     }
     return out;
   },
-  save(k, obj) {
+  save(k, obj, keepStamp) {
+    if (!keepStamp) obj._u = Date.now();
     const key = k + ':' + obj.id; clearTimeout(this.t[key]);
     const run = () => { delete this.pend[key]; return this._write(k, obj.id, () => clone(obj)); };
     this.pend[key] = run; this.t[key] = setTimeout(run, 450);
@@ -562,7 +660,10 @@ function vAulas(t) {
   const all = aulasOf(t.id); const num = {}; all.forEach((a, i) => num[a.id] = i + 1);
   const list = all.filter(a => periodOf(a.data) === UI.p).reverse();
   const nAl = (t.alunos || []).length;
-  let h = `<div class="stack"><button class="btn primary block" data-a="aula-new">+ Registar aula</button>`;
+  let h = `<div class="stack">${vHoje()}<div class="btn-row"><button class="btn primary" data-a="aula-new">+ Registar aula</button><button class="btn" data-a="tools">Ferramentas</button></div>`;
+  const al = nAl ? alertsOf(t, UI.p) : [];
+  if (al.length) h += `<div class="card alerts"><span class="eyebrow">Atenção</span>${al.slice(0, UI.allAlerts ? 99 : 3).map(x => `<button class="alrt ${x.k}" data-a="alert-go" data-k="${x.a}"><span class="ai" aria-hidden="true">${x.k === 'bad' ? '!' : x.k === 'warn' ? '•' : 'i'}</span><span>${esc(x.txt)}</span></button>`).join('')}${al.length > 3 && !UI.allAlerts ? `<button class="link" style="align-self:flex-start" data-a="alerts-all">Ver mais ${al.length - 3}</button>` : ''}</div>`;
+  h += vPlano(t);
   if (Store.mode === 'local' && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
   h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'}</span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
@@ -930,18 +1031,27 @@ function vPauta(t) {
   const als = alunosOf(t); const ms = matsOf(t, UI.p);
   const rows = als.map(al => ({al, r: calc(t, UI.p, al)}));
   const nA = rows.filter(x => x.r.EST === 'Apto').length, nN = rows.filter(x => x.r.EST === 'Não apto').length, nI = rows.length - nA - nN;
-  let h = `<div class="stack"><div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
+  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Relatórios']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  if (UI.pview === 'graf') return `<div class="stack">${seg}${vGraficos(t)}</div>`;
+  if (UI.pview === 'rel') return `<div class="stack">${seg}${vRelList(t)}</div>`;
+  let h = `<div class="stack">${seg}<div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
   h += `<div class="tiles"><div class="tile"><b>${rows.length}</b><span>Alunos</span></div><div class="tile ok"><b>${nA}</b><span>Aptos</span></div><div class="tile bad"><b>${nN}</b><span>Não aptos</span></div><div class="tile"><b>${nI}</b><span>Incompletos</span></div></div>`;
   if (!rows.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>A pauta aparece quando a turma tiver alunos.</p></div></div>`;
   const cell = (x, cls) => `<td class="${x != null && x < 10 ? 'low' : ''} ${cls || ''}">${f1(x)}</td>`;
-  h += `<div class="tbl-wrap"><table><thead><tr><th>Nº</th><th class="l">Aluno</th><th>AF</th><th>Apt.</th><th>Con.</th><th>Atit.</th><th>Final</th><th>Estado</th><th>F</th></tr></thead><tbody>`;
+  h += `<div class="tbl-wrap"><table><thead><tr><th>Nº</th><th class="l">Aluno</th><th>AF</th><th>Apt.</th><th>Con.</th><th>Atit.</th><th>Final</th>${t.ciclo !== 'S' ? '<th>' + nivelLbl(t) + '</th>' : ''}<th>Estado</th><th>F</th></tr></thead><tbody>`;
   rows.forEach(({al, r}) => {
-    h += `<tr class="click" data-a="aluno-edit" data-id="${esc(al.id)}"><td>${esc(al.num ?? '')}</td><td class="l nm">${esc(al.nome)}</td>${r.afOn ? cell(r.AF) : '<td class="muted">n/a</td>'}${r.apfOn ? cell(r.APF) : '<td class="muted">n/a</td>'}${cell(r.CON)}${cell(r.AV)}<td class="fin ${r.FIN != null && r.FIN < 10 ? 'low' : ''}">${r.FIN ?? '—'}</td><td><span class="pill ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : 'inc'}">${r.EST}</span></td><td>${r.c.F || ''}</td></tr>`;
+    h += `<tr class="click" data-a="aluno-edit" data-id="${esc(al.id)}"><td>${esc(al.num ?? '')}</td><td class="l nm">${esc(al.nome)}</td>${r.afOn ? cell(r.AF) : '<td class="muted">n/a</td>'}${r.apfOn ? cell(r.APF) : '<td class="muted">n/a</td>'}${cell(r.CON)}${cell(r.AV)}<td class="fin ${r.FIN != null && r.FIN < 10 ? 'low' : ''}">${r.FIN ?? '—'}</td>${t.ciclo !== 'S' ? `<td><b>${esc(nivel(t, r.FIN) ?? '—')}</b></td>` : ''}<td><span class="pill ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : 'inc'}">${r.EST}</span></td><td>${r.c.F || ''}</td></tr>`;
   });
   h += `</tbody></table></div>`;
   h += `<p class="hint">Regra da grelha: se algum domínio aplicável ficar abaixo de 10, a nota final fica limitada a 9 (Não apto). Toque num aluno para ver o detalhe.</p>`;
   h += `<button class="btn primary block" data-a="xlsx">Exportar pauta, sumários e presenças (Excel)</button></div>`;
   return h;
+}
+
+function vRelList(t) {
+  const als = alunosOf(t);
+  return `<div class="card"><p style="margin:0 0 10px">Relatório individual do ${esc(perLabel(UI.p, true))}: classificação por domínio, o que domina e onde melhorar em cada matéria, FITescola, atitudes, assiduidade, evolução e observações. Abre pronto a imprimir ou a guardar em PDF (A4).</p><button class="btn primary block" data-a="rel-all">Relatórios da turma toda (${als.length})</button>${CFG.escola ? '' : '<p class="hint" style="margin:8px 0 0">Indique o nome da escola e do professor em Mais → Escola e relatórios.</p>'}</div>
+    <div class="list">${als.map(al => { const r = calc(t, UI.p, al); return `<button class="li" data-a="rel-one" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}${(avalOf(t.id, UI.p).obs || {})[al.id] ? ' · com observação' : ''}</div></span><span class="end muted">Relatório ›</span></button>`; }).join('')}</div>`;
 }
 
 function vMais(t) {
@@ -964,6 +1074,12 @@ function vMais(t) {
     ${[0,1,2,3,4,5,6,7,8].map(i => `<tr><td><b>${i === 8 ? '18+' : 10 + i}</b></td>${['M','F'].map(sx => ['zs','za'].map(z => `<td><input type="text" inputmode="decimal" data-in="fitref" data-k="${f.k}" data-sx="${sx}" data-z="${z}" data-i="${i}" value="${esc(ref[sx][z][i] ?? '')}" aria-label="${sx === 'M' ? 'Rapazes' : 'Raparigas'} ${z.toUpperCase()} ${10 + i} anos"></td>`).join('')).join('')}</tr>`).join('')}
     </tbody></table></div>
     <p class="note warn">Confirme estes valores com a tabela oficial do FITescola (DGE). Vaivém, abdominais e senta e alcança vêm da tabela FITescola; as flexões são provisórias; velocidade, agilidade e impulsão estão por preencher. Sem valor, a zona escolhe-se à mão. Abaixo dos 10 anos não há referência.</p></div>`;
+  h += `<div class="sec-h"><h2>Todas as turmas</h2></div><div class="card form"><p class="hint" style="margin:0">Médias, aptos, aptidão física e faltas de todas as turmas lado a lado, com gráficos: útil para o grupo de Educação Física e o conselho pedagógico.</p><button class="btn" data-a="grupo">Painel de todas as turmas · ${perLabel(UI.p)}</button></div>`;
+  h += `<div class="sec-h"><h2>Horário semanal</h2></div><div class="card form">${vHorarioSemana()}<p class="hint" style="margin:0">Com o horário definido, o ecrã das aulas mostra as turmas do dia e abre a aula certa com um toque.</p></div>`;
+  const nv = CFG.niv || [4, 10, 14, 18];
+  h += `<div class="sec-h"><h2>Escola e relatórios</h2></div><div class="card form">
+    <div class="grid2"><div class="field"><label for="cfg-escola">Escola / agrupamento</label><input type="text" id="cfg-escola" data-in="cfg-txt" data-k="escola" value="${esc(CFG.escola || '')}"></div><div class="field"><label for="cfg-prof">Professor(a)</label><input type="text" id="cfg-prof" data-in="cfg-txt" data-k="prof" value="${esc(CFG.prof || '')}"></div></div>
+    <div class="field"><span class="lbl">Conversão da classificação 0–20 em nível 1–5 (2.º e 3.º ciclos) e menção (1.º ciclo)</span><div class="tbl-wrap"><table class="ref"><thead><tr><th>Nível 2 a partir de</th><th>Nível 3</th><th>Nível 4</th><th>Nível 5</th></tr></thead><tbody><tr>${nv.map((x, i) => `<td><input type="text" inputmode="decimal" data-in="cfg-niv" data-i="${i}" value="${x}" aria-label="Limite do nível ${i + 2}"></td>`).join('')}</tr></tbody></table></div><p class="hint" style="margin:0">Por defeito: 1 (0–3), 2 (4–9), 3 (10–13), 4 (14–17), 5 (18–20). Ajuste aos critérios aprovados na sua escola.</p></div></div>`;
   h += `<div class="sec-h"><h2>Cópia de segurança</h2></div><div class="card form">
     <p class="note">${esc(storageNote())}</p>
     ${Store.mode === 'local' ? `<p class="hint">Última cópia: ${lastBackup() ? esc(fmtDate(lastBackup(), {day:'numeric', month:'long', year:'numeric'})) : 'nunca'}. Guarde o ficheiro no OneDrive ou no email.</p>` : ''}
@@ -980,7 +1096,7 @@ function openSheet(title, body, foot) {
   $('#sheet').innerHTML = `<div class="sh-back" data-a="sh-close"></div><section class="sh" role="dialog" aria-modal="true" aria-label="${esc(title)}"><header class="sh-h"><h2>${esc(title)}</h2><button class="icon-btn" data-a="sh-close" aria-label="Fechar">×</button></header><div class="sh-b">${body}</div>${foot ? `<footer class="sh-f">${foot}</footer>` : ''}</section>`;
   $('#sheet').hidden = false; document.body.classList.add('locked');
 }
-function closeSheet() { $('#sheet').hidden = true; $('#sheet').innerHTML = ''; document.body.classList.remove('locked'); UI.draft = null; DFOTO = undefined; }
+function closeSheet() { stopTool(); $('#sheet').hidden = true; $('#sheet').innerHTML = ''; document.body.classList.remove('locked'); UI.draft = null; DFOTO = undefined; }
 function updSheet(body, foot) { const b = $('#sheet .sh-b'), f = $('#sheet .sh-f'); if (b) b.innerHTML = body; if (f) f.innerHTML = foot; }
 function armed(el, label) { if (el.dataset.armed) return true; el.dataset.armed = '1'; el.classList.add('armed'); const o = el.textContent; el.textContent = label; setTimeout(() => { if (el.isConnected) { delete el.dataset.armed; el.classList.remove('armed'); el.textContent = o; } }, 4000); return false; }
 
@@ -1014,6 +1130,8 @@ function sheetAluno(al) {
     const lv = Object.entries(r.lv);
     resumo += `<p class="hint">${perLabel(UI.p, true)}: ${lv.length ? lv.map(([m, l]) => esc(m) + ' ' + l).join(' · ') : 'sem matérias avaliadas'}${r.missing.length ? ' · Falta: ' + r.missing.join(', ') : ''}</p></div>`;
     if (lv.length) resumo += `<div class="field"><span class="lbl">O que domina e onde melhorar · ${perLabel(UI.p, true)}</span>${lv.map(([m, l]) => { const sm = lvSummary(t.ciclo, m, l); return `<details class="desc"><summary>${esc(m)} · ${l} <span class="muted small">(${esc(LVN[l])})</span></summary>${sm ? `<div class="dom" style="max-height:none;margin-bottom:12px">${sm}</div>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`; }).join('')}</div>`;
+    const evo = CFG.per.slice(0, CFG.nper).map((_, i) => calc(t, i + 1, al)), ser = [{name:'Final', color:'var(--v1)', vals:evo.map(x => x.FIN)}, {name:'Matérias', color:'var(--v2)', vals:evo.map(x => x.AF)}, {name:'Apt. física', color:'var(--v3)', vals:evo.map(x => x.APF)}, {name:'Atitudes', color:'var(--v7)', vals:evo.map(x => x.AV)}];
+    if (evo.some(x => x.FIN != null || x.AF != null || x.APF != null)) resumo += fig('Evolução por período', 'Escala 0–20; a linha tracejada marca os 10', chLine(evo.map((_, i) => perLabel(i + 1)), ser, {h:180, label:'Evolução por período'}) + legend(ser.map(x => ({name:x.name, color:x.color}))));
   }
   const body = `<div class="form">
     <div class="foto-ed"><span id="a-foto">${avatar(al, 'lg')}</span><div class="btn-row"><button class="btn" data-a="foto-one">${S.fotos[al.id] ? 'Trocar fotografia' : 'Fotografia'}</button><button class="btn ghost" data-a="foto-rm"${S.fotos[al.id] ? '' : ' hidden'}>Remover</button></div></div>
@@ -1024,7 +1142,8 @@ function sheetAluno(al) {
     <div class="field"><label for="a-proc">N.º de processo</label><input type="text" inputmode="numeric" id="a-proc" data-in="a-proc" value="${esc(al.proc || '')}"></div>
     <div class="field"><label for="a-reg">Regime</label><select id="a-reg" data-in="a-reg">${Object.keys(REG).map(k => `<option${al.regime === k ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
     <div class="field"><label for="a-obs">Observações</label><textarea id="a-obs" data-in="a-obs" placeholder="Atestado, cuidados de saúde, notas...">${esc(al.obs || '')}</textarea></div>
-    ${resumo}</div>`;
+    ${resumo}
+    ${isNew ? '' : `<div class="field"><label for="a-relobs">Observação do ${esc(perLabel(UI.p, true))} (aparece no relatório)</label><textarea id="a-relobs" placeholder="Ex.: Evoluiu no passe e na manchete; deve trabalhar a resistência aeróbia.">${esc((avalOf(t.id, UI.p).obs || {})[al.id] || '')}</textarea></div><button class="btn" data-a="rel-one" data-id="${esc(al.id)}">Relatório do aluno (imprimir ou PDF)</button>`}</div>`;
   const foot = (isNew ? '' : `<button class="btn danger" data-a="aluno-del">Remover</button>`) + `<button class="btn primary" data-a="aluno-save">Guardar</button>`;
   openSheet(isNew ? 'Novo aluno' : al.nome, body, foot);
 }
@@ -1035,6 +1154,7 @@ function sheetTurma(x) {
     <div class="field"><label for="t-nome">Nome da turma</label><input type="text" id="t-nome" data-in="t-nome" value="${esc(x.nome)}" placeholder="Ex.: 7.º B"></div>
     <div class="field"><label for="t-ciclo">Ciclo (define as matérias e os descritivos)</label><select id="t-ciclo" data-in="t-ciclo">${Object.entries(CICLOS).map(([k, n]) => `<option value="${k}"${x.ciclo === k ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
     <div class="field"><span class="lbl">Escala de Conhecimentos</span><div class="seg block">${['0-20','1-5'].map(s => `<button data-a="t-escala" data-s="${s}" class="${x.escala === s ? 'on' : ''}">${s}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Horário semanal (tempos de Educação Física)</span>${(x.horario || []).map((hh, i) => `<div class="pl-ed"><select data-in="hor" data-i="${i}" data-k="d" aria-label="Dia">${[1, 2, 3, 4, 5, 6].map(d => `<option value="${d}"${+hh.d === d ? ' selected' : ''}>${DIAS[d]}</option>`).join('')}</select><input type="time" data-in="hor" data-i="${i}" data-k="h" value="${esc(hh.h || '')}" aria-label="Hora"><button class="icon-btn" data-a="hor-del" data-i="${i}" aria-label="Remover">×</button></div>`).join('')}<button class="btn" style="align-self:flex-start" data-a="hor-add">+ Tempo letivo</button></div>
     ${isNew ? '' : `<p class="note">Eliminar a turma apaga também as aulas, presenças e avaliações dela.</p>`}</div>`;
   const foot = (isNew ? '' : `<button class="btn danger" data-a="turma-del">Eliminar turma</button>`) + `<button class="btn primary" data-a="turma-save">${isNew ? 'Criar turma' : 'Guardar'}</button>`;
   openSheet(isNew ? 'Nova turma' : x.nome, body, foot);
@@ -1064,7 +1184,7 @@ const A = {
   'turma-save': () => {
     const x = UI.draft; x.nome = ($('#t-nome').value || '').trim(); x.ciclo = $('#t-ciclo').value;
     if (!x.nome) { toast('Escreva o nome da turma.', 'bad'); $('#t-nome').focus(); return; }
-    const prev = S.turmas[x.id]; S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala}) : x;
+    const prev = S.turmas[x.id]; x.horario = (x.horario || []).filter(hh => hh.h); S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala, horario:x.horario}) : x;
     Store.save('turmas', S.turmas[x.id]); UI.turma = x.id; if (!prev) UI.tab = 'alunos'; closeSheet(); render(); toast(prev ? 'Turma guardada.' : 'Turma criada. Adicione os alunos.');
   },
   'turma-del': el => {
@@ -1074,7 +1194,7 @@ const A = {
     (S.turmas[id].alunos || []).forEach(al => { if (S.fotos[al.id]) { delete S.fotos[al.id]; Store.del('fotos', al.id); } });
     delete S.turmas[id]; Store.del('turmas', id); if (UI.turma === id) UI.turma = Object.keys(S.turmas)[0] || null; closeSheet(); render(); toast('Turma eliminada.');
   },
-  'aula-new': () => { const t = turma(); const pres = {}; (t.alunos || []).forEach(al => pres[al.id] = 'P'); let d = today(); sheetAula({id: uid(), turmaId: t.id, data: d, c: Date.now(), materias: [], sumario: '', presencas: pres}); },
+  'aula-new': () => { const t = turma(); const pres = {}; (t.alunos || []).forEach(al => pres[al.id] = 'P'); let d = today(); const u = udAtual(t, periodOf(d)); sheetAula({id: uid(), turmaId: t.id, data: d, c: Date.now(), materias: u ? [u] : [], sumario: '', presencas: pres}); },
   'aula-edit': el => { const a = clone(S.aulas[el.dataset.id]); a.materias = a.materias || []; a.presencas = a.presencas || {}; sheetAula(a); },
   'd-mat': el => { const m = el.dataset.m, d = UI.draft; const i = d.materias.indexOf(m); i >= 0 ? d.materias.splice(i, 1) : d.materias.push(m); el.classList.toggle('on', i < 0); },
   'd-pres': el => { UI.draft.presencas[el.dataset.aid] = el.dataset.s; el.parentNode.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b === el); b.setAttribute('aria-pressed', b === el); }); },
@@ -1095,7 +1215,7 @@ const A = {
     t.alunos = t.alunos || []; const i = t.alunos.findIndex(x => x.id === al.id); i >= 0 ? t.alunos[i] = al : t.alunos.push(al);
     if (DFOTO) { S.fotos[al.id] = {id: al.id, d: DFOTO}; Store.save('fotos', S.fotos[al.id]); }
     else if (DFOTO === '' && S.fotos[al.id]) { delete S.fotos[al.id]; Store.del('fotos', al.id); }
-    Store.save('turmas', t); closeSheet(); render(); toast('Aluno guardado.');
+    relObs(al.id); Store.save('turmas', t); closeSheet(); render(); toast('Aluno guardado.');
   },
   'aluno-del': el => { if (!armed(el, 'Toque de novo para remover')) return; const t = turma(); t.alunos = t.alunos.filter(x => x.id !== UI.draft.id); Store.save('turmas', t); if (S.fotos[UI.draft.id]) { delete S.fotos[UI.draft.id]; Store.del('fotos', UI.draft.id); } closeSheet(); render(); toast('Aluno removido da turma.'); },
   'alunos-paste': () => sheetPaste(),
@@ -1195,6 +1315,76 @@ const A = {
   },
   'ind-copy': el => { const t = turma(), v = avalOf(t.id, UI.p), m = el.dataset.m, prev = (avalOf(t.id, UI.p - 1).ind || {})[m] || []; v.ind = v.ind || {}; v.ind[m] = prev.map(i => ({id:uid(), n:i.n})); touchAval(v); render(); sheetCol('m:' + m); },
   'aula-aval': () => { const d = A['aula-save'](true); if (!d) return; FOCUS = d.id; SEL = null; UI.tab = 'avaliar'; UI.avMode = 'grelha'; render(); window.scrollTo(0, 0); },
+  'tools': () => sheetTools(),
+  'tool-vai': () => sheetVai(), 'tool-cron': () => sheetCron(), 'tool-cad': () => sheetCad(), 'tool-eq': () => sheetEquipas(),
+  'tv-go': () => {
+    const T = TOOL; audio();
+    if (T.run) { T.el += performance.now() - T.t0; T.run = false; clearInterval(T.iv); wake(false); }
+    else { if (!T.el) beep(1, 660); T.t0 = performance.now(); T.run = true; T.iv = setInterval(tvTick, 50); wake(true); }
+    $('#tv-go').textContent = T.run ? 'Pausa' : 'Continuar';
+  },
+  'tv-reset': el => { if (!armed(el, 'Toque de novo')) return; const T = TOOL; clearInterval(T.iv); wake(false); Object.assign(T, {el:0, run:false, res:{}, last:0, lastLvl:1}); $('#tv-go').textContent = 'Iniciar'; document.querySelectorAll('.tst').forEach(b => { b.classList.remove('done'); b.querySelector('b').textContent = ''; }); $('#tv-save').textContent = 'Guardar resultados'; tvTick(); },
+  'tv-st': el => {
+    const T = TOOL, aid = el.dataset.aid, b = el.querySelector('b');
+    if (T.res[aid] != null) { delete T.res[aid]; el.classList.remove('done'); b.textContent = ''; }
+    else { T.res[aid] = pacerAt(T.el + (T.run ? performance.now() - T.t0 : 0)).total; el.classList.add('done'); b.textContent = T.res[aid]; }
+    const n = Object.keys(T.res).length; $('#tv-save').textContent = 'Guardar ' + n + (n === 1 ? ' resultado' : ' resultados');
+  },
+  'tv-save': () => { const r = TOOL.res, n = Object.keys(r).length; if (!n) { toast('Toque nos alunos à medida que param.', 'bad'); return; } Object.entries(r).forEach(([aid, x]) => fitSet(aid, 'vaivem', x)); closeSheet(); render(); toast(n + ' resultados do vaivém guardados.'); },
+  'tc-test': el => { const T = TOOL; if (T.run) return; T.test = el.dataset.k; T.res = {}; T.i = 0; cronRender(); },
+  'tc-go': () => {
+    const T = TOOL; audio();
+    if (!T.run) { T.t0 = performance.now(); T.run = true; beep(1, 660); cronRender(); T.iv = setInterval(() => { const e = document.getElementById('tc-t'); if (e) e.textContent = nf2((performance.now() - T.t0) / 1000); }, 31); return; }
+    const sec = Math.round((performance.now() - T.t0) / 10) / 100; clearInterval(T.iv); T.run = false; beep(2, 880);
+    const id = T.q[T.i]; if (id) T.res[id] = sec;
+    const nx = T.q.findIndex((x, i) => i > T.i && T.res[x] == null), any = T.q.findIndex(x => T.res[x] == null); T.i = nx >= 0 ? nx : any >= 0 ? any : T.q.length;
+    cronRender(); const e = document.getElementById('tc-t'); if (e) e.textContent = nf2(sec);
+  },
+  'tc-skip': () => { const T = TOOL; if (T.run) { clearInterval(T.iv); T.run = false; } T.i = Math.min(T.q.length, T.i + 1); cronRender(); },
+  'tc-sel': el => { const T = TOOL; if (T.run) return; T.i = +el.dataset.i; cronRender(); },
+  'tc-save': () => { const T = TOOL, n = Object.keys(T.res).length; if (!n) { toast('Ainda não há tempos.', 'bad'); return; } Object.entries(T.res).forEach(([aid, x]) => fitSet(aid, T.test, x)); const nm = T.test === 'vel' ? 'Velocidade 40 m' : 'Agilidade 4×10 m'; closeSheet(); render(); toast(n + ' tempos guardados em ' + nm + '.'); },
+  'cd-go': () => {
+    const T = TOOL; audio();
+    if (T.run) { clearInterval(T.iv); T.run = false; wake(false); }
+    else {
+      T.run = true; T.t0 = performance.now(); T.c = 0; T.half = false; beep(1, 523); wake(true);
+      // cada ciclo de 3 s: sinal grave (descer) no início, agudo (subir) a meio, e conta uma repetição
+      T.iv = setInterval(() => { const e = performance.now() - T.t0, c = Math.floor(e / T.per), ph = (e % T.per) / T.per;
+        if (c > T.c) { T.c = c; T.half = false; beep(1, 523); }
+        if (ph >= .5 && !T.half) { T.half = true; T.n++; beep(1, 988); }
+        const q = document.getElementById('cd-n'); if (q) { q.textContent = T.n; document.getElementById('cd-b').style.width = Math.round(ph * 100) + '%'; } }, 40);
+    }
+    $('#cd-go').textContent = T.run ? 'Parar' : 'Continuar';
+  },
+  'cd-reset': () => { const T = TOOL; clearInterval(T.iv); wake(false); T.run = false; T.n = 0; $('#cd-n').textContent = '0'; $('#cd-b').style.width = '0'; $('#cd-go').textContent = 'Iniciar'; },
+  'eq-go': () => { eqMake(); $('#eq-out').innerHTML = eqHtml(); },
+  'eq-copy': async () => { const t = turma(), E = UI.eq, nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome; const txt = E.res.map((ids, i) => 'Equipa ' + (i + 1) + ': ' + ids.map(nm).join(', ')).join('\n'); try { await navigator.clipboard.writeText(txt); toast('Equipas copiadas.'); } catch (e) { toast('Não foi possível copiar.', 'bad'); } },
+  'alert-go': el => { const k = el.dataset.k; if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
+  'alerts-all': () => { UI.allAlerts = true; render(); },
+  'plano-edit': () => sheetPlano(),
+  'pl-add': () => { const t = turma(), ms = MATS[t.ciclo] || GR, used = UI.draft.map(u => u.m); UI.draft.push({m:ms.find(m => !used.includes(m)) || ms[0], n:8}); planoRender(); },
+  'pl-del': el => { UI.draft.splice(+el.dataset.i, 1); planoRender(); },
+  'pl-save': () => { const t = turma(); t.plano = t.plano || {}; t.plano[UI.p] = UI.draft.filter(u => u.m && u.n > 0); Store.save('turmas', t); closeSheet(); render(); toast('Plano guardado.'); },
+  'hoje-go': el => { UI.turma = el.dataset.id; FOCUS = null; SEL = null; UI.tab = 'aulas'; UI.p = periodOf(today()); render(); const t = turma(), a = aulasOf(t.id).filter(x => x.data === today()).pop(); if (a) A['aula-edit']({dataset:{id:a.id}}); else A['aula-new'](); },
+  'hor-add': () => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; (d.horario = d.horario || []).push({d:Math.min(5, Math.max(1, new Date().getDay())), h:''}); sheetTurma(d); },
+  'hor-del': el => { const d = UI.draft; d.nome = $('#t-nome').value; d.ciclo = $('#t-ciclo').value; d.horario.splice(+el.dataset.i, 1); sheetTurma(d); },
+  'pview': el => { UI.pview = el.dataset.k; render(); },
+  'rel-one': el => { relObs(el.dataset.id); const t = turma(), al = (t.alunos || []).find(x => x.id === el.dataset.id); if (al) printRel(t, UI.p, [al]); },
+  'rel-all': () => { const t = turma(); printRel(t, UI.p, alunosOf(t)); },
+  'print-go': () => window.print(),
+  'print-close': () => { document.body.classList.remove('printing'); $('#print').innerHTML = ''; },
+  'grupo': () => sheetGrupo(),
+  'grupo-xlsx': () => {
+    if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
+    const g = grupoRows(), wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Educação Física · ' + perLabel(UI.p, true) + ' · ' + CFG.ano], [], ['Turma', 'Alunos', 'Aulas', 'Média final', 'Aptos', 'Não aptos', 'Incompletos', 'Vaivém na ZS ou ZA (%)', 'Faltas'], ...g.map(x => [x.t.nome, x.n, x.aulas, x.media == null ? '' : Math.round(x.media * 10) / 10, x.st['Apto'], x.st['Não apto'], x.st['Incompleto'], x.zs ?? '', x.F])]), 'Turmas');
+    saveFile(('EF_todas_as_turmas_' + perLabel(UI.p)).replace(/[^\wÀ-ú.-]+/g, '_') + '.xlsx', new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  },
+  'restore-merge': () => {
+    const d = A._pending; if (!d) return; closeSheet(); let n = 0;
+    for (const k of ['turmas', 'aulas', 'aval', 'fotos']) Object.values(d[k] || {}).forEach(o => { const cur = S[k][o.id]; if (!cur || (o._u || 0) > (cur._u || 0)) { S[k][o.id] = o; Store.save(k, o, true); n++; } });
+    if (!UI.turma) UI.turma = Object.keys(S.turmas)[0] || null; render(); toast(n ? n + ' registos atualizados a partir da cópia.' : 'Este aparelho já tinha tudo o que está na cópia.');
+  },
   'xls-import': () => { if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; } $('#file-xls').click(); },
   'xls-model': () => {
     if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
@@ -1229,6 +1419,7 @@ const A = {
   'foto-one': () => $('#file-foto1').click(),
   'foto-rm': el => { DFOTO = ''; $('#a-foto').innerHTML = avatar({nome: UI.draft.nome || $('#a-nome').value}, 'lg'); el.hidden = true; }
 };
+function relObs(aid) { const ro = $('#a-relobs'); if (!ro || !UI.draft || UI.draft.id !== aid) return; const v = avalOf(turma().id, UI.p), x = ro.value.trim(); v.obs = v.obs || {}; if (x) v.obs[aid] = x; else delete v.obs[aid]; touchAval(v); }
 function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; v.fit[aid][k] = val; touchAval(v); return v; }
 function updAV(aid) { const t = turma(); const al = (t.alunos || []).find(x => x.id === aid); const el = document.getElementById('avn-' + aid); if (al && el) el.textContent = f1(calc(t, UI.p, al).AV); }
 
@@ -1248,6 +1439,11 @@ document.addEventListener('change', e => {
   else if (k === 'imp-dest') { IMP.dest = el.value; if (el.value !== '__new' && el.value !== '__split') { const t = S.turmas[el.value], m = impTurmas().find(x => norm(x) === norm(t.nome)); IMP.filter = m || ''; } sheetImport(true); }
   else if (k === 'imp-filter') { IMP.filter = el.value; sheetImport(true); }
   else if (k === 'imp-ciclo') { IMP.newCiclo = el.value; }
+  else if (k === 'eq') { const E = UI.eq; E[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.dataset.k === 'n' ? +el.value : el.value; E.res = null; $('#eq-out').innerHTML = eqHtml(); }
+  else if (k === 'pl') { const u = UI.draft[+el.dataset.i]; u[el.dataset.k] = el.dataset.k === 'n' ? Math.max(1, Math.min(60, parseInt(el.value, 10) || 1)) : el.value; }
+  else if (k === 'hor') { UI.draft.horario[+el.dataset.i][el.dataset.k] = el.value; }
+  else if (k === 'cfg-txt') { CFG[el.dataset.k] = el.value.trim(); Store.save('cfg', CFG); }
+  else if (k === 'cfg-niv') { const x = parseNum(el.value); CFG.niv = (CFG.niv || [4, 10, 14, 18]).slice(); if (x != null) CFG.niv[+el.dataset.i] = x; Store.save('cfg', CFG); }
   else if (k === 'g-pin') { PIN = el.checked ? {val:null} : null; gEditor(); }
   else if (k === 'gcol') { UI.gcol = el.value; if (SEL) SEL.k = el.value; gRefresh(); }
   else if (k === 'foto-as') { FOTOS[+el.dataset.i].aid = el.value; const n = FOTOS.filter(x => x.aid).length; $('#fotos-go').textContent = 'Guardar ' + n + ' fotografias'; }
@@ -1283,7 +1479,7 @@ $('#file-import').addEventListener('change', e => {
     let d; try { d = JSON.parse(rd.result); } catch (err) { toast('O ficheiro não é uma cópia válida do Caderno EF.', 'bad'); return; }
     if (!d || d.app !== 'Caderno EF' || typeof d.turmas !== 'object') { toast('O ficheiro não é uma cópia válida do Caderno EF.', 'bad'); return; }
     A._pending = d;
-    openSheet('Importar cópia', `<div class="form"><p>Cópia de ${esc(fmtDate((d.exportado || '').slice(0, 10), {day:'numeric', month:'long', year:'numeric'}))}: ${Object.keys(d.turmas).length} turmas, ${Object.keys(d.aulas || {}).length} aulas.</p><p class="note warn">Os dados atuais são substituídos pelos da cópia.</p></div>`, `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="restore-go">Substituir dados</button>`);
+    openSheet('Importar cópia', `<div class="form"><p>Cópia de ${esc(fmtDate((d.exportado || '').slice(0, 10), {day:'numeric', month:'long', year:'numeric'}))}: ${Object.keys(d.turmas).length} turmas, ${Object.keys(d.aulas || {}).length} aulas.</p><p class="hint"><b>Juntar</b>: para trazer o trabalho de outro aparelho (telemóvel ↔ computador). Mantém, registo a registo, a versão mais recente.</p><p class="note warn"><b>Substituir</b>: os dados atuais são apagados e trocados pelos da cópia.</p></div>`, `<button class="btn" data-a="restore-merge">Juntar</button><button class="btn danger" data-a="restore-go">Substituir</button>`);
   };
   rd.readAsText(file);
 });
@@ -1323,7 +1519,7 @@ document.addEventListener('touchend', e => {
   if (!SW) return; const t = e.changedTouches[0], dx = t.clientX - SW.x, dy = t.clientY - SW.y; SW = null;
   if (Math.abs(dx) > 60 && Math.abs(dy) < 45) gColStep(dx < 0 ? 1 : -1);
 });
-window.addEventListener('resize', () => gFit());
+window.addEventListener('resize', () => { gFit(); if (UI.tab === 'pauta' && UI.pview === 'graf') { clearTimeout(window._rz); window._rz = setTimeout(render, 200); } });
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('domd')) { UI.domOpen = e.target.open; saveUI(); const g = $('#ged'); document.documentElement.style.setProperty('--ged-h', g.offsetHeight + 'px'); gFit(); } }, true);
 $('#file-xls').addEventListener('change', async e => {
   const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
@@ -1381,6 +1577,7 @@ function exportXlsx() {
     return [al.num ?? '', al.nome, al.regime || 'Normal', ...ms.map(m => r.lv[m] || ''), r.afOn ? r1(r.AF) : 'n/a', ...FIT.map(f => r.zones[f.k] != null ? ZN[r.zones[f.k]] : ''), r.apfOn ? r1(r.APF) : 'n/a', (v.con || {})[al.id] ?? '', r1(r.CON), ...Object.keys(AVW).map(k => r.ix[k] != null ? AVD[k][r.ix[k]] : ''), r1(r.AV), r.FIN ?? '', r.EST, r.c.F, r.c.A, r.c.M, r.c.D]; });
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[t.nome + ' · ' + perLabel(p, true) + ' · ' + CFG.ano], [], head, ...rows]), 'Pauta');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[(CFG.escola ? CFG.escola + ' · ' : '') + 'Educação Física · ' + t.nome + ' · ' + perLabel(p, true) + ' · ' + CFG.ano], [], ['N.º', 'Nome', t.ciclo === 'S' ? 'Classificação (0-20)' : nivelLbl(t), 'Faltas'], ...als.map(al => { const r = calc(t, p, al); return [al.num ?? '', al.nome, t.ciclo === 'S' ? (r.FIN ?? '') : (nivel(t, r.FIN) ?? ''), r.c.F]; })]), 'Pauta escola');
   const all = aulasOf(t.id); const list = all.map((a, i) => ({a, n: i + 1})).filter(x => periodOf(x.a.data) === p);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Lição', 'Data', 'Matérias', 'Sumário', 'Faltas', 'Atrasos', 'Sem material'], ...list.map(({a, n}) => { const v = Object.values(a.presencas || {}); return [n, a.data, (a.materias || []).join(', '), a.sumario || '', v.filter(s => s === 'F').length, v.filter(s => s === 'A').length, v.filter(s => s === 'M').length]; })]), 'Sumários');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['N.º', 'Nome', ...list.map(({a, n}) => 'L' + n + ' ' + a.data.slice(5))], ...als.map(al => [al.num ?? '', al.nome, ...list.map(({a}) => (a.presencas || {})[al.id] || '')]), [], ['Legenda: ' + PS.map(k => k + ' = ' + PSN[k]).join(' · ')]]), 'Presenças');
@@ -1520,6 +1717,345 @@ function sheetFotos(nFail) {
     <div class="list">${FOTOS.map((x, i) => `<div class="foto-row"><img src="${esc(x.d)}" alt=""><div class="who"><span class="fn">${esc(x.name)}</span><select data-in="foto-as" data-i="${i}" aria-label="Aluno da fotografia ${esc(x.name)}"><option value="">— Não associar —</option>${als.map(al => `<option value="${esc(al.id)}"${x.aid === al.id ? ' selected' : ''}>${esc(al.num ?? '')} · ${esc(al.nome)}${S.fotos[al.id] ? ' (já tem)' : ''}</option>`).join('')}</select></div></div>`).join('')}</div>
     <p class="hint">As fotografias são reduzidas para ocupar pouco espaço e ficam guardadas com os dados do caderno (também na cópia de segurança).</p></div>`,
     `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="fotos-go" id="fotos-go">Guardar ${n} fotografias</button>`);
+}
+
+/* ---------- gráficos: SVG desenhado à mão, sem bibliotecas (funciona sem internet) ---------- */
+// Níveis agrupados em 4 patamares ordinais (um só tom, do claro ao escuro), os mesmos da grelha.
+const LVB = [{k:'b0', name:'Abaixo de I (NI, PI)', ls:['NI','PI']}, {k:'b1', name:'Introdução (I, PE)', ls:['I','PE']}, {k:'b2', name:'Elementar (E, PA)', ls:['E','PA']}, {k:'b3', name:'Avançado (A)', ls:['A']}];
+const ZNK = [{k:0, name:'Fora da ZS', color:'var(--st-crit)'}, {k:1, name:'Zona Saudável', color:'var(--st-good)'}, {k:2, name:'Zona Atlética', color:'var(--v1)'}];
+const STK = [{k:'Apto', name:'Apto', color:'var(--st-good)'}, {k:'Não apto', name:'Não apto', color:'var(--st-crit)'}, {k:'Incompleto', name:'Incompleto', color:'var(--v-none)'}];
+let CHW = null; // largura fixa (relatório em A4)
+const chartW = () => CHW || Math.max(280, Math.min(720, document.documentElement.clientWidth) - 62);
+const nf = v => (Math.round(v * 10) / 10).toLocaleString('pt-PT');
+function niceTicks(max) { const step = max <= 5 ? 1 : max <= 10 ? 2 : max <= 25 ? 5 : max <= 50 ? 10 : Math.ceil(max / 50) * 10; const out = []; for (let v = 0; v <= max + 1e-9; v += step) out.push(v); if (out[out.length - 1] < max) out.push(out[out.length - 1] + step); return out; }
+const svg = (W, H, label, body) => `<svg class="viz" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+const legend = keys => `<div class="vleg">${keys.map(k => `<span><i style="background:${k.color}"></i>${esc(k.name)}</span>`).join('')}</div>`;
+const tableView = (head, rows) => `<details class="vtab"><summary>Ver em tabela</summary><div class="tbl-wrap"><table><thead><tr>${head.map((h, i) => `<th${i ? '' : ' class="l"'}>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => `<td${i ? '' : ' class="l"'}>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+const fig = (title, sub, body) => `<figure class="card vfig"><figcaption><b>${esc(title)}</b>${sub ? `<span class="muted small">${esc(sub)}</span>` : ''}</figcaption>${body}</figure>`;
+function topRound(x, y, w, h, r) { r = Math.min(r, w / 2, h); return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`; }
+function rightRound(x, y, w, h, r) { r = Math.min(r, h / 2, w); return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`; }
+
+// Colunas verticais (uma série): contagens, percentagens.
+function chColumns(data, o = {}) {
+  const W = chartW(), H = o.h || 190, L = 34, B = 24, T = 12, iw = W - L - 6, ih = H - B - T;
+  const max = o.max || Math.max(1, ...data.map(d => d.v || 0)), ticks = niceTicks(max), top = ticks[ticks.length - 1];
+  const bw = iw / Math.max(1, data.length), w = Math.max(3, Math.min(44, bw - Math.max(2, bw * .28))), every = Math.ceil(data.length / Math.max(1, Math.floor(iw / 34)));
+  const y = v => T + ih - v / top * ih;
+  let b = ticks.map(t => `<line x1="${L}" x2="${W - 4}" y1="${y(t)}" y2="${y(t)}" class="vgrid"/><text x="${L - 6}" y="${y(t) + 4}" class="vax" text-anchor="end">${t}${o.unit || ''}</text>`).join('');
+  data.forEach((d, i) => {
+    const cx = L + bw * i + bw / 2, h = (d.v || 0) / top * ih;
+    if (h > 0) b += `<path d="${topRound(cx - w / 2, y(d.v), w, h, 4)}" fill="var(--v1)"/>`;
+    b += `<rect x="${L + bw * i}" y="${T}" width="${bw}" height="${ih}" fill="transparent" data-tip="${esc(d.tip || d.label + ': ' + d.v)}"/>`;
+    if (i % every === 0) b += `<text x="${cx}" y="${H - 7}" class="vax" text-anchor="middle">${esc(d.label)}</text>`;
+  });
+  return svg(W, H, o.label || '', b + `<line x1="${L}" x2="${W - 4}" y1="${T + ih}" y2="${T + ih}" class="vbase"/>`);
+}
+// Barras horizontais 0–20 com a linha dos 10 (positivo).
+function chBars(rows, o = {}) {
+  const W = chartW(), lw = Math.min(140, W * .34), max = o.max || 20, rh = 26, gap = 10, H = rows.length * (rh + gap) + 20, bw = W - lw - 44;
+  const x = v => lw + v / max * bw;
+  let b = '';
+  [0, 5, 10, 15, 20].filter(v => v <= max).forEach(v => { b += `<line x1="${x(v)}" x2="${x(v)}" y1="0" y2="${H - 18}" class="${v === (o.ref ?? 10) ? 'vref' : 'vgrid'}"/><text x="${x(v)}" y="${H - 4}" class="vax" text-anchor="middle">${v}</text>`; });
+  rows.forEach((r, i) => {
+    const yy = i * (rh + gap) + 4;
+    b += `<text x="${lw - 8}" y="${yy + rh / 2 + 4}" class="vlab" text-anchor="end">${esc(r.label)}</text>`;
+    if (r.v != null) b += `<path d="${rightRound(x(0), yy, Math.max(1, x(r.v) - x(0)), rh, 4)}" fill="${r.color || 'var(--v1)'}"/><text x="${x(r.v) + 6}" y="${yy + rh / 2 + 4}" class="vval">${nf(r.v)}</text>`;
+    else b += `<text x="${x(0) + 6}" y="${yy + rh / 2 + 4}" class="vax">sem dados</text>`;
+    b += `<rect x="0" y="${yy - 4}" width="${W}" height="${rh + 8}" fill="transparent" data-tip="${esc(r.tip || r.label + ': ' + (r.v == null ? 'sem dados' : nf(r.v)))}"/>`;
+  });
+  return svg(W, H, o.label || '', b);
+}
+// Barras empilhadas a 100 % (composição): níveis, zonas, aptos.
+function chStack(rows, keys, o = {}) {
+  const W = chartW(), lw = Math.min(150, W * .36), bw = W - lw - 6, rh = 24, gap = 12, H = rows.length * (rh + gap);
+  let b = '<defs>';
+  rows.forEach((r, i) => { b += `<clipPath id="cp${o.id || 's'}${i}"><rect x="${lw}" y="${i * (rh + gap) + 2}" width="${bw}" height="${rh}" rx="4"/></clipPath>`; });
+  b += '</defs>';
+  rows.forEach((r, i) => {
+    const yy = i * (rh + gap) + 2, tot = keys.reduce((s, k) => s + (r.c[k.k] || 0), 0);
+    b += `<text x="${lw - 8}" y="${yy + rh / 2 + 4}" class="vlab" text-anchor="end">${esc(r.label)}</text>`;
+    if (!tot) { b += `<rect x="${lw}" y="${yy}" width="${bw}" height="${rh}" rx="4" fill="var(--v-none)" data-tip="${esc(r.label)}: sem dados"/>`; return; }
+    let xx = lw; const segs = keys.filter(k => r.c[k.k]);
+    b += `<g clip-path="url(#cp${o.id || 's'}${i})">`;
+    segs.forEach((k, j) => { const w = r.c[k.k] / tot * bw; b += `<rect x="${xx}" y="${yy}" width="${Math.max(0.5, w - (j < segs.length - 1 ? 2 : 0))}" height="${rh}" fill="${k.color}" data-tip="${esc(`${r.label} · ${k.name}: ${r.c[k.k]} (${Math.round(r.c[k.k] / tot * 100)} %)`)}"/>`; xx += w; });
+    b += '</g>';
+  });
+  return svg(W, H, o.label || '', b);
+}
+// Linhas ao longo dos períodos, escala 0–20, linha dos 10.
+function chLine(xl, series, o = {}) {
+  const W = chartW(), H = o.h || 200, L = 30, R = series.length <= 4 ? 64 : 14, T = 12, B = 24, iw = W - L - R, ih = H - T - B, max = o.max || 20;
+  const x = i => L + (xl.length === 1 ? iw / 2 : i / (xl.length - 1) * iw), y = v => T + ih - v / max * ih;
+  let b = niceTicks(max).map(t => `<line x1="${L}" x2="${L + iw}" y1="${y(t)}" y2="${y(t)}" class="${t === (o.ref ?? 10) ? 'vref' : 'vgrid'}"/><text x="${L - 6}" y="${y(t) + 4}" class="vax" text-anchor="end">${t}</text>`).join('');
+  xl.forEach((l, i) => { b += `<text x="${x(i)}" y="${H - 6}" class="vax" text-anchor="middle">${esc(l)}</text>`; });
+  series.forEach(s => {
+    const pts = s.vals.map((v, i) => v == null ? null : [x(i), y(v), v, i]);
+    let d = '', pen = false; pts.forEach(p => { if (!p) { pen = false; return; } d += (pen ? 'L' : 'M') + p[0] + ',' + p[1]; pen = true; });
+    b += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    pts.forEach(p => { if (p) b += `<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${s.color}" stroke="var(--surface)" stroke-width="2"/><circle cx="${p[0]}" cy="${p[1]}" r="14" fill="transparent" data-tip="${esc(`${s.name} · ${xl[p[3]]}: ${nf(p[2])}`)}"/>`; });
+    const last = pts.filter(Boolean).pop(); if (last && series.length <= 4) b += `<text x="${last[0] + 9}" y="${last[1] + 4}" class="vlab">${esc(s.name)}</text>`;
+  });
+  return svg(W, H, o.label || '', b);
+}
+// Dica ao passar o rato ou ao tocar em qualquer marca com data-tip.
+(function vizTips() {
+  const tip = () => $('#vtip');
+  const show = (el, x, y) => { const t = tip(); t.textContent = el.getAttribute('data-tip'); t.hidden = false; const w = t.offsetWidth, h = t.offsetHeight; t.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x - w / 2)) + 'px'; t.style.top = Math.max(8, y - h - 14) + 'px'; };
+  document.addEventListener('pointermove', e => { const el = e.target.closest && e.target.closest('svg.viz [data-tip]'); if (el && e.pointerType === 'mouse') show(el, e.clientX, e.clientY); else if (e.pointerType === 'mouse') tip().hidden = true; });
+  document.addEventListener('pointerdown', e => { const el = e.target.closest && e.target.closest('svg.viz [data-tip]'); if (el && e.pointerType !== 'mouse') { show(el, e.clientX, e.clientY); clearTimeout(vizTips.t); vizTips.t = setTimeout(() => tip().hidden = true, 2600); } else if (!el) tip().hidden = true; });
+})();
+
+/* ---------- classificação para a escola ---------- */
+// 0–20 → nível 1–5 (2.º e 3.º ciclos) ou menção (1.º ciclo); limites editáveis em Mais.
+function nivel(t, fin) {
+  if (fin == null || t.ciclo === 'S') return null;
+  const c = CFG.niv || [4, 10, 14, 18]; const n = fin < c[0] ? 1 : fin < c[1] ? 2 : fin < c[2] ? 3 : fin < c[3] ? 4 : 5;
+  return t.ciclo === '1' ? ['Insuficiente', 'Insuficiente', 'Suficiente', 'Bom', 'Muito Bom'][n - 1] : n;
+}
+const nivelLbl = t => t.ciclo === '1' ? 'Menção' : 'Nível';
+
+/* ---------- gráficos da turma (Pauta → Gráficos) ---------- */
+function vGraficos(t) {
+  const p = UI.p, als = alunosOf(t), rows = als.map(al => ({al, r:calc(t, p, al)})), ms = matsOf(t, p), v = avalOf(t.id, p);
+  if (!als.length) return `<div class="card empty"><h3>Sem alunos</h3></div>`;
+  let h = '';
+  // 1. Classificações
+  if (t.ciclo === 'S') {
+    const bins = [['0–4', 0, 4], ['5–9', 5, 9], ['10–11', 10, 11], ['12–13', 12, 13], ['14–15', 14, 15], ['16–17', 16, 17], ['18–20', 18, 20]];
+    const d = bins.map(([l, a, b]) => { const n = rows.filter(x => x.r.FIN != null && x.r.FIN >= a && x.r.FIN <= b).length; return {label:l, v:n, tip:`${l} valores: ${n} ${n === 1 ? 'aluno' : 'alunos'}`}; });
+    h += fig('Classificações finais', `${rows.filter(x => x.r.FIN != null).length} de ${rows.length} alunos com classificação`, chColumns(d, {label:'Distribuição das classificações finais'}) + tableView(['Valores', 'Alunos'], d.map(x => [x.label, x.v])));
+  } else {
+    const ks = t.ciclo === '1' ? ['Insuficiente', 'Suficiente', 'Bom', 'Muito Bom'] : [1, 2, 3, 4, 5];
+    const d = ks.map(k => { const n = rows.filter(x => nivel(t, x.r.FIN) === k).length; return {label:String(k), v:n, tip:`${nivelLbl(t)} ${k}: ${n} ${n === 1 ? 'aluno' : 'alunos'}`}; });
+    h += fig(t.ciclo === '1' ? 'Menções' : 'Níveis', `${rows.filter(x => x.r.FIN != null).length} de ${rows.length} alunos com classificação`, chColumns(d, {label:'Distribuição dos níveis'}) + tableView([nivelLbl(t), 'Alunos'], d.map(x => [x.label, x.v])));
+  }
+  // 2. Estado
+  const st = {}; rows.forEach(x => st[x.r.EST] = (st[x.r.EST] || 0) + 1);
+  h += fig('Situação da turma', perLabel(p, true), chStack([{label:'Turma', c:st}], STK, {id:'st'}) + legend(STK.map(k => ({name:k.name + ' · ' + (st[k.k] || 0), color:k.color}))));
+  // 3. Médias por domínio
+  const mean = k => { const xs = rows.map(x => x.r[k]).filter(x => x != null); return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null; };
+  const dm = [['Matérias (AF)', 'AF'], ['Aptidão física', 'APF'], ['Conhecimentos', 'CON'], ['Atitudes', 'AV'], ['Final', 'FIN']].map(([l, k]) => ({label:l, v:mean(k)}));
+  h += fig('Médias da turma por domínio', 'Escala 0–20; a linha marca os 10', chBars(dm, {label:'Médias por domínio'}) + tableView(['Domínio', 'Média'], dm.map(x => [x.label, x.v == null ? '—' : nf(x.v)])));
+  // 4. Níveis por matéria
+  if (ms.length) {
+    const keys = LVB.map((b, i) => ({k:b.k, name:b.name, color:`var(--q${i + 1})`}));
+    const rs = ms.map(m => { const c = {}; rows.forEach(({al}) => { const l = (lvOf(v, al.id, m) || {}).l; const b = LVB.find(x => x.ls.includes(l)); if (b) c[b.k] = (c[b.k] || 0) + 1; }); return {label:m.replace(/\s*\(.*\)$/, ''), c}; });
+    h += fig('Níveis por matéria', 'Quantos alunos em cada patamar', chStack(rs, keys, {id:'lv'}) + legend(keys) + tableView(['Matéria', ...LVB.map(b => b.name)], rs.map(r => [r.label, ...LVB.map(b => r.c[b.k] || 0)])));
+  }
+  // 5. FITescola
+  const fr = FIT.map(f => { const c = {}; rows.forEach(({r}) => { const z = r.zones[f.k]; if (z != null) c[z] = (c[z] || 0) + 1; }); return {label:f.n, c}; }).filter(r => Object.keys(r.c).length);
+  if (fr.length) h += fig('Aptidão física (FITescola)', 'Zona de cada aluno por teste', chStack(fr, ZNK, {id:'fz'}) + legend(ZNK) + tableView(['Teste', ...ZNK.map(z => z.name)], fr.map(r => [r.label, ...ZNK.map(z => r.c[z.k] || 0)])));
+  // 6. Assiduidade por aula
+  const aul = aulasOf(t.id).map((a, i) => ({a, n:i + 1})).filter(x => periodOf(x.a.data) === p);
+  if (aul.length) {
+    const d = aul.map(({a, n}) => { const ps = Object.values(a.presencas || {}), tot = ps.length, pr = ps.filter(s => s !== 'F').length; return {label:'L' + n, v:tot ? Math.round(pr / tot * 100) : 0, tip:`Lição ${n} (${fmtDate(a.data)}): ${pr}/${tot} presentes`}; });
+    h += fig('Assiduidade por aula', 'Percentagem de alunos presentes', chColumns(d, {max:100, unit:'%', label:'Assiduidade por aula'}) + tableView(['Lição', '% presentes'], d.map(x => [x.label, x.v + ' %'])));
+  }
+  return h;
+}
+
+/* ---------- relatório individual (imprimir / PDF) ---------- */
+function relHtml(t, p, al) {
+  const r = calc(t, p, al), v = avalOf(t.id, p), R = REG[al.regime] || REG.Normal, nv = nivel(t, r.FIN);
+  const aul = aulasOf(t.id).filter(a => periodOf(a.data) === p).length;
+  const ph = S.fotos[al.id] ? `<img src="${esc(S.fotos[al.id].d)}" alt="">` : `<span class="rph">${esc((al.nome || '?')[0])}</span>`;
+  let h = `<section class="rel"><header class="rel-h"><div><div class="rel-k">Educação Física · Relatório de avaliação</div><div class="rel-s">${esc(CFG.escola || 'Escola')} · Ano letivo ${esc(CFG.ano)} · ${esc(perLabel(p, true))}</div></div><div class="rel-s">${esc(fmtDate(today(), {day:'numeric', month:'long', year:'numeric'}))}</div></header>
+    <div class="rel-id">${ph}<div><h1>${esc(al.nome)}</h1><div class="rel-s">N.º ${esc(al.num ?? '—')} · Turma ${esc(t.nome)} · ${esc(CICLOS[t.ciclo])}${al.regime && al.regime !== 'Normal' ? ' · ' + esc(al.regime) : ''}</div></div>
+    <div class="rel-fin ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : ''}"><b>${r.FIN ?? '—'}</b><span>${nv != null ? esc(nivelLbl(t) + ' ' + nv) : 'Classificação'}</span><span>${esc(r.EST)}</span></div></div>`;
+  h += `<h2>Classificação por domínio</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Peso</th><th>Classificação (0–20)</th></tr></thead><tbody>${[['Atividades físicas (matérias)', R.af, r.AF, r.afOn], ['Aptidão física', R.apf, r.APF, r.apfOn], ['Conhecimentos', R.con, r.CON, true], ['Atitudes e valores', R.av, r.AV, true]].map(([n, w, x, on]) => `<tr><td class="l">${n}</td><td>${Math.round(w * 100)} %</td><td>${on ? (x == null ? '—' : nf(x)) : 'Não aplicável'}</td></tr>`).join('')}</tbody></table>`;
+  const lv = Object.entries(r.lv);
+  if (r.afOn) h += `<h2>Matérias: o que domina e onde melhorar</h2>` + (lv.length ? lv.map(([m, l]) => `<div class="rel-m"><div class="rel-mh"><b>${esc(m)}</b><span class="rel-sc">${LV.map(x => `<i class="${x === l ? 'on' : ''}">${x}</i>`).join('')}</span><span>${esc(LVN[l])}</span></div><div class="dom">${lvSummary(t.ciclo, m, l) || 'Sem descritivo neste ciclo.'}</div></div>`).join('') : '<p class="rel-s">Sem matérias avaliadas neste período.</p>');
+  if (r.apfOn) { const fv = (v.fit || {})[al.id] || {}; h += `<h2>Aptidão física (FITescola)</h2><table class="rel-t"><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), val = fv[f.k]; if (z == null && (val == null || val === '')) return ''; return `<tr><td class="l">${esc(f.n)}</td><td>${f.bool ? (val === 'S' ? 'Sim' : val === 'N' ? 'Não' : '—') : val == null || val === '' ? '—' : esc(String(val).replace('.', ',') + ' ' + f.u)}</td><td>${z != null ? esc(ZN[z]) : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('') || '<tr><td class="l" colspan="4">Sem testes registados.</td></tr>'}</tbody></table>`; }
+  h += `<h2>Atitudes e valores</h2><table class="rel-t"><tbody>${Object.keys(AVW).map(k => `<tr><td class="l" style="width:28%"><b>${esc(AVN[k])}</b></td><td class="l">${r.ix[k] != null ? esc(AVD[k][r.ix[k]]) : '—'}</td></tr>`).join('')}</tbody></table>`;
+  h += `<h2>Assiduidade</h2><div class="rel-as">${[['Aulas', aul], ['Faltas', r.c.F], ['Atrasos', r.c.A], ['Sem material', r.c.M], ['Dispensas da prática', r.c.D]].map(([n, x]) => `<div><b>${x}</b><span>${n}</span></div>`).join('')}</div>`;
+  const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1).filter(i => i <= p);
+  if (ps.length > 1) { const cs = ps.map(i => calc(t, i, al)); CHW = 640; h += `<h2>Evolução</h2>` + chLine(ps.map(i => perLabel(i)), [{name:'Final', color:'var(--v1)', vals:cs.map(c => c.FIN)}, {name:'Matérias', color:'var(--v2)', vals:cs.map(c => c.AF)}, {name:'Apt. física', color:'var(--v3)', vals:cs.map(c => c.APF)}, {name:'Atitudes', color:'var(--v7)', vals:cs.map(c => c.AV)}], {h:170, label:'Evolução por período'}); CHW = null; }
+  h += `<h2>Observações</h2><div class="rel-obs">${(v.obs || {})[al.id] ? esc(v.obs[al.id]).replace(/\n/g, '<br>') : '&nbsp;'}</div>
+    <div class="rel-sig"><div><span>O professor${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Tomei conhecimento (Encarregado de Educação)</span></div></div></section>`;
+  return h;
+}
+function printRel(t, p, list) {
+  $('#print').innerHTML = `<div class="pbar noprint"><b>${list.length === 1 ? esc(list[0].nome) : list.length + ' relatórios'}</b><span class="sp"></span><button class="btn primary" data-a="print-go">Imprimir / Guardar PDF</button><button class="btn" data-a="print-close">Fechar</button></div>` + list.map(al => relHtml(t, p, al)).join('');
+  document.body.classList.add('printing'); window.scrollTo(0, 0);
+}
+
+/* ---------- ferramentas da aula ---------- */
+let TOOL = null;
+function audio() { try { TOOL.ac = TOOL.ac || new (window.AudioContext || window.webkitAudioContext)(); TOOL.ac.resume && TOOL.ac.resume(); } catch (e) {} }
+function beep(n = 1, f = 880) {
+  const ac = TOOL && TOOL.ac; if (!ac) return;
+  for (let i = 0; i < n; i++) { const o = ac.createOscillator(), g = ac.createGain(), t0 = ac.currentTime + i * .2; o.frequency.value = f; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.6, t0 + .01); g.gain.exponentialRampToValueAtTime(.0001, t0 + .15); o.start(t0); o.stop(t0 + .17); }
+}
+async function wake(on) { try { if (on && navigator.wakeLock) TOOL.wl = await navigator.wakeLock.request('screen'); else if (TOOL && TOOL.wl) { TOOL.wl.release(); TOOL.wl = null; } } catch (e) {} }
+function stopTool() { if (!TOOL) return; clearInterval(TOOL.iv); wake(false); try { TOOL.ac && TOOL.ac.close(); } catch (e) {} TOOL = null; }
+function sheetTools() {
+  openSheet('Ferramentas da aula', `<div class="list">${[
+    ['tool-vai', 'Vaivém (FITescola)', 'Sinais sonoros por percurso e por nível; toque no aluno quando para e o resultado entra na avaliação.'],
+    ['tool-cron', 'Cronómetro', 'Velocidade 40 m e agilidade 4×10 m: um aluno atrás do outro, os tempos entram na avaliação.'],
+    ['tool-cad', 'Cadência', 'Ritmo de 1 repetição a cada 3 segundos para abdominais e flexões, com contagem.'],
+    ['tool-eq', 'Equipas', 'Aleatórias ou equilibradas pelo nível, misturando rapazes e raparigas.']
+  ].map(([a, n, d]) => `<button class="li" data-a="${a}"><span class="who"><div class="nm">${n}</div><div class="meta" style="white-space:normal">${d}</div></span><span class="end muted">›</span></button>`).join('')}</div>`);
+}
+// Vaivém 20 m: nível 1 a 8,0 km/h, nível 2 a 9,0 km/h e +0,5 km/h por nível; cerca de 1 minuto por nível.
+function pacer(n) { const kmh = n === 1 ? 8 : 8 + .5 * n, lap = 20 / (kmh / 3.6); return {kmh, lap, laps:Math.ceil(60 / lap)}; }
+function pacerAt(ms) {
+  let s = ms / 1000, lvl = 1, total = 0;
+  for (;;) { const P = pacer(lvl), d = P.lap * P.laps; if (s < d) { const k = Math.floor(s / P.lap); return {lvl, lap:k + 1, total:total + k, P, frac:(s - k * P.lap) / P.lap}; } s -= d; total += P.laps; lvl++; if (lvl > 21) return {lvl:21, lap:1, total, P, frac:0, end:true}; }
+}
+function sheetVai() {
+  const t = turma(); stopTool(); TOOL = {kind:'vai', el:0, run:false, res:{}, last:0, lastLvl:1};
+  const als = alunosOf(t).filter(al => (REG[al.regime] || REG.Normal).apf > 0);
+  openSheet('Vaivém', `<div class="tool"><div class="tbig"><span id="tv-l">Nível 1</span><b id="tv-t">0</b><span id="tv-p">percurso 1 · 8,0 km/h</span><div class="tprog"><i id="tv-b"></i></div></div>
+    <div class="btn-row"><button class="btn primary" data-a="tv-go" id="tv-go">Iniciar</button><button class="btn" data-a="tv-reset">Recomeçar</button></div>
+    <p class="hint">Um sinal a cada percurso, três sinais ao mudar de nível. Toque no aluno quando ele parar (à segunda falha): fica com os percursos completos até esse momento. Toque de novo para anular. Protocolo aproximado ao da FITescola: confirme com o áudio oficial quando puder.</p>
+    <div class="tgrid">${als.map(al => `<button class="tst" data-a="tv-st" data-aid="${esc(al.id)}">${avatar(al, 'sm')}<span class="nm">${esc(al.nome.split(' ')[0])} ${esc(al.nome.split(' ').slice(-1)[0] !== al.nome.split(' ')[0] ? al.nome.split(' ').slice(-1)[0][0] + '.' : '')}</span><b id="tvs-${esc(al.id)}"></b></button>`).join('')}</div></div>`,
+    `<button class="btn primary" data-a="tv-save" id="tv-save">Guardar resultados</button>`);
+}
+function tvTick() {
+  const T = TOOL; if (!T || T.kind !== 'vai') return;
+  const ms = T.el + (T.run ? performance.now() - T.t0 : 0), s = pacerAt(ms);
+  if (T.run && s.total > T.last) { beep(s.lvl > T.lastLvl ? 3 : 1, s.lvl > T.lastLvl ? 1046 : 880); T.last = s.total; T.lastLvl = s.lvl; }
+  const q = id => document.getElementById(id); if (!q('tv-t')) return;
+  q('tv-l').textContent = 'Nível ' + s.lvl; q('tv-t').textContent = s.total; q('tv-p').textContent = `percurso ${s.lap} de ${s.P.laps} · ${s.P.kmh.toLocaleString('pt-PT', {minimumFractionDigits:1})} km/h`; q('tv-b').style.width = Math.round(s.frac * 100) + '%';
+}
+function sheetCron() {
+  const t = turma(); stopTool(); TOOL = {kind:'cron', test:'vel', i:0, run:false, res:{}};
+  TOOL.q = alunosOf(t).filter(al => (REG[al.regime] || REG.Normal).apf > 0).map(al => al.id);
+  cronRender(true);
+}
+function cronRender(open) {
+  const T = TOOL, t = turma(), al = id => (t.alunos || []).find(x => x.id === id), cur = al(T.q[T.i]);
+  const body = `<div class="tool"><div class="seg block">${[['vel', 'Velocidade 40 m'], ['agil', 'Agilidade 4×10 m']].map(([k, n]) => `<button data-a="tc-test" data-k="${k}" class="${T.test === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+    <div class="tbig"><span>${cur ? esc(cur.num + ' · ' + cur.nome) : 'Todos os alunos têm tempo'}</span><b id="tc-t">0,00</b><span>segundos</span></div>
+    <div class="btn-row"><button class="btn primary" data-a="tc-go" id="tc-go"${cur ? '' : ' disabled'}>${T.run ? 'Chegada' : 'Partida'}</button><button class="btn" data-a="tc-skip">Saltar aluno</button></div>
+    <div class="list">${T.q.map((id, i) => { const a = al(id); return a ? `<button class="li${i === T.i ? ' on' : ''}" data-a="tc-sel" data-i="${i}">${avatar(a, 'sm')}<span class="who"><div class="nm">${esc(a.num + ' · ' + a.nome)}</div></span><span class="end"><b>${T.res[id] != null ? nf2(T.res[id]) + ' s' : ''}</b></span></button>` : ''; }).join('')}</div></div>`;
+  const foot = `<button class="btn primary" data-a="tc-save">Guardar ${Object.keys(T.res).length} tempos</button>`;
+  if (open) openSheet('Cronómetro', body, foot); else updSheet(body, foot);
+}
+const nf2 = v => v.toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2});
+function sheetCad() {
+  stopTool(); TOOL = {kind:'cad', n:0, run:false, per:3000};
+  openSheet('Cadência', `<div class="tool"><div class="tbig"><span>Repetições</span><b id="cd-n">0</b><span id="cd-s">1 repetição a cada 3 segundos</span><div class="tprog"><i id="cd-b"></i></div></div>
+    <div class="btn-row"><button class="btn primary" data-a="cd-go" id="cd-go">Iniciar</button><button class="btn" data-a="cd-reset">Recomeçar</button></div>
+    <p class="hint">Sinal grave para descer, agudo para subir. Abdominais: máximo de 75 repetições. Flexões de braços: até o aluno não conseguir manter o ritmo.</p></div>`);
+}
+
+/* ---------- equipas ---------- */
+function sheetEquipas() {
+  const t = turma(), ms = matsOf(t, UI.p), aHoje = aulasOf(t.id).filter(a => a.data === today()).pop();
+  UI.eq = Object.assign({n:2, crit:'rand', mix:true, pres:!!aHoje}, UI.eq || {});
+  const E = UI.eq; E.res = null;
+  openSheet('Equipas', `<div class="form">
+    <div class="grid2"><div class="field"><label for="eq-n">Número de equipas</label><select id="eq-n" data-in="eq" data-k="n">${[2, 3, 4, 5, 6, 7, 8].map(n => `<option${E.n === n ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+    <div class="field"><label for="eq-c">Critério</label><select id="eq-c" data-in="eq" data-k="crit"><option value="rand"${E.crit === 'rand' ? ' selected' : ''}>Aleatório</option><option value="fin"${E.crit === 'fin' ? ' selected' : ''}>Equilibrado pela nota final</option>${ms.map(m => `<option value="m:${esc(m)}"${E.crit === 'm:' + m ? ' selected' : ''}>Equilibrado pelo nível em ${esc(m)}</option>`).join('')}</select></div></div>
+    <label class="pin"><input type="checkbox" data-in="eq" data-k="mix"${E.mix ? ' checked' : ''}> Misturar rapazes e raparigas por igual</label>
+    ${aHoje ? `<label class="pin"><input type="checkbox" data-in="eq" data-k="pres"${E.pres ? ' checked' : ''}> Deixar de fora quem faltou à aula de hoje</label>` : ''}
+    <div id="eq-out">${eqHtml()}</div></div>`, `<button class="btn" data-a="eq-copy">Copiar</button><button class="btn primary" data-a="eq-go">Baralhar de novo</button>`);
+}
+function eqMake() {
+  const t = turma(), E = UI.eq, aHoje = aulasOf(t.id).filter(a => a.data === today()).pop();
+  let als = alunosOf(t); if (E.pres && aHoje) als = als.filter(al => (aHoje.presencas || {})[al.id] !== 'F');
+  const v = avalOf(t.id, UI.p), score = al => { if (E.crit === 'fin') { const r = calc(t, UI.p, al); return r.FIN ?? r.AF ?? 10; } if (E.crit.startsWith('m:')) { const x = lvOf(v, al.id, E.crit.slice(2)); return x ? LVP[x.l] : 11; } return 0; };
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const groups = E.mix ? [als.filter(a => a.sexo === 'F'), als.filter(a => a.sexo === 'M'), als.filter(a => a.sexo !== 'F' && a.sexo !== 'M')] : [als];
+  const teams = Array.from({length:E.n}, () => ({al:[], sum:0, g:[0, 0, 0]})), avg = tm => tm.al.length ? tm.sum / tm.al.length : 0;
+  // Do melhor para o pior (ou baralhado), cada aluno vai para a equipa com menos alunos do seu grupo (sexo),
+  // depois com menos alunos e, se equilibrado, com a soma mais baixa: equipas parecidas em número, sexo e nível.
+  groups.forEach((g, gi) => { g = shuffle(g.slice()); if (E.crit !== 'rand') g.sort((a, b) => score(b) - score(a));
+    g.forEach(al => { const tm = shuffle(teams.slice()).sort((x, y) => x.g[gi] - y.g[gi] || x.al.length - y.al.length || (E.crit === 'rand' ? 0 : avg(x) - avg(y)))[0]; tm.al.push(al); tm.g[gi]++; tm.sum += score(al); }); });
+  // Afinação: trocar alunos do mesmo sexo entre equipas enquanto a diferença entre a melhor e a pior média diminuir.
+  if (E.crit !== 'rand') {
+    const gOf = al => E.mix ? (al.sexo === 'F' ? 0 : al.sexo === 'M' ? 1 : 2) : 0, spread = () => { const a = teams.map(avg); return Math.max(...a) - Math.min(...a); };
+    for (let it = 0; it < 100; it++) {
+      const cur = spread(); let best = null;
+      teams.forEach((A, ai) => teams.forEach((B, bi) => { if (bi <= ai) return; A.al.forEach((x, i) => B.al.forEach((y, j) => {
+        if (gOf(x) !== gOf(y)) return; const d = score(y) - score(x); A.al[i] = y; B.al[j] = x; A.sum += d; B.sum -= d;
+        const sp = spread(); if (!best || sp < best.sp) best = {sp, A, B, i, j, d};
+        A.al[i] = x; B.al[j] = y; A.sum -= d; B.sum += d; })); }));
+      if (!best || best.sp >= cur - 1e-9) break;
+      const {A, B, i, j, d} = best, x = A.al[i]; A.al[i] = B.al[j]; B.al[j] = x; A.sum += d; B.sum -= d;
+    }
+  }
+  E.res = teams.map(tm => tm.al.map(al => al.id)); E.sc = E.crit !== 'rand' ? teams.map(tm => tm.al.length ? tm.sum / tm.al.length : null) : null;
+}
+function eqHtml() {
+  const t = turma(), E = UI.eq; if (!E.res || E.res.length !== E.n) eqMake();
+  const al = id => (t.alunos || []).find(x => x.id === id);
+  return `<div class="eqs">${E.res.map((ids, i) => `<div class="eq"><div class="eq-h"><i style="background:var(--v${i + 1})"></i><b>Equipa ${i + 1}</b><span class="muted small">${ids.length} alunos${E.sc && E.sc[i] != null ? ' · média ' + (E.crit.startsWith('m:') ? LV.reduce((b, x) => Math.abs(LVP[x] - E.sc[i]) < Math.abs(LVP[b] - E.sc[i]) ? x : b, 'NI') : nf(E.sc[i])) : ''}</span></div>${ids.map(id => { const a = al(id); return a ? `<div class="eq-a">${avatar(a, 'sm')}<span>${esc(a.nome)}</span></div>` : ''; }).join('')}</div>`).join('')}</div>`;
+}
+
+/* ---------- alertas ---------- */
+function alertsOf(t, p) {
+  const out = [], als = alunosOf(t), v = avalOf(t.id, p), rows = als.map(al => ({al, r:calc(t, p, al)}));
+  const fal = rows.filter(x => x.r.c.F >= 3);
+  if (fal.length) out.push({k:'bad', txt:`${fal.length} ${fal.length === 1 ? 'aluno tem' : 'alunos têm'} 3 ou mais faltas: ${fal.map(x => x.al.nome.split(' ')[0] + ' (' + x.r.c.F + ')').join(', ')}.`, a:'alunos'});
+  const fim = CFG.per[p - 1].fim, dias = fim ? Math.round((new Date(fim + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 864e5) : 99, inc = rows.filter(x => x.r.EST === 'Incompleto').length;
+  if (dias >= 0 && dias <= 21 && inc) out.push({k:'warn', txt:`Faltam ${dias} dias para o fim do ${perLabel(p, true)} e ${inc} ${inc === 1 ? 'aluno tem' : 'alunos têm'} a avaliação incompleta.`, a:'todo'});
+  matsOf(t, p).forEach(m => { const n = als.filter(al => (REG[al.regime] || REG.Normal).af > 0 && !lvOf(v, al.id, m)).length; const dadas = aulasOf(t.id).filter(a => periodOf(a.data) === p && (a.materias || []).includes(m)).length; if (n && dadas >= 4) out.push({k:'warn', txt:`${m}: ${dadas} aulas dadas e ${n} ${n === 1 ? 'aluno ainda sem nível' : 'alunos ainda sem nível'}.`, a:'todo'}); });
+  const np = rows.filter(x => x.r.EST === 'Não apto'); if (np.length) out.push({k:'bad', txt:`Previsão de Não apto: ${np.map(x => x.al.nome.split(' ')[0]).join(', ')}.`, a:'pauta'});
+  if (p > 1) { const dn = als.filter(al => { const a = calc(t, p - 1, al).zones.vaivem, b = calc(t, p, al).zones.vaivem; return a != null && b != null && b < a; }); if (dn.length) out.push({k:'warn', txt:`Vaivém: ${dn.length} ${dn.length === 1 ? 'aluno desceu' : 'alunos desceram'} de zona face ao período anterior (${dn.map(a => a.nome.split(' ')[0]).join(', ')}).`, a:'fit'}); }
+  const sd = als.filter(al => !al.sexo || !al.nasc).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou data de nascimento: necessários para as zonas do FITescola.`, a:'alunos'});
+  return out;
+}
+
+/* ---------- planeamento por unidades didáticas ---------- */
+const planOf = (t, p) => ((t.plano || {})[p] || []);
+const dadasOf = (t, p, m) => aulasOf(t.id).filter(a => periodOf(a.data) === p && (a.materias || []).includes(m)).length;
+function udAtual(t, p) { const u = planOf(t, p).find(u => dadasOf(t, p, u.m) < u.n); return u ? u.m : null; }
+function vPlano(t) {
+  const pl = planOf(t, UI.p);
+  if (!pl.length) return `<button class="card" data-a="plano-edit" style="text-align:left"><b>Planear o ${esc(perLabel(UI.p, true))}</b><p class="hint" style="margin:4px 0 0">Indique as unidades didáticas e o número de aulas de cada uma: as aulas novas já vêm com a matéria certa e vê aqui o que falta dar.</p></button>`;
+  const rows = pl.map(u => { const d = dadasOf(t, UI.p, u.m); return {u, d}; });
+  const tot = rows.reduce((s, x) => s + Math.min(x.d, x.u.n), 0), prev = rows.reduce((s, x) => s + x.u.n, 0);
+  return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><button class="link" data-a="plano-edit">Editar</button></div>
+    <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
+    <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p></div>`;
+}
+function sheetPlano() {
+  const t = turma(); UI.draft = clone(planOf(t, UI.p));
+  planoRender(true);
+}
+function planoRender(open) {
+  const t = turma(), d = UI.draft, ms = MATS[t.ciclo] || GR;
+  const body = `<div class="form"><p class="hint">Pela ordem em que vai dar as matérias. Uma matéria pode repetir-se (ex.: duas unidades de Voleibol).</p>
+    ${d.map((u, i) => `<div class="pl-ed"><select data-in="pl" data-i="${i}" data-k="m" aria-label="Matéria">${ms.map(m => `<option${u.m === m ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select><input type="number" min="1" max="60" inputmode="numeric" data-in="pl" data-i="${i}" data-k="n" value="${u.n}" aria-label="Aulas previstas"><button class="icon-btn" data-a="pl-del" data-i="${i}" aria-label="Remover">×</button></div>`).join('') || '<p class="muted">Ainda sem unidades.</p>'}
+    <button class="btn" data-a="pl-add">+ Unidade didática</button></div>`;
+  const foot = `<button class="btn primary" data-a="pl-save">Guardar plano</button>`;
+  if (open) openSheet('Plano do ' + perLabel(UI.p, true), body, foot); else updSheet(body, foot);
+}
+
+/* ---------- horário semanal ---------- */
+const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+function hojeSlots() { const d = new Date().getDay(); return Object.values(S.turmas).flatMap(t => (t.horario || []).filter(h => +h.d === d && h.h).map(h => ({t, h:h.h}))).sort((a, b) => a.h.localeCompare(b.h)); }
+function vHoje() {
+  const sl = hojeSlots(); if (!sl.length) return '';
+  const now = new Date(), hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  return `<div class="card hoje"><span class="eyebrow">Hoje · ${esc(fmtDate(today(), {weekday:'long', day:'numeric', month:'long'}))}</span><div class="chips">${sl.map(x => { const feita = aulasOf(x.t.id).some(a => a.data === today()); return `<button class="chip ${feita ? '' : x.h <= hm ? 'on' : ''}" data-a="hoje-go" data-id="${esc(x.t.id)}">${esc(x.h)} · ${esc(x.t.nome)}${feita ? ' ✓' : ''}</button>`; }).join('')}</div></div>`;
+}
+function vHorarioSemana() {
+  const sl = Object.values(S.turmas).flatMap(t => (t.horario || []).filter(h => h.h).map(h => ({t, d:+h.d, h:h.h})));
+  if (!sl.length) return '<p class="hint">Defina o horário em cada turma (Mais → turma → Horário).</p>';
+  const hs = [...new Set(sl.map(x => x.h))].sort(), ds = [1, 2, 3, 4, 5, 6].filter(d => d < 6 || sl.some(x => x.d === 6));
+  return `<div class="tbl-wrap"><table><thead><tr><th>Hora</th>${ds.map(d => `<th>${DIAS[d]}</th>`).join('')}</tr></thead><tbody>${hs.map(h => `<tr><td><b>${h}</b></td>${ds.map(d => `<td>${sl.filter(x => x.d === d && x.h === h).map(x => esc(x.t.nome)).join('<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ---------- painel do grupo de EF (todas as turmas) ---------- */
+function grupoRows() {
+  return Object.values(S.turmas).sort((a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true})).map(t => {
+    const rs = alunosOf(t).map(al => calc(t, UI.p, al)), fins = rs.map(r => r.FIN).filter(x => x != null);
+    const vz = rs.map(r => r.zones.vaivem).filter(z => z != null);
+    return {t, n:rs.length, aulas:aulasOf(t.id).filter(a => periodOf(a.data) === UI.p).length, media:fins.length ? fins.reduce((s, x) => s + x, 0) / fins.length : null,
+      st:{'Apto':rs.filter(r => r.EST === 'Apto').length, 'Não apto':rs.filter(r => r.EST === 'Não apto').length, 'Incompleto':rs.filter(r => r.EST === 'Incompleto').length},
+      zs:vz.length ? Math.round(vz.filter(z => z >= 1).length / vz.length * 100) : null, F:rs.reduce((s, r) => s + r.c.F, 0)};
+  });
+}
+function sheetGrupo() {
+  const g = grupoRows();
+  if (!g.length) { toast('Ainda não há turmas.'); return; }
+  const b = fig('Média final por turma', perLabel(UI.p, true) + ' · escala 0–20', chBars(g.map(x => ({label:x.t.nome, v:x.media})), {label:'Média final por turma'})) +
+    fig('Situação por turma', 'Aptos, não aptos e avaliações incompletas', chStack(g.map(x => ({label:x.t.nome, c:x.st})), STK, {id:'gr'}) + legend(STK)) +
+    `<div class="tbl-wrap"><table><thead><tr><th class="l">Turma</th><th>Alunos</th><th>Aulas</th><th>Média</th><th>Aptos</th><th>Não aptos</th><th>Vaivém ZS+</th><th>Faltas</th></tr></thead><tbody>${g.map(x => `<tr><td class="l"><b>${esc(x.t.nome)}</b></td><td>${x.n}</td><td>${x.aulas}</td><td>${x.media == null ? '—' : nf(x.media)}</td><td>${x.st['Apto']}</td><td class="${x.st['Não apto'] ? 'low' : ''}">${x.st['Não apto']}</td><td>${x.zs == null ? '—' : x.zs + ' %'}</td><td>${x.F}</td></tr>`).join('')}</tbody></table></div>`;
+  openSheet('Painel de todas as turmas · ' + perLabel(UI.p), `<div class="stack">${b}</div>`, `<button class="btn primary" data-a="grupo-xlsx">Exportar para Excel</button>`);
 }
 
 /* ---------- demo ---------- */
