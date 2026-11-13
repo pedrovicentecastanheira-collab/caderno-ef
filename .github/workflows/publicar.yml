@@ -24,8 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      # A app fica na raiz do site e também em app/, para que funcionem os dois endereços
+      # (…/caderno-ef/ e …/caderno-ef/app/), incluindo apps já instaladas no telemóvel.
+      - run: mkdir -p _site/app && cp -r app/. _site/ && cp -r app/. _site/app/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: app
+          path: _site
       - id: deploy
         uses: actions/deploy-pages@v4
