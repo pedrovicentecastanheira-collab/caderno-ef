@@ -212,7 +212,13 @@ const A = {
   'pview': el => { UI.pview = el.dataset.k; render(); },
   'rel-one': el => { relObs(el.dataset.id); const t = turma(), al = (t.alunos || []).find(x => x.id === el.dataset.id); if (al) printRel(t, UI.p, [al]); },
   'rel-all': () => { const t = turma(); printRel(t, UI.p, alunosOf(t)); },
-  'print-go': () => window.print(),
+  // Na conta Claude a página não pode abrir a impressão: o relatório é descarregado num ficheiro que se abre e imprime.
+  'print-go': () => {
+    if (Store.mode !== 'cloud') { window.print(); return; }
+    const css = [...document.querySelectorAll('style')].map(x => x.textContent).join('\n'), body = [...document.querySelectorAll('#print .rel')].map(x => x.outerHTML).join('');
+    const nome = (($('#print .pbar b') || {}).textContent || 'relatorio').replace(/[^\wÀ-ú.-]+/g, '_');
+    saveFile(nome + '.html', new Blob([`<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>${esc(nome)}</title><style>${css}\n#print{display:block!important;position:static!important}</style></head><body class="printing" onload="setTimeout(()=>print(),300)"><div id="print">${body}</div></body></html>`], {type:'text/html'}));
+  },
   'print-close': () => { document.body.classList.remove('printing'); $('#print').innerHTML = ''; },
   'grupo': () => sheetGrupo(),
   'grupo-xlsx': () => {
@@ -237,7 +243,7 @@ const A = {
   'disp-add': () => { const d = alunoDraft(); (d.disp = d.disp || []).push({id:uid(), tipo:'Dispensa Parcial 1', ini:today(), fim:'', motivo:''}); sheetAluno(d); const b = $('#sheet .sh-b'); b.scrollTop = b.scrollHeight; },
   'disp-del': el => { if (!armed(el, 'Remover?')) return; const d = alunoDraft(); d.disp.splice(+el.dataset.i, 1); sheetAluno(d); },
   'doc-anexar': el => { DOCI = +el.dataset.i; $('#file-doc').click(); },
-  'doc-ver': el => { const x = S.docs[el.dataset.id]; if (!x) return; const u = URL.createObjectURL(dataURLtoBlob(x.d)); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); },
+  'doc-ver': el => { const x = S.docs[el.dataset.id]; if (!x) return; if (Store.mode === 'cloud') { saveFile(x.nome || 'atestado', dataURLtoBlob(x.d)); return; } const u = URL.createObjectURL(dataURLtoBlob(x.d)); window.open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); },
   'doc-rel-all': () => { const t = turma(); printRel(t, UI.p, alunosOf(t)); },
   'doc-crit': () => printDoc('Critérios de avaliação', criteriosHtml(turma())),
   'doc-plan': () => { const t = turma(); printDoc('Planificação anual · ' + t.nome, planHtml(t)); },

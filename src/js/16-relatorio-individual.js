@@ -24,7 +24,7 @@ function relHtml(t, p, al) {
   return h;
 }
 function printRel(t, p, list) {
-  $('#print').innerHTML = `<div class="pbar noprint"><b>${list.length === 1 ? esc(list[0].nome) : list.length + ' relatórios'}</b><span class="sp"></span><button class="btn primary" data-a="print-go">Imprimir / Guardar PDF</button><button class="btn" data-a="print-close">Fechar</button></div>` + list.map(al => relHtml(t, p, al)).join('');
+  $('#print').innerHTML = `<div class="pbar noprint"><b>${list.length === 1 ? esc(list[0].nome) : list.length + ' relatórios'}</b><span class="sp"></span><button class="btn primary" data-a="print-go">${Store.mode === 'cloud' ? 'Descarregar para imprimir' : 'Imprimir / Guardar PDF'}</button><button class="btn" data-a="print-close">Fechar</button></div>` + list.map(al => relHtml(t, p, al)).join('');
   document.body.classList.add('printing'); window.scrollTo(0, 0);
 }
 

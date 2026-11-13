@@ -1,7 +1,7 @@
 /* ---------- documentos imprimíveis ---------- */
 function docHead(title, sub) { return `<header class="rel-h"><div><div class="rel-k">${esc(title)}</div><div class="rel-s">${esc(CFG.escola || 'Escola')} · Ano letivo ${esc(CFG.ano)}${sub ? ' · ' + esc(sub) : ''}</div></div><div class="rel-s">${esc(fmtDate(today(), {day:'numeric', month:'long', year:'numeric'}))}</div></header>`; }
 function printDoc(label, html) {
-  $('#print').innerHTML = `<div class="pbar noprint"><b>${esc(label)}</b><span class="sp"></span><button class="btn primary" data-a="print-go">Imprimir / Guardar PDF</button><button class="btn" data-a="print-close">Fechar</button></div>` + html;
+  $('#print').innerHTML = `<div class="pbar noprint"><b>${esc(label)}</b><span class="sp"></span><button class="btn primary" data-a="print-go">${Store.mode === 'cloud' ? 'Descarregar para imprimir' : 'Imprimir / Guardar PDF'}</button><button class="btn" data-a="print-close">Fechar</button></div>` + html;
   document.body.classList.add('printing'); $('#print').scrollTop = 0;
 }
 // Critérios de avaliação de Educação Física (para alunos e encarregados de educação).
