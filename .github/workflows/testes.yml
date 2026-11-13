@@ -6,7 +6,8 @@ on:
   pull_request:
 jobs:
   testes:
-    runs-on: ubuntu-latest
+    # O Playwright 1.56 ainda não suporta o Ubuntu 26.04 (o atual ubuntu-latest).
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
