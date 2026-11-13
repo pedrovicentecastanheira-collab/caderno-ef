@@ -1,7 +1,7 @@
 /* ---------- gráficos da turma (Pauta → Gráficos) ---------- */
 function vGraficos(t) {
   const p = UI.p, als = alunosOf(t), rows = als.map(al => ({al, r:calc(t, p, al)})), ms = matsOf(t, p), v = avalOf(t.id, p);
-  if (!als.length) return `<div class="card empty"><h3>Sem alunos</h3></div>`;
+  if (!als.length) return `<div class="card empty">${ART}<h3>Sem alunos</h3></div>`;
   let h = '';
   // 1. Classificações
   if (t.ciclo === 'S') {
@@ -14,7 +14,7 @@ function vGraficos(t) {
     h += fig(t.ciclo === '1' ? 'Menções' : 'Níveis', `${rows.filter(x => x.r.FIN != null).length} de ${rows.length} alunos com classificação`, chColumns(d, {label:'Distribuição dos níveis'}) + tableView([nivelLbl(t), 'Alunos'], d.map(x => [x.label, x.v])));
   }
   // Mapa da turma
-  if (ms.length) h += fig('Mapa da turma', 'Nível de cada aluno em cada matéria', chMapa(t, p) + legend(LVB.map((b, i) => ({name:b.name, color:`var(--q${i + 1})`}))));
+  if (ms.length) h += fig('Mapa da turma', 'Nível de cada aluno em cada matéria', chMapa(t, p) + legend(LVB.map((b, i) => ({name:b.name, color:`var(--lv${i + 1})`}))));
   // Aprendizagens Essenciais
   const aes = als.map(al => aeOf(t, al, p));
   if (aes[0]) {
@@ -41,7 +41,7 @@ function vGraficos(t) {
   h += fig('Médias da turma por domínio', 'Escala 0–20; a linha marca os 10', chBars(dm, {label:'Médias por domínio'}) + tableView(['Domínio', 'Média'], dm.map(x => [x.label, x.v == null ? '—' : nf(x.v)])));
   // 4. Níveis por matéria
   if (ms.length) {
-    const keys = LVB.map((b, i) => ({k:b.k, name:b.name, color:`var(--q${i + 1})`}));
+    const keys = LVB.map((b, i) => ({k:b.k, name:b.name, color:`var(--lv${i + 1})`}));
     const rs = ms.map(m => { const c = {}; rows.forEach(({al}) => { const l = (lvOf(v, al.id, m) || {}).l; const b = LVB.find(x => x.ls.includes(l)); if (b) c[b.k] = (c[b.k] || 0) + 1; }); return {label:m.replace(/\s*\(.*\)$/, ''), c}; });
     h += fig('Níveis por matéria', 'Quantos alunos em cada patamar', chStack(rs, keys, {id:'lv'}) + legend(keys) + tableView(['Matéria', ...LVB.map(b => b.name)], rs.map(r => [r.label, ...LVB.map(b => r.c[b.k] || 0)])));
   }

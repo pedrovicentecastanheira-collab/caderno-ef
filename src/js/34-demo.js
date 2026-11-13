@@ -17,6 +17,6 @@ function makeDemo() {
     if (i % 4 !== 3) v.av[al.id] = {resp: 1 + Math.floor(rnd() * 3), emp: 1 + Math.floor(rnd() * 3), lid: Math.floor(rnd() * 4)};
   });
   S.aval[v.id] = v; Store.save('aval', v);
-  UI.turma = t.id; UI.p = 1; UI.tab = 'aulas'; render(); toast('Turma de exemplo criada (alunos fictícios).');
+  UI.turma = t.id; UI.p = 1; UI.tab = 'aulas'; wizNext(); render(); toast('Turma de exemplo criada (alunos fictícios).');
 }
 

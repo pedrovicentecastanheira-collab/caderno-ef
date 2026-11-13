@@ -1,6 +1,7 @@
 /* ---------- grelha da turma: uma tabela, toque na célula, valores na barra de baixo ---------- */
 const GN = {mat:'Matérias', fit:'FITescola', con:'Conhecimentos', av:'Atitudes'};
-const GLV = {NI:'g0', PI:'g1', I:'g1', PE:'g2', E:'g2', PA:'g3', A:'g3'};
+// Mesmos 4 patamares em todo o lado (grelha, cartões, gráficos, relatório): abaixo de I · Introdução · Elementar · Avançado.
+const GLV = {NI:'g0', PI:'g0', I:'g1', PE:'g1', E:'g2', PA:'g2', A:'g3'};
 const GAV = ['g0', 'g1', 'g2', 'g3'];
 const FITL = {vaivem:'Vaivém', ombros:'Ombros', senta:'Senta e alc.', abd:'Abdom.', flex:'Flexões', vel:'Veloc. 40 m', agil:'Agilid.', imp:'Impulsão'};
 const AVL = {pont:'Pont.', mat:'Mat.', resp:'Resp.', emp:'Emp.', lid:'Lid.'};

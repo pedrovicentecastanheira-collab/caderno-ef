@@ -7,6 +7,7 @@ function slotsAgora() {
 function vInicio() {
   const ts = Object.values(S.turmas).sort((a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true})), p = UI.p, hr = new Date().getHours();
   let h = `<div class="stack"><div class="hello"><div class="eyebrow">${esc(fmtDate(today(), {weekday:'long', day:'numeric', month:'long'}))} · ${esc(perLabel(p, true))}</div><h1>${hr < 13 ? 'Bom dia' : hr < 20 ? 'Boa tarde' : 'Boa noite'}${CFG.prof ? ', ' + esc(CFG.prof.split(' ')[0]) : ''}</h1></div>`;
+  h += vWizHorario();
   // Agora e a seguir
   const {cur, next, all} = slotsAgora(), slot = (x, lbl) => { const feita = aulasOf(x.t.id).find(a => a.data === today()); return `<div class="now"><span class="eyebrow">${lbl}</span><div class="now-h"><b>${esc(x.h)}</b><span>${esc(x.t.nome)}</span></div><div class="btn-row"><button class="btn primary" data-a="hoje-go" data-id="${esc(x.t.id)}">${feita ? 'Abrir a aula' : 'Registar a aula'}</button><button class="btn" data-a="ini-aval" data-id="${esc(x.t.id)}">Avaliar</button></div></div>`; };
   if (cur || next) h += `<div class="card nowc">${cur ? slot(cur, 'Agora') : ''}${next ? slot(next, cur ? 'A seguir' : 'Próxima aula') : ''}${all.length > (cur ? 1 : 0) + (next ? 1 : 0) ? `<p class="hint" style="margin:0">Hoje: ${all.map(x => esc(x.h + ' ' + x.t.nome)).join(' · ')}</p>` : ''}</div>`;

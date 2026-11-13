@@ -1,5 +1,6 @@
 /* Layout: app shell — sticky header with turma + período, one scrolling column (max 720px), fixed bottom tab bar, bottom sheets for editing */
 :root{
+  --lv1:var(--bad); --lv2:var(--warn); --lv3:var(--accent); --lv4:var(--ok);
   --bg:#EDF0F4; --surface:#FFFFFF; --surface-2:#F6F8FA; --ink:#13202D; --muted:#5A6879; --line:#D8DFE7;
   --accent:#1C55CF; --accent-ink:#FFFFFF; --accent-soft:#E1E9FA;
   --ok:#1C7C46; --ok-soft:#DCF0E3; --bad:#BF352D; --bad-soft:#F8E0DD;
@@ -40,3 +41,7 @@ button{cursor:pointer}
 h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-height:1.1;margin:0;text-wrap:balance}
 .num-t{font-variant-numeric:tabular-nums}
 
+
+/* contraste alto: texto secundário e linhas mais escuros, contornos mais fortes */
+:root[data-contrast="high"]{--muted:var(--ink);--line:color-mix(in srgb,var(--ink) 55%,transparent)}
+:root[data-contrast="high"] .card,:root[data-contrast="high"] .btn,:root[data-contrast="high"] .list{border-width:2px}

@@ -13,8 +13,8 @@ const A = {
   'turma-save': () => {
     const x = UI.draft; x.nome = ($('#t-nome').value || '').trim(); x.ciclo = $('#t-ciclo').value; x.ano = +$('#t-ano').value || null;
     if (!x.nome) { toast('Escreva o nome da turma.', 'bad'); $('#t-nome').focus(); return; }
-    const prev = S.turmas[x.id]; x.horario = (x.horario || []).filter(hh => hh.h); S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala, horario:x.horario, ano:x.ano}) : x;
-    Store.save('turmas', S.turmas[x.id]); UI.turma = x.id; if (!prev) UI.tab = 'alunos'; closeSheet(); render(); toast(prev ? 'Turma guardada.' : 'Turma criada. Adicione os alunos.');
+    const prev = S.turmas[x.id]; x.horario = (x.horario || []).filter(hh => hh.h); S.turmas[x.id] = prev ? Object.assign(prev, {nome:x.nome, ciclo:x.ciclo, escala:x.escala, horario:x.horario, ano:x.ano, cor:x.cor}) : x;
+    Store.save('turmas', S.turmas[x.id]); UI.turma = x.id; if (!prev) { UI.tab = 'alunos'; wizNext(); } closeSheet(); render(); toast(prev ? 'Turma guardada.' : 'Turma criada. Adicione os alunos.');
   },
   'turma-del': el => {
     if (!armed(el, 'Toque de novo para eliminar')) return;
@@ -35,7 +35,15 @@ const A = {
   },
   'aula-del': el => { if (!armed(el, 'Toque de novo para eliminar')) return; const id = UI.draft.id; delete S.aulas[id]; Store.del('aulas', id); closeSheet(); render(); toast('Aula eliminada.'); },
   'aluno-new': () => { const t = turma(); const n = Math.max(0, ...(t.alunos || []).map(a => +a.num || 0)) + 1; sheetAluno({id: uid(), num: n, proc: '', nome: '', sexo: '', nasc: '', regime: 'Normal', obs: ''}); },
-  'aluno-edit': el => { const al = (turma().alunos || []).find(x => x.id === el.dataset.id); if (al) sheetAluno(clone(al)); },
+  'aluno-edit': el => { const al = (turma().alunos || []).find(x => x.id === el.dataset.id); if (!al) return; closeSheet(); if (UI.tab !== 'turma') UI.backTab = UI.tab; UI.aluno = al.id; UI.tab = 'turma'; UI.tsub = 'alunos'; SEL = null; render(); if (!WIDE()) window.scrollTo(0, 0); },
+  'ap-back': () => { UI.aluno = null; if (UI.backTab) { UI.tab = UI.backTab; UI.backTab = null; } render(); },
+  'ap-tab': el => { UI.atab = el.dataset.k; render(); },
+  'ap-edit': () => { const al = pageAluno(); if (al) sheetAluno(clone(al)); },
+  'ap-comp': el => { UI.tab = 'avaliar'; UI.avMode = 'grelha'; UI.hide.mat = false; SEL = {aid:UI.aluno, k:'m:' + el.dataset.m}; UI.gedOpen = true; UI.domOpen = true; UI.backTab = null; render(); },
+  'ver': el => { UI[el.dataset.k] = el.dataset.v; render(); },
+  'wiz': el => { UI.wiz = +el.dataset.s; render(); window.scrollTo(0, 0); },
+  'wiz-fim': () => { CFG.wizDone = true; UI.wizH = false; Store.save('cfg', CFG); render(); },
+  't-cor': el => { UI.draft.cor = +el.dataset.c; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
   'a-sexo': el => { UI.draft.sexo = el.dataset.v; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
   'aluno-save': () => {
     const t = turma(), al = UI.draft;
@@ -246,8 +254,8 @@ const A = {
     if (el.dataset.next) { const als = alunosOf(t), i = als.findIndex(x => x.id === d.aid); sheetAuto(als[i + 1].id); $('#sheet .sh-b').scrollTop = 0; toast('Guardado. Agora: ' + als[i + 1].nome.split(' ')[0] + '.'); }
     else { closeSheet(); render(); toast('Autoavaliação guardada.'); }
   },
-  'obs-sug': el => { const ta = $('#a-relobs'), t = turma(), al = UI.draft; if (ta.value.trim() && !armed(el, 'Substituir o texto?')) return; ta.value = obsSugest(t, UI.p, (t.alunos || []).find(x => x.id === al.id) || al) || 'Sem dados suficientes para sugerir.'; ta.focus(); },
-  'obs-add': el => { const ta = $('#a-relobs'), x = OBSB[+el.dataset.i]; ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + x.replace('assíduo(a)', UI.draft.sexo === 'F' ? 'assídua' : UI.draft.sexo === 'M' ? 'assíduo' : 'assíduo(a)'); },
+  'obs-sug': el => { const ta = $('#a-relobs'), t = turma(), al = UI.draft || pageAluno(); if (ta.value.trim() && !armed(el, 'Substituir o texto?')) return; ta.value = obsSugest(t, UI.p, (t.alunos || []).find(x => x.id === al.id) || al) || 'Sem dados suficientes para sugerir.'; ta.focus(); if (!UI.draft) ta.dispatchEvent(new Event('change', {bubbles:true})); },
+  'obs-add': el => { const ta = $('#a-relobs'), x = OBSB[+el.dataset.i]; ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + x.replace('assíduo(a)', (UI.draft || pageAluno()).sexo === 'F' ? 'assídua' : (UI.draft || pageAluno()).sexo === 'M' ? 'assíduo' : 'assíduo(a)'); if (!UI.draft) ta.dispatchEvent(new Event('change', {bubbles:true})); },
   'd-sug': el => { const ta = $('#d-sum'); ta.value = (ta.value.trim() ? ta.value.trim() + ' ' : '') + el.dataset.t; UI.draft.sumario = ta.value; },
   'xls-import': () => { if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; } $('#file-xls').click(); },
   'xls-model': () => {
@@ -272,7 +280,7 @@ const A = {
       Store.save('turmas', t); first = first || t;
     });
     const nT = plan.filter(g => g.list.length).length;
-    IMP = null; UI.turma = first.id; UI.tab = 'alunos'; closeSheet(); render();
+    IMP = null; UI.turma = first.id; UI.tab = 'alunos'; wizNext(); closeSheet(); render();
     toast(nNew + ' alunos importados' + (nUpd ? ', ' + nUpd + ' atualizados' : '') + (nT > 1 ? ' em ' + nT + ' turmas' : '') + '.');
   },
   'fotos-import': () => { const t = turma(); if (!t || !(t.alunos || []).length) { toast('Importe primeiro os alunos da turma.', 'bad'); return; } $('#file-fotos').click(); },
@@ -304,6 +312,7 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
   if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); } }
+  else if (k === 'pg-obs') { const v = avalOf(turma().id, UI.p), x = el.value.trim(); v.obs = v.obs || {}; if (x) v.obs[el.dataset.aid] = x; else delete v.obs[el.dataset.aid]; touchAval(v); toast('Observação guardada.'); }
   else if (k === 'f-todo') { UI.todo = el.checked; gRefresh(); }
   else if (k === 'f-sort') { UI.sort = el.value ? {k:el.value, d:-1} : null; sheetFiltros(); gRefresh(); }
   else if (k === 'per-sel') { A.per({dataset:{p:el.value}}); }

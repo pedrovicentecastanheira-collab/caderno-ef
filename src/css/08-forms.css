@@ -6,3 +6,5 @@ textarea{min-height:96px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form{display:flex;flex-direction:column;gap:14px}
 
+.grid2>.field{min-width:0}
+.grid2 input,.grid2 select{min-width:0}

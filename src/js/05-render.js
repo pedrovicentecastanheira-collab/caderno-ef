@@ -1,6 +1,7 @@
 /* ---------- render ---------- */
 function render() {
-  normTab(); saveUI();
+  normTab(); saveUI(); applyLook();
+  document.body.classList.toggle('wide', WIDE() && UI.tab !== 'defs');
   const t = turma(), ts = Object.values(S.turmas).sort(byNome), c = tcor(t);
   document.documentElement.style.setProperty('--tc', `var(--v${c})`);
   let top = '<div class="brand">Caderno <b>EF</b></div>';
@@ -15,15 +16,23 @@ function render() {
   $('#nav').hidden = !t && UI.tab !== 'defs';
   morph($('#nav-in'), TABS.map(([k, n]) => `<button data-a="tab" data-t="${k}" class="${UI.tab === k ? 'on' : ''}" aria-current="${UI.tab === k ? 'page' : 'false'}">${IC[k]}<span>${n}</span></button>`).join(''));
   let h;
-  if (!ts.length && UI.tab !== 'defs' || !t && UI.tab !== 'defs' && UI.tab !== 'inicio') h = vWelcome();
+  if (!ts.length && UI.tab !== 'defs' || !t && UI.tab !== 'defs' && UI.tab !== 'inicio') h = vWizard();
   else if (UI.tab === 'inicio') h = vInicio();
   else h = ({turma:vTurma, avaliar:vAvaliar, relatorios:vPauta, defs:vDefs})[UI.tab](t);
   morph($('#main'), '<div class="wrap">' + h + '</div>');
   gEditor();
 }
 function vTurma(t) {
-  const sub = UI.tsub || 'aulas';
-  return `<div class="stack"><div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
+  const sub = UI.tsub || 'aulas', al = pageAluno();
+  if (sub === 'alunos' && WIDE() && (t.alunos || []).length) {
+    const sel = al || alunosOf(t)[0]; UI.aluno = sel.id;
+    return `<div class="split"><div class="split-l">${vTurmaSeg(sub)}${vAlunos(t)}</div><div class="split-r">${vAlunoPage(t, sel, true)}</div></div>`;
+  }
+  if (sub === 'alunos' && al) return vAlunoPage(t, al, false);
+  return `<div class="stack">${vTurmaSeg(sub)}</div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
+}
+function vTurmaSeg(sub) {
+  return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
@@ -35,7 +44,6 @@ function vDefs(t) {
   h += sec[0] === 'ver' ? vAparencia() : sec[2].map(n => parts[n] || '').join('');
   return h + '</div>';
 }
-function vAparencia() { return '<div class="card"><p class="hint" style="margin:0">Em breve.</p></div>'; }
 
 function storageNote() {
   if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
@@ -74,12 +82,12 @@ function vAulas(t) {
   if (Store.local && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
   h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'}</span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
-  if (!list.length) h += `<div class="card empty"><h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
+  if (!list.length) h += `<div class="card empty">${ART}<h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
   list.forEach(a => {
     const c = {F:0, A:0, M:0, D:0}; Object.values(a.presencas || {}).forEach(s => { if (s in c) c[s]++; });
     h += `<button class="card" data-a="aula-edit" data-id="${esc(a.id)}">
       <div class="aula-h"><span class="licao">Lição <span class="num-t">${num[a.id]}</span></span><span class="date">${esc(fmtDate(a.data))}</span></div>
-      ${(a.materias || []).length ? `<div class="chips">${a.materias.map(m => `<span class="chip">${esc(m)}</span>`).join('')}</div>` : ''}
+      ${(a.materias || []).length ? `<div class="chips">${a.materias.map(m => `<span class="chip">${subIcon(m, anoOf(t))}${esc(m)}</span>`).join('')}</div>` : ''}
       <p class="sum">${a.sumario ? esc(a.sumario) : '<span class="muted">Sem sumário</span>'}</p>
       <div class="pres-mini">${presTags(c) || '<span class="tag P">Todos presentes</span>'}</div>
     </button>`;
@@ -91,12 +99,12 @@ function vAlunos(t) {
   const als = alunosOf(t);
   let h = `<div class="stack"><div class="btn-row"><button class="btn primary" data-a="xls-import">Importar Excel</button><button class="btn" data-a="fotos-import">Fotografias</button><button class="btn" data-a="aluno-new">+ Aluno</button><button class="btn" data-a="alunos-paste">Colar lista</button></div>`;
   h += `<div class="sec-h"><h2>${esc(t.nome)}</h2><span class="muted small">${esc(CICLOS[t.ciclo])} · ${als.length} alunos</span></div>`;
-  if (!als.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e data de nascimento. Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
+  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e data de nascimento. Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
   h += '<div class="list">';
   als.forEach(al => {
     const c = counts(t, UI.p, al.id); const age = ageAt(al.nasc, today());
     const meta = [al.sexo === 'F' ? 'Rapariga' : al.sexo === 'M' ? 'Rapaz' : 'Sexo por indicar', age != null ? age + ' anos' : 'sem data de nasc.'].join(' · ');
-    h += `<button class="li" data-a="aluno-edit" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">${esc(meta)}</div></span><span class="end">${(x => x ? `<span class="tag reg">${esc(x.replace('Dispensa ', 'Disp. '))}</span>` : '')((d => d && d.tipo !== 'Apenas registo' ? d.tipo : regAt(al) !== 'Normal' ? regAt(al) : '')(dispOn(al, today())))}${c.F ? `<span class="tag F">${c.F}F</span>` : ''}</span></button>`;
+    h += `<button class="li${UI.aluno === al.id && WIDE() ? ' on' : ''}" data-a="aluno-edit" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">${esc(meta)}</div></span><span class="end">${(x => x ? `<span class="tag reg">${esc(x.replace('Dispensa ', 'Disp. '))}</span>` : '')((d => d && d.tipo !== 'Apenas registo' ? d.tipo : regAt(al) !== 'Normal' ? regAt(al) : '')(dispOn(al, today())))}${c.F ? `<span class="tag F">${c.F}F</span>` : ''}</span></button>`;
   });
   return h + '</div></div>';
 }
@@ -104,7 +112,7 @@ function vAlunos(t) {
 function vAvaliar(t) {
   const als = alunosOf(t);
   let h = `<div class="stack">${UI.avMode === 'dominio' ? gToolbar(false) : ''}`;
-  if (!als.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>Adicione alunos à turma para começar a avaliar.</p></div></div>`;
+  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Adicione alunos à turma para começar a avaliar.</p></div></div>`;
   if (UI.avMode !== 'dominio') return h + vGrelha(t) + '</div>';
   h += `<div class="seg block" role="group" aria-label="Domínio">` +
     [['mat','Matérias'],['fit','FITescola'],['con','Conhec.'],['av','Atitudes']].map(([k, n]) => `<button data-a="avtab" data-k="${k}" class="${UI.avTab === k ? 'on' : ''}">${n}</button>`).join('') + '</div>';
@@ -113,7 +121,7 @@ function vAvaliar(t) {
     const ms = matsOf(t, UI.p);
     if (!ms.includes(UI.mat)) UI.mat = ms[0] || null;
     h += `<div class="chips">${ms.map(m => `<button class="chip ${m === UI.mat ? 'on' : ''}" data-a="mat-sel" data-m="${esc(m)}">${esc(m)}</button>`).join('')}<button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
-    if (!UI.mat) return h + `<div class="card empty"><h3>Sem matérias neste período</h3><p>As matérias entram aqui automaticamente quando as indica nas aulas. Também pode adicionar uma diretamente.</p></div></div>`;
+    if (!UI.mat) return h + `<div class="card empty">${ART}<h3>Sem matérias neste período</h3><p>As matérias entram aqui automaticamente quando as indica nas aulas. Também pode adicionar uma diretamente.</p></div></div>`;
     const d = (PNEF[t.ciclo] || []).find(x => x.m === UI.mat);
     h += `<details class="desc"><summary>Descritivos PNEF · ${esc(UI.mat)}</summary>` + (d ? `<dl>${['I','E','A'].map(k => `<dt>${k} · ${LVN[k]}</dt><dd>${esc(d[k] || '—')}</dd>`).join('')}</dl><p class="hint" style="margin:0 0 12px">PI, PE e PA: cumpre pelo menos metade dos conteúdos do nível I, E ou A.</p>` : `<p class="hint" style="margin:0 0 12px">A grelha não tem descritivo para esta matéria neste ciclo.</p>`) + '</details>';
     h += '<div class="list">';

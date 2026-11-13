@@ -8,7 +8,7 @@ function vPlano(t) {
   const rows = pl.map(u => { const d = dadasOf(t, UI.p, u.m); return {u, d}; });
   const tot = rows.reduce((s, x) => s + Math.min(x.d, x.u.n), 0), prev = rows.reduce((s, x) => s + x.u.n, 0);
   return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><span><button class="link" data-a="doc-plan">Imprimir</button> · <button class="link" data-a="plano-edit">Editar</button></span></div>
-    <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
+    <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${subIcon(u.m, anoOf(t))} ${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
     <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p></div>`;
 }
 function sheetPlano() {

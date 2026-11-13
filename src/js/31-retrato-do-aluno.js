@@ -16,7 +16,7 @@ function compBars(t, p, al) {
   const v = avalOf(t.id, p), r = calc(t, p, al), ms = Object.keys(r.lv);
   const rows = ms.map(m => { const x = compSplit(t.ciclo, m, r.lv[m], tksOf(v, al.id, m)), tot = compsOf(t.ciclo, m).length; return {m, l:r.lv[m], d:x ? x.dom.length : null, tot}; });
   if (!rows.length) return '<p class="hint">Sem matérias avaliadas neste período.</p>';
-  return `<div class="cbars">${rows.map(x => { const b = LVB.findIndex(z => z.ls.includes(x.l)) + 1, pc = x.tot ? Math.round(x.d / x.tot * 100) : 0; return `<div class="cbar"><div class="cb-h"><b>${esc(x.m)}</b><span class="muted small">${esc(x.l)} · ${x.tot ? `${x.d} de ${x.tot} competências` : 'sem descritivo'}</span></div><span class="cb-b" role="img" aria-label="${esc(x.m)}: ${x.d ?? 0} de ${x.tot} competências"><i style="width:${pc}%;background:var(--q${b || 1})"></i></span></div>`; }).join('')}</div>`;
+  return `<div class="cbars">${rows.map(x => { const b = LVB.findIndex(z => z.ls.includes(x.l)) + 1, pc = x.tot ? Math.round(x.d / x.tot * 100) : 0; return `<div class="cbar"><div class="cb-h"><b>${esc(x.m)}</b><span class="muted small">${esc(x.l)} · ${x.tot ? `${x.d} de ${x.tot} competências` : 'sem descritivo'}</span></div><span class="cb-b" role="img" aria-label="${esc(x.m)}: ${x.d ?? 0} de ${x.tot} competências"><i style="width:${pc}%;background:var(--lv${b || 1})"></i></span></div>`; }).join('')}</div>`;
 }
 function retrato(t, p, al) {
   const rows = compareRows(t, p, al).filter(x => x.label !== 'Final');

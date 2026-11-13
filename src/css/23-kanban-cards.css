@@ -33,5 +33,6 @@ table.hmap td,table.hmap th{padding:6px 6px;font-size:12.5px}
 table.hmap td{font-family:var(--f-display);font-weight:700;border:2px solid var(--surface)}
 table.hmap td.nm{font-family:var(--f-body);font-weight:600}
 .hm0{background:var(--surface-2);color:var(--muted)}
-.hm1{background:var(--q1);color:var(--hm1,#13202D)} .hm2{background:var(--q2);color:#fff} .hm3{background:var(--q3);color:var(--hm3,#fff)} .hm4{background:var(--q4);color:var(--hm4,#fff)}
+
 .cons-a{display:flex;flex-direction:column;gap:6px}
+.hm1{background:var(--bad-soft);color:var(--bad)} .hm2{background:var(--warn-soft);color:var(--warn)} .hm3{background:var(--accent-soft);color:var(--accent)} .hm4{background:var(--ok-soft);color:var(--ok)}
