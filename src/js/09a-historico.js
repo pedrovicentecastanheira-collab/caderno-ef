@@ -27,7 +27,7 @@ function histRecord(v) {
     if (last && now - last.ts < 8000) { last.para = e.para; last.ts = now; if (last.de === last.para) h.ev.splice(h.ev.indexOf(last), 1); }
     else h.ev.push(Object.assign({ts:now, p:v.p}, e));
   });
-  if (h.ev.length > 3000) h.ev.splice(0, h.ev.length - 3000);
+  if (h.ev.length > 1500) h.ev.splice(0, h.ev.length - 1500); // cada registo guardado tem de caber em 256 KB
   Store.save('hist', h);
 }
 function histHtml(t, aid, n = 40) {

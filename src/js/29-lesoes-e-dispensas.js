@@ -30,11 +30,11 @@ function dispHtml(al) {
 function dataURLtoBlob(u) { const [h, b] = u.split(','), mime = /:(.*?);/.exec(h)[1], bin = atob(b), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], {type:mime}); }
 async function docFromFile(f) {
   if (/^image\//.test(f.type)) {
-    const im = await loadImg(f), k = Math.min(1, 1400 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+    const im = await loadImg(f), k = Math.min(1, (Store.mode === 'cloud' ? 1000 : 1400) / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
     c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     return c.toDataURL('image/jpeg', .7);
   }
-  if (f.type === 'application/pdf' && f.size <= 1.5e6) return await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+  if (f.type === 'application/pdf' && f.size <= (Store.mode === 'cloud' ? 1.8e5 : 1.5e6)) return await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
   throw new Error('tipo');
 }
 

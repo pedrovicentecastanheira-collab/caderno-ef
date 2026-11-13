@@ -869,7 +869,7 @@ function vDefs(t) {
 }
 
 function storageNote() {
-  if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
+  if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o próprio professor os vê, no telemóvel e no computador, sempre que abrir o caderno com a sua conta.';
   if (Store.local) return 'Os dados ficam guardados apenas neste telemóvel, não vão para nenhum servidor. Faça cópias de segurança regulares: se apagar a app ou os dados do navegador, perde o que não tiver copiado.';
   return 'Este navegador não permite guardar dados: o que registar perde-se ao fechar a página.';
 }
@@ -1954,7 +1954,7 @@ $('#file-fotos').addEventListener('change', async e => {
 });
 $('#file-doc').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f || !UI.draft || DOCI == null) return;
-  let d; try { d = await docFromFile(f); } catch (er) { toast('Use uma fotografia ou um PDF até 1,5 MB.', 'bad'); return; }
+  let d; try { d = await docFromFile(f); } catch (er) { toast(Store.mode === 'cloud' ? 'Use uma fotografia ou um PDF até 180 KB.' : 'Use uma fotografia ou um PDF até 1,5 MB.', 'bad'); return; }
   const id = uid(); S.docs[id] = {id, nome:f.name, d}; Store.save('docs', S.docs[id]);
   const dr = alunoDraft(); dr.disp[DOCI].doc = id; DOCI = null; sheetAluno(dr); toast('Atestado anexado. Guarde a ficha do aluno.');
 });
@@ -1993,7 +1993,7 @@ function histRecord(v) {
     if (last && now - last.ts < 8000) { last.para = e.para; last.ts = now; if (last.de === last.para) h.ev.splice(h.ev.indexOf(last), 1); }
     else h.ev.push(Object.assign({ts:now, p:v.p}, e));
   });
-  if (h.ev.length > 3000) h.ev.splice(0, h.ev.length - 3000);
+  if (h.ev.length > 1500) h.ev.splice(0, h.ev.length - 1500); // cada registo guardado tem de caber em 256 KB
   Store.save('hist', h);
 }
 function histHtml(t, aid, n = 40) {
@@ -2825,11 +2825,11 @@ function dispHtml(al) {
 function dataURLtoBlob(u) { const [h, b] = u.split(','), mime = /:(.*?);/.exec(h)[1], bin = atob(b), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], {type:mime}); }
 async function docFromFile(f) {
   if (/^image\//.test(f.type)) {
-    const im = await loadImg(f), k = Math.min(1, 1400 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+    const im = await loadImg(f), k = Math.min(1, (Store.mode === 'cloud' ? 1000 : 1400) / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
     c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
     return c.toDataURL('image/jpeg', .7);
   }
-  if (f.type === 'application/pdf' && f.size <= 1.5e6) return await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+  if (f.type === 'application/pdf' && f.size <= (Store.mode === 'cloud' ? 1.8e5 : 1.5e6)) return await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
   throw new Error('tipo');
 }
 

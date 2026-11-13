@@ -441,7 +441,7 @@ $('#file-fotos').addEventListener('change', async e => {
 });
 $('#file-doc').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f || !UI.draft || DOCI == null) return;
-  let d; try { d = await docFromFile(f); } catch (er) { toast('Use uma fotografia ou um PDF até 1,5 MB.', 'bad'); return; }
+  let d; try { d = await docFromFile(f); } catch (er) { toast(Store.mode === 'cloud' ? 'Use uma fotografia ou um PDF até 180 KB.' : 'Use uma fotografia ou um PDF até 1,5 MB.', 'bad'); return; }
   const id = uid(); S.docs[id] = {id, nome:f.name, d}; Store.save('docs', S.docs[id]);
   const dr = alunoDraft(); dr.disp[DOCI].doc = id; DOCI = null; sheetAluno(dr); toast('Atestado anexado. Guarde a ficha do aluno.');
 });

@@ -46,7 +46,7 @@ function vDefs(t) {
 }
 
 function storageNote() {
-  if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
+  if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o próprio professor os vê, no telemóvel e no computador, sempre que abrir o caderno com a sua conta.';
   if (Store.local) return 'Os dados ficam guardados apenas neste telemóvel, não vão para nenhum servidor. Faça cópias de segurança regulares: se apagar a app ou os dados do navegador, perde o que não tiver copiado.';
   return 'Este navegador não permite guardar dados: o que registar perde-se ao fechar a página.';
 }
