@@ -18,7 +18,7 @@ function sheetPlano() {
 function planoRender(open) {
   const t = turma(), d = UI.draft, ms = MATS[t.ciclo] || GR;
   const body = `<div class="form"><p class="hint">Pela ordem em que vai dar as matérias. Uma matéria pode repetir-se (ex.: duas unidades de Voleibol).</p>
-    ${d.map((u, i) => `<div class="pl-ed"><select data-in="pl" data-i="${i}" data-k="m" aria-label="Matéria">${ms.map(m => `<option${u.m === m ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select><input type="number" min="1" max="60" inputmode="numeric" data-in="pl" data-i="${i}" data-k="n" value="${u.n}" aria-label="Aulas previstas"><button class="icon-btn" data-a="pl-del" data-i="${i}" aria-label="Remover">×</button></div>`).join('') || '<p class="muted">Ainda sem unidades.</p>'}
+    ${d.map((u, i) => `<div class="pl-ed"><select data-in="pl" data-i="${i}" data-k="m" aria-label="Matéria">${matOpts(t, u.m)}</select><input type="number" min="1" max="60" inputmode="numeric" data-in="pl" data-i="${i}" data-k="n" value="${u.n}" aria-label="Aulas previstas"><button class="icon-btn" data-a="pl-del" data-i="${i}" aria-label="Remover">×</button></div>`).join('') || '<p class="muted">Ainda sem unidades.</p>'}
     <button class="btn" data-a="pl-add">+ Unidade didática</button></div>`;
   const foot = `<button class="btn primary" data-a="pl-save">Guardar plano</button>`;
   if (open) openSheet('Plano do ' + perLabel(UI.p, true), body, foot); else updSheet(body, foot);

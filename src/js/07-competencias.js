@@ -1,4 +1,21 @@
-/* ---------- competências: cada descritivo PNEF partido em ações observáveis ---------- */
+/* ---------- competências por matéria e nível ---------- */
+// Do 2.º ciclo ao secundário: as competências numeradas dos Anexos 2, 3 e 4 das AE (2026), com o id oficial (ex.: E4.2).
+// Um item com subitens não se avalia: é o contexto dos subitens. Sem anexo (1.º ciclo e Jogos Tradicionais), parte-se o descritivo PNEF.
+function ae26Of(ciclo, m) {
+  const d = AE26[ciclo] && AE26[ciclo][m]; if (!d) return null;
+  const out = [];
+  ['I', 'E', 'A'].forEach(k => {
+    const its = d[k] === '=3' ? AE26['3'][m][k] : d[k]; if (!its) return;
+    const txt = Object.fromEntries(its.map(([n, t]) => [n, t]));
+    its.forEach(([n, t]) => {
+      if (its.some(([o]) => o.startsWith(n + '.'))) return;
+      const ps = n.split('.'), ctx = [];
+      for (let i = 1; i < ps.length; i++) { const p = txt[ps.slice(0, i).join('.')]; if (p) ctx.push(p.replace(/[:.]\s*$/, '')); }
+      out.push({k, id:k + n, n, ctx:ctx.join(' — '), txt:t, of:true});
+    });
+  });
+  return out;
+}
 // Corta-se onde começa uma nova ação (verbo); as enumerações ficam juntas e o contexto ("Em jogo 4x4…") passa a cabeçalho.
 const CVERB = new Set('executa desloca-se desliza combina recebe desmarca-se realiza cria aplica mantém lança remata salta participa passa dança serve coordena segue trava inicia defende nada faz dá dribla opta finaliza finta corre flutua associa apresenta apresenta-as aproveita arranca desenha curva posiciona-se conhece compõe reproduz agarra marca elabora progride bate desempenha aperfeiçoa conduz patina devolve coopera identifica varia alterna especializa-se lê otimiza domina distingue analisa orienta interpreta calcula planeia organiza enquadra-se dificulta ocupa preenche seleciona escolhe utiliza assegura mergulha joga respeita cumpre'.split(' '));
 const CCTX = /^(em |no |na |nos |nas |após |a par|a pares|ao |sem |como |durante |depois |numa |num )/i;
@@ -8,6 +25,7 @@ const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
 const COMPC = {};
 function compsOf(ciclo, m) {
   const key = ciclo + '|' + m; if (COMPC[key]) return COMPC[key];
+  const of = ae26Of(ciclo, m); if (of) return COMPC[key] = of;
   const d = (PNEF[ciclo] || []).find(x => x.m === m), out = [];
   if (d) ['I', 'E', 'A'].forEach(k => { let n = 0;
     splitTop(String(d[k] || '').replace(/\.\s*$/, ''), ';').forEach(cl => {
@@ -31,8 +49,16 @@ const tksOf = (v, aid, m) => ((v.comp || {})[aid] || {})[m];
 // Agrupa por contexto; um contexto com uma só competência fica na própria linha, para não parecer que abrange as seguintes.
 function compList(cs) {
   const gs = []; cs.forEach(c => { const g = gs[gs.length - 1]; if (g && g.ctx === c.ctx && c.ctx) g.xs.push(c); else gs.push({ctx:c.ctx, xs:[c]}); });
-  let h = '<ul>'; gs.forEach(g => { if (g.ctx && g.xs.length > 1) h += `<li class="cg"><span class="cctx">${esc(g.ctx)}:</span><ul>${g.xs.map(c => `<li>${esc(c.txt)}</li>`).join('')}</ul></li>`; else g.xs.forEach(c => { h += `<li>${g.ctx ? `<span class="cctx">${esc(g.ctx)}:</span> ` + esc(c.txt.charAt(0).toLowerCase() + c.txt.slice(1)) : esc(c.txt)}</li>`; }); });
+  let h = '<ul>'; gs.forEach(g => { if (g.ctx && g.xs.length > 1) h += `<li class="cg"><span class="cctx">${esc(g.ctx)}:</span><ul>${g.xs.map(c => `<li>${cidOf(c)}${esc(c.txt)}</li>`).join('')}</ul></li>`; else g.xs.forEach(c => { h += `<li>${cidOf(c)}${g.ctx ? `<span class="cctx">${esc(g.ctx)}:</span> ` + esc(c.txt.charAt(0).toLowerCase() + c.txt.slice(1)) : esc(c.txt)}</li>`; }); });
   return h + '</ul>';
+}
+const cidOf = c => c.of ? `<b class="cid">${c.k}${c.n}</b> ` : '';
+// Descritivos de uma matéria: as competências oficiais por nível (Anexos de 2026) ou, sem elas, o texto PNEF.
+function descHtml(ciclo, m, open) {
+  const cs = compsOf(ciclo, m), of = cs.length && cs[0].of, d = (PNEF[ciclo] || []).find(x => x.m === m);
+  const body = of ? ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); return xs.length ? `<div class="dlv"><b>${k} · ${LVN[k]}</b> <span class="muted small">${xs.length} competências</span>${compList(xs)}</div>` : ''; }).join('')
+    : d ? `<dl>${['I','E','A'].map(k => `<dt>${k} · ${LVN[k]}</dt><dd>${esc(d[k] || '—')}</dd>`).join('')}</dl>` : '<p class="hint">Sem descritivo para esta matéria neste ciclo.</p>';
+  return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.</p></details>`;
 }
 // O que domina e o que falta: pelas competências assinaladas ou, sem elas, pelo nível escolhido.
 function compSplit(ciclo, m, l, ticks) {
@@ -65,7 +91,7 @@ function lvFromTicks(ciclo, m, ticks) {
 function compCheck(ciclo, m, ticks) {
   const cs = compsOf(ciclo, m); ticks = ticks || {};
   return ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return ''; const all = xs.every(c => ticks[c.id]); let last = null;
-    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${esc(c.txt)}</span></label>`; }).join(''); }).join('');
+    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(c.txt)}</span></label>`; }).join(''); }).join('');
 }
 function regOf(t, p, aid) {
   let pos = 0, neg = 0;
@@ -256,7 +282,7 @@ function gEditor() {
   if (col.type === 'lvl' && col.m && !col.ind && compsOf(c.t.ciclo, col.m).length) {
     const l = (lvOf(c.v, al.id, col.m) || {}).l, tk = tksOf(c.v, al.id, col.m), sm = lvSummary(c.t.ciclo, col.m, l, tk), ex = tk && Object.values(tk).some(Boolean);
     h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk)}</div></details>`;
-  } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem descritivo PNEF para esta matéria neste ciclo.'}</p>`;
+  } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem competências descritas para esta matéria neste ciclo.'}</p>`;
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
   el.innerHTML = `<div class="wrap">${h}</div>`; el.hidden = false; document.body.classList.add('ged-on');
@@ -307,9 +333,8 @@ function sheetCol(k) {
   if (col.m && !col.ind) b += aeBox(t);
   if (col.k === 'con' && AE[anoOf(t)]) b += `<div class="aebox"><b>Conhecimentos · Aprendizagens Essenciais do ${anoOf(t)}.º ano</b>${AE[anoOf(t)].con.map(x => `<div>• ${esc(x)}</div>`).join('')}<div><span class="ae1 pill">Proficiente</span> ${AE_CON_P}</div><div><span class="ae2 pill">${esc(aeTop(AE[anoOf(t)]))}</span> ${AE_CON_E}</div></div>`;
   if (col.m) {
-    const d = (PNEF[t.ciclo] || []).find(x => x.m === col.m);
     if (col.ind) b += `<p class="hint">Indicador de <b>${esc(col.m)}</b>. A média dos indicadores dá o nível da matéria quando este não é escolhido à mão.</p>`;
-    b += `<details class="desc"${col.ind ? '' : ' open'}><summary>Descritivos PNEF · ${esc(col.m)}</summary>${d ? `<dl>${['I','E','A'].map(x => `<dt>${x} · ${LVN[x]}</dt><dd>${esc(d[x] || '—')}</dd>`).join('')}</dl>` : '<p class="hint">Sem descritivo neste ciclo.</p>'}</details>`;
+    b += descHtml(t.ciclo, col.m, !col.ind);
     if (!col.ind) {
       const inds = (c.v.ind || {})[col.m] || [], prev = UI.p > 1 ? ((avalOf(t.id, UI.p - 1).ind || {})[col.m] || []) : [];
       b += `<div class="field"><span class="lbl">Indicadores de desempenho</span><p class="hint">Divida a matéria em indicadores (ex.: passe, manchete, jogo 2x2). Cada um ganha uma coluna; o nível da matéria passa a ser a média, a não ser que o escolha à mão.</p>

@@ -2,7 +2,10 @@
 // Fonte: documentos oficiais da DGE para o 5.º–9.º ano e 10.º–12.º ano. As tabelas de níveis de desempenho,
 // as regras de seleção das matérias para a avaliação e as matérias mínimas a lecionar estão transcritas de lá.
 const SUBN = {JOG:'Jogos', JDC:'Jogos Desportivos Coletivos', GIN:'Ginástica', ATL:'Atletismo', ARE:'Atividades Rítmicas Expressivas', PAT:'Patinagem', RAQ:'Raquetas', OUT:'Outras'};
-const SUBD = {'Voleibol':'JDC', 'Basquetebol':'JDC', 'Andebol':'JDC', 'Futebol':'JDC', 'Softbol':'JDC', 'Ginástica de Solo':'GIN', 'Ginástica de Aparelhos (Trampolins)':'GIN', 'Ginástica Acrobática':'GIN', 'Atletismo':'ATL', 'Dança':'ARE', 'Danças Sociais':'ARE', 'Danças Tradicionais':'ARE', 'Patinagem':'PAT', 'Badminton':'RAQ', 'Ténis de Mesa':'RAQ', 'Judo/Luta':'OUT', 'Orientação':'OUT', 'Natação':'OUT', 'Jogos Tradicionais Populares':'OUT'};
+const SUBD = {'Voleibol':'JDC', 'Basquetebol':'JDC', 'Andebol':'JDC', 'Futebol':'JDC', 'Softbol':'JDC', 'Ginástica de Solo':'GIN', 'Ginástica de Aparelhos (Trampolins)':'GIN', 'Ginástica Acrobática':'GIN', 'Atletismo':'ATL', 'Dança':'ARE', 'Danças Sociais':'ARE', 'Danças Tradicionais':'ARE', 'Patinagem':'PAT', 'Badminton':'RAQ', 'Ténis de Mesa':'RAQ', 'Luta':'OUT', 'Judo':'OUT', 'Orientação':'OUT', 'Natação':'OUT', 'Jogos Tradicionais Populares':'OUT',
+  'Futsal':'JDC', 'Corfebol':'JDC', 'Ultimate Frisbee':'JDC', 'Hóquei em Campo':'JDC', 'Kin-Ball':'JDC', 'Rugby T1':'JDC', 'Beisebol':'JDC',
+  'Ginástica Rítmica':'GIN', 'Aeróbica':'ARE', 'Patinagem Artística':'PAT', 'Hóquei em Patins':'PAT', 'Corrida de Patins':'PAT', 'Skateboarding':'PAT',
+  'Ténis':'RAQ', 'Padel':'RAQ', 'Pickleball':'RAQ'};
 // Subdomínio de uma matéria para a avaliação: até ao 9.º ano as Raquetas contam em "Outras"; no 5.º ano os Jogos Tradicionais contam em "Jogos".
 function subOf(m, ano, lec) { let s = SUBD[m] || 'OUT'; if (s === 'RAQ' && ano < (lec ? 9 : 10)) s = 'OUT'; if (s === 'OUT' && m === 'Jogos Tradicionais Populares' && ano === 5) s = 'JOG'; return s; }
 const AE_APF = 'Desenvolver capacidades motoras evidenciando aptidão aeróbia e aptidão neuromuscular, enquadradas na Zona Saudável de Aptidão Física do programa FITescola®, para a sua idade e sexo.';

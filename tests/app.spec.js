@@ -77,7 +77,10 @@ test('competências assinaladas definem o nível', async ({page}) => {
   await page.evaluate(() => { UI.gedOpen = true; UI.domOpen = true; gEditor(); });
   await page.click('#ged [data-a="comp-all"][data-k="I"]');
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('I');
-  await page.click('#ged input[data-in="comp"][data-id="E0"]'); await page.click('#ged input[data-in="comp"][data-id="E1"]'); await page.click('#ged input[data-in="comp"][data-id="E2"]');
+  // Competências oficiais dos Anexos de 2026, com a numeração do anexo (E1, E4.2, ...): metade do Elementar dá PE.
+  await expect(page.locator('#ged input[data-in="comp"][data-id="E4.2"]')).toHaveCount(1);
+  const nE = await page.locator('#ged input[data-in="comp"][data-id^="E"]').count();
+  for (let i = 0; i < Math.ceil(nE / 2); i++) await page.locator('#ged input[data-in="comp"][data-id^="E"]').nth(i).click();
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('PE');
   await expect(page.locator('#ged .domd summary')).toContainText('Para melhorar');
 });
@@ -175,11 +178,13 @@ test('dados antigos do localStorage passam para o IndexedDB e são migrados', as
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.setItem('ef:turmas:t1', JSON.stringify({id: 't1', nome: '8.º C', ciclo: '3', escala: '0-20', alunos: [{id: 'a1', num: 1, nome: 'Rui Sá', sexo: 'M', nasc: '2012-05-01', regime: 'Normal'}]}));
-    localStorage.setItem('ef:aval:t1_1', JSON.stringify({id: 't1_1', turmaId: 't1', p: 1, materias: ['Voleibol'], af: {a1: {Voleibol: 'I'}}, fit: {}, con: {}, av: {}}));
+    localStorage.setItem('ef:aval:t1_1', JSON.stringify({id: 't1_1', turmaId: 't1', p: 1, materias: ['Voleibol', 'Judo/Luta'], af: {a1: {Voleibol: 'I', 'Judo/Luta': 'E'}}, comp: {a1: {Voleibol: {I0: true}}}, fit: {}, con: {}, av: {}}));
   });
   await page.reload();
   await expect.poll(() => page.evaluate(() => Store.mode)).toBe('idb');
-  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 2, 0]);
+  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 3, 0]);
+  // versão 3: Judo/Luta passa a Luta; as competências assinaladas com a numeração antiga saem
+  expect(await page.evaluate(() => [S.aval.t1_1.materias, S.aval.t1_1.af.a1.Luta, Object.keys(S.aval.t1_1.comp.a1)])).toEqual([['Voleibol', 'Luta'], 'E', []]);
   await page.waitForTimeout(700); await page.reload();
   expect(await page.evaluate(() => S.aval.t1_1.af.a1.Voleibol)).toBe('I');
 });

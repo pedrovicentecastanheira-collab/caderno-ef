@@ -58,7 +58,7 @@ function vWelcome() {
     <ul>
       <li>Importação das turmas e alunos a partir do Excel, com fotografias.</li>
       <li>Registo de aulas com sumário e presenças (presente, falta, atraso, sem material, dispensado).</li>
-      <li>Avaliação da turma toda numa grelha: escolhe o nível e toca nos alunos, com os descritivos PNEF.</li>
+      <li>Avaliação da turma toda numa grelha: escolhe o nível e toca nos alunos, com as competências das Aprendizagens Essenciais.</li>
       <li>FITescola com zona calculada pela idade e sexo, Conhecimentos e Atitudes.</li>
       <li>Pauta automática com as regras da sua grelha, exportável para Excel.</li>
     </ul>
@@ -122,8 +122,7 @@ function vAvaliar(t) {
     if (!ms.includes(UI.mat)) UI.mat = ms[0] || null;
     h += `<div class="chips">${ms.map(m => `<button class="chip ${m === UI.mat ? 'on' : ''}" data-a="mat-sel" data-m="${esc(m)}">${esc(m)}</button>`).join('')}<button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
     if (!UI.mat) return h + `<div class="card empty">${ART}<h3>Sem matérias neste período</h3><p>As matérias entram aqui automaticamente quando as indica nas aulas. Também pode adicionar uma diretamente.</p></div></div>`;
-    const d = (PNEF[t.ciclo] || []).find(x => x.m === UI.mat);
-    h += `<details class="desc"><summary>Descritivos PNEF · ${esc(UI.mat)}</summary>` + (d ? `<dl>${['I','E','A'].map(k => `<dt>${k} · ${LVN[k]}</dt><dd>${esc(d[k] || '—')}</dd>`).join('')}</dl><p class="hint" style="margin:0 0 12px">PI, PE e PA: cumpre pelo menos metade dos conteúdos do nível I, E ou A.</p>` : `<p class="hint" style="margin:0 0 12px">A grelha não tem descritivo para esta matéria neste ciclo.</p>`) + '</details>';
+    h += descHtml(t.ciclo, UI.mat);
     h += '<div class="list">';
     als.forEach(al => {
       const off = (REG[regAt(al)] || REG.Normal).af === 0; const cur = ((v.af || {})[al.id] || {})[UI.mat];
