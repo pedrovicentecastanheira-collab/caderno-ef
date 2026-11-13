@@ -38,14 +38,14 @@ test('navegação: 4 separadores, período, definições por secções', async (
   await demo(page);
   await expect(page.locator('#nav [data-a="tab"]')).toHaveCount(4);
   await page.selectOption('select.perchip', '2');
-  expect(await page.evaluate(() => UI.p)).toBe(2);
+  await expect.poll(() => page.evaluate(() => UI.p)).toBe(2);
   await page.click('#top .gear');
   await expect(page.locator('h1.ptitle')).toHaveText('Definições');
   await page.click('[data-a="dsec"][data-k="ver"]');
   await page.click('[data-a="ver"][data-k="zoom"][data-v="1.25"]');
   await page.click('[data-a="ver"][data-k="contrast"][data-v="high"]');
   await page.click('[data-a="ver"][data-k="theme"][data-v="dark"]');
-  expect(await page.evaluate(() => [document.body.style.zoom, document.documentElement.dataset.contrast, document.documentElement.dataset.theme])).toEqual(['1.25', 'high', 'dark']);
+  await expect.poll(() => page.evaluate(() => [document.body.style.zoom, document.documentElement.dataset.contrast, document.documentElement.dataset.theme])).toEqual(['1.25', 'high', 'dark']);
 });
 
 test('grelha: lançar, realçar, desfazer duas vezes e histórico', async ({page}, ti) => {
@@ -77,7 +77,10 @@ test('competências assinaladas definem o nível', async ({page}) => {
   await page.evaluate(() => { UI.gedOpen = true; UI.domOpen = true; gEditor(); });
   await page.click('#ged [data-a="comp-all"][data-k="I"]');
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('I');
-  await page.click('#ged input[data-in="comp"][data-id="E0"]'); await page.click('#ged input[data-in="comp"][data-id="E1"]'); await page.click('#ged input[data-in="comp"][data-id="E2"]');
+  // Competências oficiais dos Anexos de 2026, com a numeração do anexo (E1, E4.2, ...): metade do Elementar dá PE.
+  await expect(page.locator('#ged input[data-in="comp"][data-id="E4.2"]')).toHaveCount(1);
+  const nE = await page.locator('#ged input[data-in="comp"][data-id^="E"]').count();
+  for (let i = 0; i < Math.ceil(nE / 2); i++) await page.locator('#ged input[data-in="comp"][data-id^="E"]').nth(i).click();
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('PE');
   await expect(page.locator('#ged .domd summary')).toContainText('Para melhorar');
 });
@@ -143,7 +146,7 @@ test('lesão ou dispensa: regime do período e D nas aulas novas', async ({page}
 test('calendário do ano abre a aula do dia', async ({page}) => {
   await demo(page); await go(page, 'turma');
   await page.click('[data-a="aview"][data-k="cal"]');
-  expect(await page.locator('.cd.au').count()).toBe(10);
+  await expect(page.locator('.cd.au')).toHaveCount(10);
   await page.locator('.cd.au').first().click();
   await expect(page.locator('#sheet .sh-h h2')).toHaveText('Lição 1');
 });
@@ -175,11 +178,13 @@ test('dados antigos do localStorage passam para o IndexedDB e são migrados', as
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.setItem('ef:turmas:t1', JSON.stringify({id: 't1', nome: '8.º C', ciclo: '3', escala: '0-20', alunos: [{id: 'a1', num: 1, nome: 'Rui Sá', sexo: 'M', nasc: '2012-05-01', regime: 'Normal'}]}));
-    localStorage.setItem('ef:aval:t1_1', JSON.stringify({id: 't1_1', turmaId: 't1', p: 1, materias: ['Voleibol'], af: {a1: {Voleibol: 'I'}}, fit: {}, con: {}, av: {}}));
+    localStorage.setItem('ef:aval:t1_1', JSON.stringify({id: 't1_1', turmaId: 't1', p: 1, materias: ['Voleibol', 'Judo/Luta'], af: {a1: {Voleibol: 'I', 'Judo/Luta': 'E'}}, comp: {a1: {Voleibol: {I0: true}}}, fit: {}, con: {}, av: {}}));
   });
   await page.reload();
   await expect.poll(() => page.evaluate(() => Store.mode)).toBe('idb');
-  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 2, 0]);
+  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 3, 0]);
+  // versão 3: Judo/Luta passa a Luta; as competências assinaladas com a numeração antiga saem
+  expect(await page.evaluate(() => [S.aval.t1_1.materias, S.aval.t1_1.af.a1.Luta, Object.keys(S.aval.t1_1.comp.a1)])).toEqual([['Voleibol', 'Luta'], 'E', []]);
   await page.waitForTimeout(700); await page.reload();
   expect(await page.evaluate(() => S.aval.t1_1.af.a1.Voleibol)).toBe('I');
 });
@@ -195,4 +200,55 @@ test('gráficos, documentos e ferramentas abrem sem erros', async ({page}) => {
   await expect(page.locator('.eq')).toHaveCount(2);
   await page.click('#sheet .sh-h [data-a="sh-close"]');
   await go(page, 'inicio'); await expect(page.locator('.tcard')).toHaveCount(1);
+});
+
+test('avaliação inicial guiada gera prioridades e plano anual; plano de aula com o banco de exercícios', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="tsub"][data-k="planear"]');
+  await page.click('[data-a="ai-sug"]');
+  await page.locator('[data-a="ai-set"][data-l="NI"]').nth(0).click();
+  await page.click('[data-a="ai-rest"][data-l="I"]');
+  await page.locator('[data-a="ai-m"]').nth(1).click(); await page.click('[data-a="ai-rest"][data-l="E"]');
+  await expect(page.locator('.ai-pr')).toHaveCount(2);
+  await expect(page.locator('.ai-pr').first()).toContainText('Voleibol');
+  await expect(page.locator('.ai-g')).toHaveCount(1);
+  await page.click('[data-a="ai-plano"]'); await page.click('[data-a="ai-plano-go"]');
+  expect(await page.evaluate(() => [turma().plano[1][0].m, turma().plano[2][0].m])).toEqual(['Voleibol', 'Basquetebol']);
+  // plano de aula
+  await page.click('[data-a="aula-new"]');
+  await page.click('#pa-det summary'); await page.click('[data-a="pa-pick"]');
+  await page.locator('[data-a="pa-add"]').first().click();
+  await page.locator('[data-a="pa-sug"][data-k="aq"]').first().click();
+  await page.click('[data-a="pa-sum"]');
+  await expect(page.locator('#d-sum')).toHaveValue(/^Voleibol: /);
+  await page.click('[data-a="aula-save"]');
+  expect(await page.evaluate(() => { const a = Object.values(S.aulas).sort((x, y) => (x._u || 0) - (y._u || 0)).pop(); return [a.plano.pf.length, !!a.plano.aq.txt]; })).toEqual([1, true]);
+  // banco: exercício do professor
+  await page.click('[data-a="tsub"][data-k="planear"]'); await page.click('[data-a="plv"][data-k="ex"]');
+  await page.click('[data-a="ex-new"]'); await page.fill('#ex-dn', 'Circuito de manchete'); await page.click('[data-a="ex-save"]');
+  await expect(page.locator('.card.ex', {hasText: 'Circuito de manchete'})).toHaveCount(1);
+});
+
+test('espaços, lembretes, partilha com o grupo e consistência das notas', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="tsub"][data-k="planear"]'); await page.click('[data-a="plv"][data-k="esp"]');
+  await page.selectOption('#esp-s0', 'Pavilhão'); await page.selectOption('#esp-s1', 'Exterior');
+  await expect(page.locator('.esp-r').first()).toContainText('Pavilhão');
+  expect(await page.evaluate(() => [espOf(turma(), '2026-09-14'), espOf(turma(), '2026-09-28')])).toEqual(['Pavilhão', 'Exterior']);
+  await page.locator('[data-a="esp-wk"]').first().click();
+  await expect.poll(() => page.evaluate(() => espOf(turma(), '2026-09-14'))).toBe('Ginásio');
+  // lembretes: lista do dia e teste (sem notificações, aparece dentro da app)
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="lemb"]');
+  await page.click('[data-a="lemb-test"]'); await expect(page.locator('#toast')).toContainText('Caderno EF');
+  // pacote do grupo: exportar e importar noutro caderno
+  const pkg = await page.evaluate(() => { CFG.exs = [{id: 'x1', m: 'Voleibol', lv: 'I', nome: 'Rede baixa 1x1', desc: '', crit: ''}]; const t = turma(), v = avalOf(t.id, 1); v.ind = {Voleibol: [{id: 'i1', n: 'Passe'}]}; S.aval[v.id] = v; return pkgBuild(); });
+  expect(pkg.ind['7'].Voleibol).toEqual(['Passe']);
+  await page.evaluate(p => { CFG.exs = []; const t = turma(), v = avalOf(t.id, UI.p); v.ind = {}; S.aval[v.id] = v; pkgOpen(p); }, pkg);
+  await page.click('[data-a="pkg-go"]');
+  expect(await page.evaluate(() => [CFG.exs.length, avalOf(turma().id, UI.p).ind.Voleibol[0].n])).toEqual([1, 'Passe']);
+  // consistência: nível acima das competências assinaladas trava a exportação
+  await page.evaluate(() => { const t = turma(), v = avalOf(t.id, 1), al = t.alunos[1]; v.af[al.id] = Object.assign(v.af[al.id] || {}, {Voleibol: 'E'}); v.comp = {[al.id]: {Voleibol: {I1: true}}}; S.aval[v.id] = v; UI.p = 1; UI.tab = 'relatorios'; UI.pview = 'pauta'; render(); });
+  await expect(page.locator('details.cons')).toContainText('nível E em Voleibol');
+  await page.click('[data-a="xlsx"]');
+  await expect(page.locator('#sheet .sh-h h2')).toHaveText('Antes de exportar a pauta');
 });

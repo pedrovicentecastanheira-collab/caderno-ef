@@ -9,16 +9,17 @@ function armed(el, label) { if (el.dataset.armed) return true; el.dataset.armed 
 
 function sheetAula(a) {
   const t = turma(); const isNew = !S.aulas[a.id];
-  UI.draft = a;
+  UI.draft = a; UI.paPick = false;
   const all = aulasOf(t.id); const n = isNew ? all.filter(x => x.data <= a.data).length + 1 : all.findIndex(x => x.id === a.id) + 1;
   const last = all.filter(x => x.id !== a.id && x.sumario).pop();
   const body = `<div class="form">
     <div class="grid2"><div class="field"><label for="d-data">Data</label><input type="date" id="d-data" data-in="d-data" value="${esc(a.data)}"></div>
     <div class="field"><span class="lbl">Lição</span><div class="licao" style="padding-top:8px">N.º <span class="num-t">${n}</span> <span class="muted small" style="font-family:var(--f-body);font-weight:500">· ${perLabel(periodOf(a.data), true)}</span></div></div></div>
-    <div class="field"><span class="lbl">Matérias da aula</span><div class="chips">${(MATS[t.ciclo] || GR).map(m => `<button class="chip ${a.materias.includes(m) ? 'on' : ''}" data-a="d-mat" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Matérias da aula</span>${matChips(t, m => `<button class="chip ${a.materias.includes(m) ? 'on' : ''}" data-a="d-mat" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`, a.materias)}</div>
     <div class="field"><label for="d-sum">Sumário</label><textarea id="d-sum" data-in="d-sum" placeholder="Ex.: Voleibol: passe e manchete em situação de 2x2. Condição física: resistência.">${esc(a.sumario)}</textarea>
     <div class="sug">${[...a.materias.flatMap(m => SUMB[m] || []), ...SUMG].map(x => `<button data-a="d-sug" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     ${last ? `<button class="link" style="align-self:flex-start" data-a="d-last">Copiar o sumário da lição anterior</button>` : ''}</div>
+    ${paBox(a)}
     <button class="btn block" data-a="aula-aval">Avaliar nesta aula: níveis e registos +/−</button>
     <div class="field"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Presenças</span><button class="link" data-a="d-allp">Todos presentes</button></div>
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>
@@ -66,8 +67,18 @@ function sheetPaste() {
     `<button class="btn primary" data-a="paste-go">Adicionar alunos</button>`);
 }
 
+// Matérias do ciclo em chips: as nucleares à vista e as alternativas (Anexos de 2026) num grupo que abre.
+function matChips(t, chip, sel) {
+  const ms = MATS[t.ciclo] || GR, nuc = ms.filter(m => !isAlt(t.ciclo, m)).map(chip).join(''), alt = ms.filter(m => isAlt(t.ciclo, m)), ah = alt.map(chip).join('');
+  return `<div class="chips">${nuc}</div>` + (ah ? `<details class="alts"${(sel || []).some(m => alt.includes(m)) ? ' open' : ''}><summary>Matérias alternativas <span class="muted">(${alt.length})</span></summary><div class="chips">${ah}</div></details>` : '');
+}
+// Lista de opções com as matérias alternativas num grupo à parte.
+function matOpts(t, cur) {
+  const ms = MATS[t.ciclo] || GR, o = m => `<option${cur === m ? ' selected' : ''}>${esc(m)}</option>`, alt = ms.filter(m => isAlt(t.ciclo, m));
+  return ms.filter(m => !isAlt(t.ciclo, m)).map(o).join('') + (alt.length ? `<optgroup label="Matérias alternativas">${alt.map(o).join('')}</optgroup>` : '');
+}
 function sheetMatAdd() {
   const t = turma(); const cur = matsOf(t, UI.p);
-  openSheet('Adicionar matéria ao período', `<div class="chips">${(MATS[t.ciclo] || GR).filter(m => !cur.includes(m)).map(m => `<button class="chip" data-a="mat-add-go" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>`);
+  openSheet('Adicionar matéria ao período', matChips(t, m => cur.includes(m) ? '' : `<button class="chip" data-a="mat-add-go" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`));
 }
 
