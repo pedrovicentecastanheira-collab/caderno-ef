@@ -1,0 +1,15 @@
+/* header */
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top-in{display:flex;align-items:center;gap:10px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.brand b{color:var(--accent)}
+.turma-sel{flex:1;min-width:0;position:relative}
+.turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:22px;padding:2px 22px 2px 0;text-overflow:ellipsis}
+.turma-sel::after{content:"";position:absolute;right:4px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:8px;padding:6px 9px;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg.block{display:flex;width:100%}
+.seg.block button{flex:1}
+

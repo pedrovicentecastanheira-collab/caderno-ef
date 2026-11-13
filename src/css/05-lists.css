@@ -1,0 +1,10 @@
+/* lists */
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;min-height:52px}
+.li:first-child{border-top:0}
+.li .n{width:26px;flex:none;font-family:var(--f-display);font-weight:700;font-size:17px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.li .who{flex:1;min-width:0}
+.li .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li .meta{font-size:12.5px;color:var(--muted)}
+.li .end{flex:none;display:flex;gap:6px;align-items:center}
+

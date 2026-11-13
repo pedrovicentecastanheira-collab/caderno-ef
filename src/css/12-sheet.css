@@ -1,0 +1,13 @@
+/* sheet */
+#sheet{position:fixed;inset:0;z-index:50}
+.sh-back{position:absolute;inset:0;background:var(--scrim)}
+.sh{position:absolute;left:0;right:0;bottom:0;max-height:94%;margin:0 auto;max-width:720px;background:var(--bg);border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.sh-h h2{font-size:22px}
+.sh-b{overflow-y:auto;padding:14px max(16px,env(safe-area-inset-right,0px)) 18px max(16px,env(safe-area-inset-left,0px));flex:1;-webkit-overflow-scrolling:touch}
+.sh-f{display:flex;gap:8px;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.sh-f .btn{flex:1}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+#toast.bad{background:var(--bad);color:var(--surface)}
+.loading{padding:60px 16px;text-align:center;color:var(--muted)}

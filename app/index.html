@@ -189,6 +189,8 @@ td.fin{font-family:var(--f-display);font-weight:700;font-size:18px}
 .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.inc{background:var(--surface-2);color:var(--muted)}
 table.ref input{width:64px;min-height:36px;padding:6px;font-size:15px;text-align:center}
 
+.hist{display:flex;flex-direction:column;gap:6px;padding-bottom:12px}
+.hi{display:flex;flex-direction:column;font-size:13.5px;border-bottom:1px solid var(--line);padding-bottom:5px}
 /* summary tiles */
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
@@ -554,9 +556,14 @@ const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLow
 function toast(msg, kind) { const t = $('#toast'); t.textContent = msg; t.className = kind || ''; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 2600); }
 
 /* ---------- storage ---------- */
-const KINDS = ['cfg', 'turmas', 'aulas', 'aval', 'fotos', 'docs'];
+// Três modos: 'cloud' (conta Claude, sincroniza entre aparelhos), 'idb' (IndexedDB neste aparelho, centenas de MB)
+// e 'local' (localStorage, só se o IndexedDB não existir). Na primeira abertura com IndexedDB, os dados do localStorage passam para lá.
+const KINDS = ['cfg', 'turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'];
+const emptyData = () => Object.fromEntries(KINDS.map(k => [k, {}]));
+const LSKEY = new RegExp('^ef:(' + KINDS.join('|') + '):(.+)$');
+const idbReq = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
 const Store = {
-  mode: 'memory', db: null, uid: null, q: {}, t: {}, pend: {},
+  mode: 'memory', db: null, idb: null, uid: null, q: {}, t: {}, pend: {},
   async init() {
     if (window.claude && typeof window.claude.use === 'function') {
       try {
@@ -564,19 +571,36 @@ const Store = {
         if (db && user) { const id = await user.id(); if (id) { this.db = db; this.uid = id; this.mode = 'cloud'; return; } }
       } catch (e) {}
     }
+    try {
+      if (!window.indexedDB) throw new Error('sem IndexedDB');
+      const r = indexedDB.open('caderno-ef', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      this.idb = await idbReq(r); this.mode = 'idb'; await this.migrateLocal(); return;
+    } catch (e) {}
     try { localStorage.setItem('ef:probe', '1'); localStorage.removeItem('ef:probe'); this.mode = 'local'; } catch (e) { this.mode = 'memory'; }
+  },
+  tx(rw) { return this.idb.transaction('kv', rw ? 'readwrite' : 'readonly').objectStore('kv'); },
+  // Copia ef:<tipo>:<id> do localStorage para o IndexedDB e só depois os apaga.
+  async migrateLocal() {
+    const keys = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (LSKEY.test(k || '')) keys.push(k); } } catch (e) { return; }
+    if (!keys.length) return;
+    const st = this.tx(true); keys.forEach(k => { try { st.put(JSON.parse(localStorage.getItem(k)), k.slice(3)); } catch (e) {} });
+    await new Promise((res, rej) => { st.transaction.oncomplete = res; st.transaction.onerror = () => rej(st.transaction.error); });
+    keys.forEach(k => localStorage.removeItem(k));
   },
   col(k) { return this.db.doc('data/users/' + this.uid + '/app').collection(k); },
   async loadAll() {
-    const out = {cfg:{}, turmas:{}, aulas:{}, aval:{}, fotos:{}, docs:{}};
+    const out = emptyData();
     if (this.mode === 'cloud') {
       for (const k of KINDS) {
         const snap = await this.col(k).limit(1000).get();
         snap.docs.forEach(d => { if (d.exists) out[k][d.id] = clone(d.data()); });
       }
+    } else if (this.mode === 'idb') {
+      const st = this.tx(), [keys, vals] = await Promise.all([idbReq(st.getAllKeys()), idbReq(st.getAll())]);
+      keys.forEach((key, i) => { const j = key.indexOf(':'), k = key.slice(0, j); if (out[k]) out[k][key.slice(j + 1)] = vals[i]; });
     } else if (this.mode === 'local') {
       for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i); const m = /^ef:(cfg|turmas|aulas|aval|fotos|docs):(.+)$/.exec(key || '');
+        const key = localStorage.key(i); const m = LSKEY.exec(key || '');
         if (m) { try { out[m[1]][m[2]] = JSON.parse(localStorage.getItem(key)); } catch (e) {} }
       }
     }
@@ -590,6 +614,7 @@ const Store = {
   },
   del(k, id) { const key = k + ':' + id; clearTimeout(this.t[key]); delete this.pend[key]; return this._write(k, id, null); },
   flush() { Object.keys(this.pend).forEach(key => { clearTimeout(this.t[key]); const fn = this.pend[key]; fn && fn(); }); },
+  get local() { return this.mode === 'idb' || this.mode === 'local'; },
   _write(k, id, get) {
     const key = k + ':' + id; const prev = this.q[key] || Promise.resolve();
     const p = prev.then(async () => {
@@ -598,6 +623,8 @@ const Store = {
         const ref = this.col(k).doc(id);
         const go = () => body ? ref.set(body) : ref.delete();
         try { await go(); } catch (e) { if (e && e.code === 'unavailable') { await sleep(500 + Math.random() * 700); await go(); } else throw e; }
+      } else if (this.mode === 'idb') {
+        await idbReq(body ? this.tx(true).put(body, key) : this.tx(true).delete(key));
       } else if (this.mode === 'local') {
         if (body) localStorage.setItem('ef:' + key, JSON.stringify(body)); else localStorage.removeItem('ef:' + key);
       }
@@ -606,9 +633,30 @@ const Store = {
   }
 };
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') Store.flush(); });
-
+/* ---------- versão dos dados e migrações ---------- */
+// Cada mudança na estrutura dos dados tem um número e um passo de conversão: cópias antigas abrem sempre bem.
+const SCHEMA = 2;
+const MIGRATIONS = [
+  // 1 → 2: turma com ano de escolaridade; aluno com lista de lesões e dispensas.
+  {v:2, run(D, touch) {
+    Object.values(D.turmas || {}).forEach(t => {
+      let ch = false;
+      if (t.ano == null) { t.ano = guessAno(t.nome); ch = true; }
+      (t.alunos || []).forEach(al => { if (!Array.isArray(al.disp)) { al.disp = []; ch = true; } });
+      if (ch) touch('turmas', t);
+    });
+  }}
+];
+// Aplica as migrações em falta a um conjunto de dados (os guardados ou uma cópia importada).
+function migrate(D, persist) {
+  D.cfg = D.cfg || {}; const cfg = D.cfg.geral, from = (cfg && cfg.schema) || 1, touched = [];
+  MIGRATIONS.filter(m => m.v > from).forEach(m => m.run(D, (k, o) => touched.push([k, o])));
+  if (cfg) cfg.schema = SCHEMA;
+  if (persist) { touched.forEach(([k, o]) => Store.save(k, o, true)); if (cfg && from < SCHEMA) Store.save('cfg', cfg, true); }
+  return from;
+}
 /* ---------- state ---------- */
-let S = {cfg:{}, turmas:{}, aulas:{}, aval:{}, fotos:{}, docs:{}};
+let S = emptyData();
 let CFG = null;
 const UI = {turma:null, tab:'inicio', p:1, avTab:'mat', avMode:'grelha', glay:null, gcol:null, hide:{mat:false, fit:false, con:false, av:false}, todo:false, sort:null, mat:null, fit:'vaivem', fitref:'vaivem', draft:null};
 let IMP = null, FOTOS = null, DFOTO, UNDO = null;
@@ -627,7 +675,7 @@ const turma = () => S.turmas[UI.turma] || null;
 const alunosOf = t => (t.alunos || []).slice().sort((a, b) => (a.num || 999) - (b.num || 999) || a.nome.localeCompare(b.nome, 'pt'));
 function aulasOf(tid) { return Object.values(S.aulas).filter(a => a.turmaId === tid).sort((a, b) => a.data.localeCompare(b.data) || (a.c || 0) - (b.c || 0)); }
 function avalOf(tid, p) { const id = tid + '_' + p; return S.aval[id] || {id, turmaId:tid, p, materias:[], af:{}, fit:{}, con:{}, av:{}}; }
-function touchAval(v) { S.aval[v.id] = v; Store.save('aval', v); }
+function touchAval(v) { histRecord(v); S.aval[v.id] = v; Store.save('aval', v); }
 function matsOf(t, p) {
   const set = new Set(avalOf(t.id, p).materias || []);
   aulasOf(t.id).forEach(a => { if (periodOf(a.data) === p) (a.materias || []).forEach(m => set.add(m)); });
@@ -707,21 +755,21 @@ function render() {
       '<option value="__new">+ Nova turma…</option></select></div>';
     top += '<div class="seg" role="group" aria-label="Período">' + CFG.per.slice(0, CFG.nper).map((_, i) => `<button data-a="per" data-p="${i + 1}" class="${UI.p === i + 1 ? 'on' : ''}">${perLabel(i + 1)}</button>`).join('') + '</div>';
   }
-  $('#top').innerHTML = '<div class="wrap top-in">' + top + '</div>';
+  morph($('#top'), '<div class="wrap top-in">' + top + '</div>');
   document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px');
   $('#nav').hidden = !t && UI.tab !== 'mais';
-  $('#nav-in').innerHTML = TABS.map(([k, n]) => `<button data-a="tab" data-t="${k}" class="${UI.tab === k ? 'on' : ''}" aria-current="${UI.tab === k ? 'page' : 'false'}">${IC[k]}<span>${n}</span></button>`).join('');
+  morph($('#nav-in'), TABS.map(([k, n]) => `<button data-a="tab" data-t="${k}" class="${UI.tab === k ? 'on' : ''}" aria-current="${UI.tab === k ? 'page' : 'false'}">${IC[k]}<span>${n}</span></button>`).join(''));
   let h;
   if (!ts.length && UI.tab !== 'mais' || !t && UI.tab !== 'mais' && UI.tab !== 'inicio') h = vWelcome();
   else if (UI.tab === 'inicio') h = vInicio();
   else h = ({aulas:vAulas, alunos:vAlunos, avaliar:vAvaliar, pauta:vPauta, mais:vMais})[UI.tab](t);
-  $('#main').innerHTML = '<div class="wrap">' + h + '</div>';
+  morph($('#main'), '<div class="wrap">' + h + '</div>');
   gEditor();
 }
 
 function storageNote() {
   if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
-  if (Store.mode === 'local') return 'Os dados ficam guardados apenas neste telemóvel, não vão para nenhum servidor. Faça cópias de segurança regulares: se apagar a app ou os dados do navegador, perde o que não tiver copiado.';
+  if (Store.local) return 'Os dados ficam guardados apenas neste telemóvel, não vão para nenhum servidor. Faça cópias de segurança regulares: se apagar a app ou os dados do navegador, perde o que não tiver copiado.';
   return 'Este navegador não permite guardar dados: o que registar perde-se ao fechar a página.';
 }
 
@@ -753,7 +801,7 @@ function vAulas(t) {
   const al = nAl ? alertsOf(t, UI.p) : [];
   if (al.length) h += `<div class="card alerts"><span class="eyebrow">Atenção</span>${al.slice(0, UI.allAlerts ? 99 : 3).map(x => `<button class="alrt ${x.k}" data-a="alert-go" data-k="${x.a}"><span class="ai" aria-hidden="true">${x.k === 'bad' ? '!' : x.k === 'warn' ? '•' : 'i'}</span><span>${esc(x.txt)}</span></button>`).join('')}${al.length > 3 && !UI.allAlerts ? `<button class="link" style="align-self:flex-start" data-a="alerts-all">Ver mais ${al.length - 3}</button>` : ''}</div>`;
   h += vPlano(t);
-  if (Store.mode === 'local' && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
+  if (Store.local && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
   h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'}</span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
   if (!list.length) h += `<div class="card empty"><h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
@@ -855,6 +903,25 @@ function avatar(al, cls) {
   return `<span class="${c}" aria-hidden="true">${esc(((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase())}</span>`;
 }
 
+/* ---------- atualização do ecrã sem redesenhar tudo ---------- */
+// Compara o HTML novo com o que está no ecrã e só muda o que mudou: mantém o scroll, o foco, o texto a ser escrito e o que está aberto.
+function morph(el, html) { const t = document.createElement('template'); t.innerHTML = html; morphKids(el, t.content); }
+function morphKids(a, b) {
+  const an = [...a.childNodes], bn = [...b.childNodes];
+  bn.forEach((n, i) => { const o = an[i]; if (!o) a.appendChild(n); else morphNode(o, n); });
+  for (let i = an.length - 1; i >= bn.length; i--) an[i].remove();
+}
+function morphNode(o, n) {
+  if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && o.id !== n.id)) { o.replaceWith(n); return; }
+  if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+  for (const at of [...o.attributes]) if (!n.hasAttribute(at.name) && !(at.name === 'open' && o.nodeName === 'DETAILS')) o.removeAttribute(at.name);
+  for (const at of [...n.attributes]) if (o.getAttribute(at.name) !== at.value) o.setAttribute(at.name, at.value);
+  const focused = o === document.activeElement;
+  if (o.nodeName === 'INPUT') { if (!focused) { o.value = n.getAttribute('value') ?? ''; o.checked = n.hasAttribute('checked'); } return; }
+  if (o.nodeName === 'TEXTAREA') { if (!focused) o.value = n.textContent; return; }
+  morphKids(o, n);
+  if (o.nodeName === 'SELECT' && !focused) { const s = n.querySelector('option[selected]'); o.value = s ? s.value : (o.options[0] ? o.options[0].value : ''); }
+}
 /* ---------- grelha da turma: uma tabela, toque na célula, valores na barra de baixo ---------- */
 const GN = {mat:'Matérias', fit:'FITescola', con:'Conhecimentos', av:'Atitudes'};
 const GLV = {NI:'g0', PI:'g1', I:'g1', PE:'g2', E:'g2', PA:'g3', A:'g3'};
@@ -1014,7 +1081,7 @@ function gChoices(col) {
   if (col.type === 'reg') return [{v:-1, label:'−1', cls:'g0'}, {v:1, label:'+1', cls:'g3'}];
   return null;
 }
-function gSnap(c, col) { UNDO = col.type === 'reg' ? {aula:FOCUS, snap:clone((S.aulas[FOCUS] || {}).reg || {})} : {vid:c.v.id, snap:clone(c.v)}; }
+function gSnap(c, col) { UNDO = col.type === 'reg' ? {aula:FOCUS, snap:clone((S.aulas[FOCUS] || {}).reg || {})} : {vid:c.v.id, snap:clone(c.v)}; UNDOS.push(UNDO); if (UNDOS.length > 40) UNDOS.shift(); }
 // Grava um valor numa célula (val null apaga). Não faz render.
 function gSet(c, col, al, val) {
   const v = c.v, id = al.id, k = col.k, at = (o, key) => (o[key] = o[key] || {});
@@ -1145,7 +1212,7 @@ function gFill(k, val) {
   const {t, c} = gHere(), col = gCols(t, c.v).find(x => x.k === k); if (!col) return 0;
   gSnap(c, col); let n = 0;
   alunosOf(t).forEach(al => { if (!gEditable(col, al)) return; const has = val == null ? gGet(c, col, al) != null : gFilled(c, col, al) && !gShow(c, col, al).auto; if (val == null ? has : !has) { gSet(c, col, al, val); n++; } });
-  if (!n) UNDO = null; return n;
+  if (!n) { UNDOS.pop(); UNDO = UNDOS[UNDOS.length - 1] || null; } return n;
 }
 
 function sheetCol(k) {
@@ -1224,7 +1291,7 @@ function vMais(t) {
     <button class="btn" data-a="doc-crit">Critérios de avaliação (imprimir ou PDF)</button></div>`;
   h += `<div class="sec-h"><h2>Cópia de segurança</h2></div><div class="card form">
     <p class="note">${esc(storageNote())}</p>
-    ${Store.mode === 'local' ? `<p class="hint">Última cópia: ${lastBackup() ? esc(fmtDate(lastBackup(), {day:'numeric', month:'long', year:'numeric'})) : 'nunca'}. Guarde o ficheiro no OneDrive ou no email.</p>` : ''}
+    ${Store.local ? `<p class="hint">Última cópia: ${lastBackup() ? esc(fmtDate(lastBackup(), {day:'numeric', month:'long', year:'numeric'})) : 'nunca'}. Guarde o ficheiro no OneDrive ou no email.</p>` : ''}
     <div class="btn-row"><button class="btn" data-a="backup">Exportar cópia (.json)</button><button class="btn" data-a="restore">Importar cópia</button></div>
     ${t ? `<button class="btn" data-a="xlsx">Exportar ${esc(t.nome)} · ${perLabel(UI.p)} para Excel</button>` : ''}</div>`;
   h += `<div class="sec-h"><h2>Regras de cálculo</h2></div><div class="card small" style="display:grid;gap:6px">
@@ -1293,6 +1360,7 @@ function sheetAluno(al) {
     ${(fe => fe ? fig('Aptidão física ao longo do ano', 'Resultados por período e linha da Zona Saudável', fe) : '')(chFitEvo(t, al))}
     ${(ae => ae ? `<div class="aebox"><b>Aprendizagens Essenciais · ${ae.ano}.º ano</b><div>Atividades físicas: <span class="pill ${aeCls(ae.af)}">${esc(aeLbl(ae, ae.af))}</span> · Aptidão física: <span class="pill ${aeCls(ae.apf)}">${esc(aeLbl(ae, ae.apf))}</span> · Conhecimentos: <span class="pill ${aeCls(ae.con)}">${esc(aeLbl(ae, ae.con))}</span></div><div class="hint">Matérias consideradas: ${ae.sel.length ? ae.sel.map(c => esc(c.m) + ' ' + c.l).join(' · ') : '—'}</div></div>` : '')(aeOf(t, al, UI.p))}
     <div class="field"><span class="lbl">Autoavaliação</span>${autoCompare(t, UI.p, al) || '<p class="hint" style="margin:0">Ainda sem autoavaliação neste período.</p>'}<button class="btn" data-a="auto-open" data-id="${esc(al.id)}">${(avalOf(t.id, UI.p).auto || {})[al.id] ? 'Rever a autoavaliação' : 'Autoavaliação do aluno'}</button></div>
+    <details class="desc"><summary>Histórico de alterações</summary>${histHtml(t, al.id)}</details>
     <button class="btn primary" data-a="rel-one" data-id="${esc(al.id)}">Relatório do aluno (imprimir ou PDF)</button>`}</div>`;
   const foot = (isNew ? '' : `<button class="btn danger" data-a="aluno-del">Remover</button>`) + `<button class="btn primary" data-a="aluno-save">Guardar</button>`;
   openSheet(isNew ? 'Novo aluno' : al.nome, body, foot);
@@ -1325,7 +1393,7 @@ function sheetMatAdd() {
 /* ---------- actions ---------- */
 const A = {
   'tab': el => { UI.tab = el.dataset.t; if (UI.tab !== 'avaliar') SEL = null; render(); window.scrollTo(0, 0); },
-  'per': el => { UI.p = +el.dataset.p; FOCUS = null; SEL = null; UNDO = null; render(); },
+  'per': el => { UI.p = +el.dataset.p; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; render(); },
   'sh-close': () => closeSheet(),
   'avtab': el => { UI.avTab = el.dataset.k; render(); },
   'demo': () => { makeDemo(); },
@@ -1414,13 +1482,13 @@ const A = {
   },
   'nper': el => { CFG.nper = +el.dataset.n; while (CFG.per.length < 3) CFG.per.push({ini:'', fim:''}); if (UI.p > CFG.nper) UI.p = CFG.nper; Store.save('cfg', CFG); render(); },
   'fitref-sel': el => { UI.fitref = el.dataset.k; render(); },
-  'backup': () => { Store.flush(); const data = {app:'Caderno EF', versao:1, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs}; saveFile('caderno-ef-copia-' + today() + '.json', new Blob([JSON.stringify(data, null, 1)], {type:'application/json'})); try { localStorage.setItem('ef:lastBackup', today()); } catch (e) {} },
+  'backup': () => { Store.flush(); const data = {app:'Caderno EF', versao:1, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; saveFile('caderno-ef-copia-' + today() + '.json', new Blob([JSON.stringify(data, null, 1)], {type:'application/json'})); try { localStorage.setItem('ef:lastBackup', today()); } catch (e) {} },
   'restore': () => $('#file-import').click(),
   'restore-go': async () => {
-    const d = A._pending; if (!d) return; closeSheet();
-    for (const k of ['turmas','aulas','aval','fotos','docs']) for (const id of Object.keys(S[k])) await Store.del(k, id);
-    S = {cfg: d.cfg || {}, turmas: d.turmas || {}, aulas: d.aulas || {}, aval: d.aval || {}, fotos: d.fotos || {}, docs: d.docs || {}};
-    if (!S.cfg.geral) S.cfg.geral = defaultCfg(); CFG = S.cfg.geral;
+    const d = A._pending; if (!d) return; closeSheet(); migrate(d);
+    for (const k of ['turmas','aulas','aval','fotos','docs','hist']) for (const id of Object.keys(S[k])) await Store.del(k, id);
+    S = {cfg: d.cfg || {}, turmas: d.turmas || {}, aulas: d.aulas || {}, aval: d.aval || {}, fotos: d.fotos || {}, docs: d.docs || {}, hist: d.hist || {}};
+    if (!S.cfg.geral) S.cfg.geral = defaultCfg(); CFG = S.cfg.geral; Object.keys(SHADOW).forEach(k => delete SHADOW[k]); Object.values(S.aval).forEach(v => SHADOW[v.id] = clone(v));
     for (const k of KINDS) Object.values(S[k]).forEach(o => Store.save(k, o));
     UI.turma = Object.keys(S.turmas)[0] || null; render(); toast('Cópia importada.');
   },
@@ -1437,9 +1505,10 @@ const A = {
   'g-desel': () => { SEL = null; PIN = null; gRefresh(); },
   'g-undo': () => {
     if (!UNDO) return;
-    if (UNDO.aula) { const a = S.aulas[UNDO.aula]; if (a) { a.reg = UNDO.snap; Store.save('aulas', a); } }
-    else { S.aval[UNDO.vid] = UNDO.snap; Store.save('aval', UNDO.snap); }
-    UNDO = null; gRefresh(); toast('Desfeito.');
+    const u = UNDOS.pop() || UNDO;
+    if (u.aula) { const a = S.aulas[u.aula]; if (a) { a.reg = u.snap; Store.save('aulas', a); } }
+    else touchAval(u.snap);
+    UNDO = UNDOS[UNDOS.length - 1] || null; gRefresh(); toast(UNDOS.length ? 'Desfeito. Pode desfazer mais ' + UNDOS.length + '.' : 'Desfeito.');
   },
   'g-grp': el => { UI.hide[el.dataset.g] = !UI.hide[el.dataset.g]; gRefresh(); },
   'g-lay': el => { UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
@@ -1532,8 +1601,8 @@ const A = {
     saveFile(('EF_todas_as_turmas_' + perLabel(UI.p)).replace(/[^\wÀ-ú.-]+/g, '_') + '.xlsx', new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
   },
   'restore-merge': () => {
-    const d = A._pending; if (!d) return; closeSheet(); let n = 0;
-    for (const k of ['turmas', 'aulas', 'aval', 'fotos', 'docs']) Object.values(d[k] || {}).forEach(o => { const cur = S[k][o.id]; if (!cur || (o._u || 0) > (cur._u || 0)) { S[k][o.id] = o; Store.save(k, o, true); n++; } });
+    const d = A._pending; if (!d) return; closeSheet(); migrate(d); let n = 0;
+    for (const k of ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist']) Object.values(d[k] || {}).forEach(o => { const cur = S[k][o.id]; if (!cur || (o._u || 0) > (cur._u || 0)) { S[k][o.id] = o; if (k === 'aval') SHADOW[o.id] = clone(o); Store.save(k, o, true); n++; } });
     if (!UI.turma) UI.turma = Object.keys(S.turmas)[0] || null; render(); toast(n ? n + ' registos atualizados a partir da cópia.' : 'Este aparelho já tinha tudo o que está na cópia.');
   },
   'comp-all': el => compSet(id => id[0] === el.dataset.k, el.dataset.v === '1'),
@@ -1621,7 +1690,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
-  if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UI.sort = null; render(); } }
+  if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); } }
   else if (k === 'd-data') { UI.draft.data = el.value || today(); }
   else if (k === 'avo') { const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; v.av = v.av || {}; v.av[aid] = v.av[aid] || {}; v.av[aid][el.dataset.k] = el.value === '' ? null : +el.value; touchAval(v); updAV(aid); }
   else if (k === 'cfg-ano') { CFG.ano = el.value.trim(); Store.save('cfg', CFG); }
@@ -1757,6 +1826,44 @@ $('#file-foto1').addEventListener('change', async e => {
   $('#a-foto').innerHTML = `<img class="av lg" src="${esc(DFOTO)}" alt="">`; const rm = document.querySelector('[data-a="foto-rm"]'); if (rm) rm.hidden = false;
 });
 
+/* ---------- histórico de alterações e desfazer ---------- */
+// Cada avaliação gravada é comparada com a versão anterior; as diferenças ficam registadas por turma (quem, o quê, de, para, quando).
+const SHADOW = {}, UNDOS = [];
+const HLAB = {af:'Nível', iv:'Indicador', fit:'FITescola', con:'Conhecimentos', av:'Atitudes', comp:'Competências', obs:'Observação', med:'Medidas', auto:'Autoavaliação'};
+const hval = x => x == null || x === '' ? '—' : typeof x === 'object' ? (Object.values(x).every(v => v === true) ? Object.keys(x).length + ' assinaladas' : 'alterado') : String(x).replace('.', ',');
+function histDiff(a, b) {
+  const ev = [];
+  Object.keys(HLAB).forEach(f => {
+    const A = (a || {})[f] || {}, B = (b || {})[f] || {};
+    new Set([...Object.keys(A), ...Object.keys(B)]).forEach(aid => {
+      const x = A[aid], y = B[aid]; if (JSON.stringify(x ?? null) === JSON.stringify(y ?? null)) return;
+      if (f === 'obs' || f === 'med' || f === 'con' || f === 'auto' || typeof x !== 'object' && typeof y !== 'object') { ev.push({aid, f, k:'', de:f === 'auto' ? (x ? 'feita' : '—') : hval(x), para:f === 'auto' ? (y ? 'feita' : '—') : hval(y)}); return; }
+      new Set([...Object.keys(x || {}), ...Object.keys(y || {})]).forEach(k => {
+        const u = (x || {})[k], w = (y || {})[k]; if (JSON.stringify(u ?? null) === JSON.stringify(w ?? null)) return;
+        const lab = f === 'iv' ? (Object.values(b.ind || {}).flat().find(i => i.id === k) || {}).n || k : f === 'av' ? AVN[k] || k : f === 'fit' ? ((FIT.find(z => z.k === k.replace(/_z$/, '')) || {}).n || k) + (/_z$/.test(k) ? ' (zona)' : '') : k;
+        ev.push({aid, f, k:lab, de:f === 'av' && u != null ? u + 1 : hval(u), para:f === 'av' && w != null ? w + 1 : hval(w)});
+      });
+    });
+  });
+  return ev;
+}
+function histRecord(v) {
+  const evs = histDiff(SHADOW[v.id], v); SHADOW[v.id] = clone(v); if (!evs.length || !v.turmaId) return;
+  const h = S.hist[v.turmaId] = S.hist[v.turmaId] || {id:v.turmaId, ev:[]}, now = Date.now();
+  evs.forEach(e => {
+    const last = [...h.ev].reverse().find(x => x.aid === e.aid && x.f === e.f && x.k === e.k && x.p === v.p);
+    if (last && now - last.ts < 8000) { last.para = e.para; last.ts = now; if (last.de === last.para) h.ev.splice(h.ev.indexOf(last), 1); }
+    else h.ev.push(Object.assign({ts:now, p:v.p}, e));
+  });
+  if (h.ev.length > 3000) h.ev.splice(0, h.ev.length - 3000);
+  Store.save('hist', h);
+}
+function histHtml(t, aid, n = 40) {
+  const ev = ((S.hist[t.id] || {}).ev || []).filter(e => !aid || e.aid === aid).slice(-n).reverse();
+  if (!ev.length) return '<p class="hint" style="margin:0">Ainda sem alterações registadas.</p>';
+  const nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome || '';
+  return `<div class="hist">${ev.map(e => `<div class="hi"><span class="muted small">${esc(new Date(e.ts).toLocaleString('pt-PT', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}))} · ${esc(perLabel(e.p))}</span><span>${aid ? '' : `<b>${esc(nm(e.aid))}</b> · `}${esc(HLAB[e.f])}${e.k ? ' · ' + esc(e.k) : ''}: <span class="muted">${esc(e.de)}</span> → <b>${esc(e.para)}</b></span></div>`).join('')}</div>`;
+}
 /* ---------- files ---------- */
 async function saveFile(name, blob) {
   let dl = null;
@@ -2768,9 +2875,11 @@ function makeDemo() {
 (async function boot() {
   loadUI();
   await Store.init();
-  if (Store.mode === 'local' && navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }
-  try { S = await Store.loadAll(); } catch (e) { S = {cfg:{}, turmas:{}, aulas:{}, aval:{}, fotos:{}, docs:{}}; toast('Não foi possível ler os dados guardados. Recarregue a página.', 'bad'); }
-  if (!S.cfg.geral) S.cfg.geral = defaultCfg();
+  if (Store.local && navigator.storage && navigator.storage.persist) { try { navigator.storage.persist(); } catch (e) {} }
+  try { S = await Store.loadAll(); } catch (e) { S = emptyData(); toast('Não foi possível ler os dados guardados. Recarregue a página.', 'bad'); }
+  if (!S.cfg.geral) S.cfg.geral = defaultCfg(); // sem versão: os dados que já existam passam por todas as migrações
+  migrate(S, true);
+  Object.values(S.aval).forEach(v => SHADOW[v.id] = clone(v));
   CFG = S.cfg.geral; CFG.fit = Object.assign(clone(FITREF), CFG.fit || {}); while (CFG.per.length < 3) CFG.per.push({ini:'', fim:''});
   if (!S.turmas[UI.turma]) UI.turma = Object.keys(S.turmas)[0] || null;
   if (!UI._pSet) { UI.p = periodOf(today()); }

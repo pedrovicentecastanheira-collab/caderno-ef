@@ -1,0 +1,11 @@
+/* one column at a time (phone) */
+.gcnav{display:grid;grid-template-columns:44px 1fr 44px;gap:6px;align-items:center}
+.gcnav select{font-weight:600}
+.gcl{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;touch-action:pan-y}
+.gcr{display:flex;align-items:center;gap:12px;padding:8px 12px;border:0;border-top:1px solid var(--line);background:none;text-align:left;width:100%;min-height:58px}
+.gcr:first-child{border-top:0}
+.gcr .who{flex:1;min-width:0;display:flex;flex-direction:column}
+.gcr .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcr .meta{font-size:12.5px;color:var(--muted)}
+.gcr .c{flex:none;min-width:58px;height:42px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:18px;background:var(--surface-2);padding:0 8px}
+.gcr.sel{background:var(--accent-soft)}

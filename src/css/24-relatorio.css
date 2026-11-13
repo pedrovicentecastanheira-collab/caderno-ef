@@ -1,0 +1,48 @@
+/* report (always printed in light colors) */
+#print{display:none}
+body.printing{overflow:hidden}
+body.printing #print{display:block;position:fixed;inset:0;z-index:80;overflow:auto;background:#DDE2E8}
+.pbar{position:sticky;top:0;display:flex;gap:8px;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line);z-index:2}
+.pbar .sp{flex:1}
+.rel{--hm1:#13202D; --hm3:#fff; --hm4:#fff; --ink:#13202D; --muted:#5A6879; --line:#D8DFE7; --surface:#FFFFFF; --surface-2:#F4F6F8; --ok:#1C7C46; --warn:#9C620E; --bad:#BF352D; --accent:#1C55CF; --v1:#2a78d6; --v2:#eb6834; --v3:#1baf7a; --v4:#eda100; --v5:#e87ba4; --v6:#008300; --v7:#6250d6; --v8:#e34948; --q1:#86b6ef; --q2:#3987e5; --q3:#1c5cab; --q4:#0d366b; --st-good:#0ca30c; --st-crit:#d03b3b; --st-warn:#fab219; --v-none:#C9D0D8;
+  color-scheme:light;background:#fff;color:var(--ink);max-width:190mm;margin:16px auto;padding:12mm;box-shadow:0 4px 18px rgba(0,0,0,.15);font-size:12.5px;line-height:1.45}
+.rel h1{font-size:26px} .rel h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border-bottom:1.5px solid var(--accent);padding-bottom:3px;margin:16px 0 8px}
+.rel-h{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.rel-k{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.rel-s{color:var(--muted);font-size:12px}
+.rel-id{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center}
+.rel-id img,.rph{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--surface-2);display:grid;place-items:center;font-family:var(--f-display);font-size:30px;font-weight:700;color:var(--accent)}
+.rel-fin{border:2px solid var(--line);border-radius:12px;padding:8px 16px;text-align:center;display:flex;flex-direction:column;min-width:110px}
+.rel-fin b{font-family:var(--f-display);font-size:40px;line-height:1}
+.rel-fin span{font-size:12px;color:var(--muted);font-weight:600}
+.rel-fin.ok{border-color:var(--ok)} .rel-fin.ok b{color:var(--ok)} .rel-fin.bad{border-color:var(--bad)} .rel-fin.bad b{color:var(--bad)}
+.rel-t{width:100%;border-collapse:collapse;font-size:12.5px;break-inside:avoid}
+.rel-t th,.rel-t td{border:1px solid var(--line);padding:5px 8px;text-align:center;white-space:normal}
+.rel-t th{background:var(--surface-2);font-size:11px}
+.rel-t .l{text-align:left}
+.rel h2{break-after:avoid}
+.rel-m{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px;break-inside:avoid}
+.rel-mh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.rel-mh b{font-size:14px}
+.rel-sc{display:inline-flex;gap:2px}
+.rel-sc i{font-style:normal;font-family:var(--f-display);font-weight:700;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.rel-sc i.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.rel .dom{max-height:none;background:var(--surface-2)}
+.rel-as{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;break-inside:avoid}
+.rel-as div{border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center;display:flex;flex-direction:column}
+.rel-as b{font-family:var(--f-display);font-size:22px}
+.rel-as span{font-size:11px;color:var(--muted)}
+.rel-obs{border:1px solid var(--line);border-radius:8px;min-height:64px;padding:8px 10px}
+.rel-sig{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px;break-inside:avoid}
+.rel-sig div{border-top:1px solid var(--ink);padding-top:4px;font-size:11.5px;color:var(--muted)}
+@media print{
+  body.printing{overflow:visible;background:#fff}
+  body.printing > *:not(#print){display:none!important}
+  body.printing #print{position:static;overflow:visible;background:#fff}
+  .noprint{display:none!important}
+  .rel{margin:0;padding:0;box-shadow:none;max-width:none;break-after:page}
+  .rel:last-child{break-after:auto}
+  @page{size:A4;margin:12mm}
+}
+@media (prefers-reduced-motion: no-preference){ .sh{animation:up .18s ease-out} @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}} }
+@media (max-width:380px){ .ps{grid-template-columns:repeat(5,34px)} .ps button{height:36px} .seg button{padding:6px 7px} }

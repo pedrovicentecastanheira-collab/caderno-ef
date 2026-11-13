@@ -1,0 +1,7 @@
+/* portrait */
+.retrato{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:16px;align-items:start}
+@media (max-width:620px){ .retrato{grid-template-columns:1fr} }
+.cbars{display:flex;flex-direction:column;gap:8px}
+.cb-h{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
+.cb-b{display:block;height:12px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-top:3px}
+.cb-b i{display:block;height:100%;border-radius:0 4px 4px 0}
