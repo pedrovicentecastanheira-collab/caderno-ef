@@ -38,14 +38,14 @@ test('navegação: 4 separadores, período, definições por secções', async (
   await demo(page);
   await expect(page.locator('#nav [data-a="tab"]')).toHaveCount(4);
   await page.selectOption('select.perchip', '2');
-  expect(await page.evaluate(() => UI.p)).toBe(2);
+  await expect.poll(() => page.evaluate(() => UI.p)).toBe(2);
   await page.click('#top .gear');
   await expect(page.locator('h1.ptitle')).toHaveText('Definições');
   await page.click('[data-a="dsec"][data-k="ver"]');
   await page.click('[data-a="ver"][data-k="zoom"][data-v="1.25"]');
   await page.click('[data-a="ver"][data-k="contrast"][data-v="high"]');
   await page.click('[data-a="ver"][data-k="theme"][data-v="dark"]');
-  expect(await page.evaluate(() => [document.body.style.zoom, document.documentElement.dataset.contrast, document.documentElement.dataset.theme])).toEqual(['1.25', 'high', 'dark']);
+  await expect.poll(() => page.evaluate(() => [document.body.style.zoom, document.documentElement.dataset.contrast, document.documentElement.dataset.theme])).toEqual(['1.25', 'high', 'dark']);
 });
 
 test('grelha: lançar, realçar, desfazer duas vezes e histórico', async ({page}, ti) => {
@@ -146,7 +146,7 @@ test('lesão ou dispensa: regime do período e D nas aulas novas', async ({page}
 test('calendário do ano abre a aula do dia', async ({page}) => {
   await demo(page); await go(page, 'turma');
   await page.click('[data-a="aview"][data-k="cal"]');
-  expect(await page.locator('.cd.au').count()).toBe(10);
+  await expect(page.locator('.cd.au')).toHaveCount(10);
   await page.locator('.cd.au').first().click();
   await expect(page.locator('#sheet .sh-h h2')).toHaveText('Lição 1');
 });
@@ -200,4 +200,31 @@ test('gráficos, documentos e ferramentas abrem sem erros', async ({page}) => {
   await expect(page.locator('.eq')).toHaveCount(2);
   await page.click('#sheet .sh-h [data-a="sh-close"]');
   await go(page, 'inicio'); await expect(page.locator('.tcard')).toHaveCount(1);
+});
+
+test('avaliação inicial guiada gera prioridades e plano anual; plano de aula com o banco de exercícios', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="tsub"][data-k="planear"]');
+  await page.click('[data-a="ai-sug"]');
+  await page.locator('[data-a="ai-set"][data-l="NI"]').nth(0).click();
+  await page.click('[data-a="ai-rest"][data-l="I"]');
+  await page.locator('[data-a="ai-m"]').nth(1).click(); await page.click('[data-a="ai-rest"][data-l="E"]');
+  await expect(page.locator('.ai-pr')).toHaveCount(2);
+  await expect(page.locator('.ai-pr').first()).toContainText('Voleibol');
+  await expect(page.locator('.ai-g')).toHaveCount(1);
+  await page.click('[data-a="ai-plano"]'); await page.click('[data-a="ai-plano-go"]');
+  expect(await page.evaluate(() => [turma().plano[1][0].m, turma().plano[2][0].m])).toEqual(['Voleibol', 'Basquetebol']);
+  // plano de aula
+  await page.click('[data-a="aula-new"]');
+  await page.click('#pa-det summary'); await page.click('[data-a="pa-pick"]');
+  await page.locator('[data-a="pa-add"]').first().click();
+  await page.locator('[data-a="pa-sug"][data-k="aq"]').first().click();
+  await page.click('[data-a="pa-sum"]');
+  await expect(page.locator('#d-sum')).toHaveValue(/^Voleibol: /);
+  await page.click('[data-a="aula-save"]');
+  expect(await page.evaluate(() => { const a = Object.values(S.aulas).sort((x, y) => (x._u || 0) - (y._u || 0)).pop(); return [a.plano.pf.length, !!a.plano.aq.txt]; })).toEqual([1, true]);
+  // banco: exercício do professor
+  await page.click('[data-a="tsub"][data-k="planear"]'); await page.click('[data-a="plv"][data-k="ex"]');
+  await page.click('[data-a="ex-new"]'); await page.fill('#ex-dn', 'Circuito de manchete'); await page.click('[data-a="ex-save"]');
+  await expect(page.locator('.card.ex', {hasText: 'Circuito de manchete'})).toHaveCount(1);
 });

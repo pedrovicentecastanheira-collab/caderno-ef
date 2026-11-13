@@ -558,6 +558,53 @@ body.wide .wrap{max-width:1200px}
 .wiz-h{border-left:4px solid var(--accent)}
 /* toques de pelo menos 44 px em ecrãs táteis */
 @media (pointer:coarse){ button.chip,.seg button,.gt-dom button,.perchip,.btn,.lv,.icon-btn{min-height:44px} .icon-btn{min-width:44px} .link{min-height:40px} }
+/* planear: avaliação inicial, banco de exercícios e plano de aula */
+.pl-b.big{height:10px;border-radius:999px}
+.pl-b.big i{border-radius:999px;background:var(--tc,var(--accent))}
+.ai-reg .ai-r{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.ai-reg .ai-r:first-of-type{border-top:0}
+.ai-r .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.ai-r .n{width:22px;text-align:right;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+.ai-lv{display:inline-flex;gap:4px;flex:none}
+.ai-lv button{min-width:40px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-display);font-weight:700;font-size:13.5px;color:var(--muted)}
+.ai-lv button.on{background:var(--gc);border-color:var(--gc);color:#fff}
+.ai-gs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.ai-g{border-radius:12px;padding:10px 12px;background:var(--gs);border:1px solid color-mix(in srgb,var(--gc) 30%,transparent)}
+.ai-g>b{display:block;color:var(--gc);font-size:13px;margin-bottom:6px}
+.ai-g>div{display:flex;flex-wrap:wrap;gap:4px}
+.ai-g span{background:var(--surface);border-radius:999px;padding:2px 8px;font-size:12.5px}
+.ai-pr{display:grid;grid-template-columns:24px minmax(0,1.2fr) minmax(0,2fr);gap:10px;align-items:center;padding:6px 0}
+.ai-i{font-family:var(--f-display);font-weight:700;color:var(--muted);text-align:right}
+.ai-m{font-size:14px;font-weight:600;min-width:0}
+.ai-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.ai-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11.5px;font-weight:700;color:#fff;background:var(--gc);min-width:18px}
+.legend .sw{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--gc);margin-right:4px;vertical-align:-1px}
+@media (max-width:560px){.ai-pr{grid-template-columns:20px 1fr}.ai-bar{grid-column:2}}
+.ex-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.card.ex{padding:12px 14px}
+.ex-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ex-h b{flex:1;min-width:0;font-size:14.5px}
+.ex-h .btn,.ex-h .link{margin-left:auto}
+.pill.lvp{background:var(--gs,var(--surface-2));color:var(--gc,var(--muted));font-family:var(--f-display);min-width:24px;text-align:center;padding:2px 7px}
+.btn.sm{padding:6px 12px;font-size:13px;min-height:0}
+details.aplano{flex:none;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface)}
+details.aplano>summary{cursor:pointer;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+details.aplano[open]>summary{margin-bottom:10px}
+.pa-tot{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pa-tot .pl-b{flex:1;height:10px;border-radius:999px}
+.pa-tot .pl-b i{background:var(--ok);border-radius:999px}
+.pa-tot .pl-b i.over{background:var(--bad)}
+.pa-tot input,.pa-ph input,.pa-ex input[type=number]{width:58px;padding:4px 6px;text-align:center}
+.pa-p{border-top:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:6px}
+.pa-ph{display:flex;align-items:center;gap:6px}
+.pa-ph b{flex:1}
+.pa-ex{display:flex;align-items:center;gap:6px}
+.pa-exn{flex:1;min-width:0;display:flex;flex-direction:column}
+.pa-exn input{width:100%;padding:5px 8px}
+.pa-exn .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-pick{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;padding:4px;margin-top:4px;background:var(--surface-2);border-radius:12px}
+.chip.on .muted{color:inherit;opacity:.8}
+@media (max-width:560px){.pa-ex{flex-wrap:wrap}.pa-exn{flex:1 1 calc(100% - 44px)}.pa-ex input[type=number]{margin-left:38px}}
 </style>
 </head>
 <body>
@@ -883,10 +930,11 @@ function vTurma(t) {
     return `<div class="split"><div class="split-l">${vTurmaSeg(sub)}${vAlunos(t)}</div><div class="split-r">${vAlunoPage(t, sel, true)}</div></div>`;
   }
   if (sub === 'alunos' && al) return vAlunoPage(t, al, false);
+  if (sub === 'planear') return `<div class="stack">${vTurmaSeg(sub)}${vPlanear(t)}</div>`;
   return `<div class="stack">${vTurmaSeg(sub)}</div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
 }
 function vTurmaSeg(sub) {
-  return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos'], ['planear', 'Planear']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
@@ -1504,7 +1552,7 @@ function armed(el, label) { if (el.dataset.armed) return true; el.dataset.armed 
 
 function sheetAula(a) {
   const t = turma(); const isNew = !S.aulas[a.id];
-  UI.draft = a;
+  UI.draft = a; UI.paPick = false;
   const all = aulasOf(t.id); const n = isNew ? all.filter(x => x.data <= a.data).length + 1 : all.findIndex(x => x.id === a.id) + 1;
   const last = all.filter(x => x.id !== a.id && x.sumario).pop();
   const body = `<div class="form">
@@ -1514,6 +1562,7 @@ function sheetAula(a) {
     <div class="field"><label for="d-sum">Sumário</label><textarea id="d-sum" data-in="d-sum" placeholder="Ex.: Voleibol: passe e manchete em situação de 2x2. Condição física: resistência.">${esc(a.sumario)}</textarea>
     <div class="sug">${[...a.materias.flatMap(m => SUMB[m] || []), ...SUMG].map(x => `<button data-a="d-sug" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     ${last ? `<button class="link" style="align-self:flex-start" data-a="d-last">Copiar o sumário da lição anterior</button>` : ''}</div>
+    ${paBox(a)}
     <button class="btn block" data-a="aula-aval">Avaliar nesta aula: níveis e registos +/−</button>
     <div class="field"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Presenças</span><button class="link" data-a="d-allp">Todos presentes</button></div>
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>
@@ -1778,7 +1827,7 @@ const A = {
   'cd-reset': () => { const T = TOOL; clearInterval(T.iv); wake(false); T.run = false; T.n = 0; $('#cd-n').textContent = '0'; $('#cd-b').style.width = '0'; $('#cd-go').textContent = 'Iniciar'; },
   'eq-go': () => { eqMake(); $('#eq-out').innerHTML = eqHtml(); },
   'eq-copy': async () => { const t = turma(), E = UI.eq, nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome; const txt = E.res.map((ids, i) => 'Equipa ' + (i + 1) + ': ' + ids.map(nm).join(', ')).join('\n'); try { await navigator.clipboard.writeText(txt); toast('Equipas copiadas.'); } catch (e) { toast('Não foi possível copiar.', 'bad'); } },
-  'alert-go': el => { const k = el.dataset.k; if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
+  'alert-go': el => { const k = el.dataset.k; if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
   'alerts-all': () => { UI.allAlerts = true; render(); },
   'plano-edit': () => sheetPlano(),
   'pl-add': () => { const t = turma(), ms = MATS[t.ciclo] || GR, used = UI.draft.map(u => u.m); UI.draft.push({m:ms.find(m => !used.includes(m)) || ms[0], n:8}); planoRender(); },
@@ -2536,6 +2585,7 @@ function alertsOf(t, p) {
   const fim = CFG.per[p - 1].fim, dias = fim ? Math.round((new Date(fim + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 864e5) : 99, inc = rows.filter(x => x.r.EST === 'Incompleto').length;
   if (dias >= 0 && dias <= 21 && inc) out.push({k:'warn', txt:`Faltam ${dias} dias para o fim do ${perLabel(p, true)} e ${inc} ${inc === 1 ? 'aluno tem' : 'alunos têm'} a avaliação incompleta.`, a:'todo'});
   matsOf(t, p).forEach(m => { const n = als.filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0 && !lvOf(v, al.id, m)).length; const dadas = aulasOf(t.id).filter(a => periodOf(a.data) === p && (a.materias || []).includes(m)).length; if (n && dadas >= 4) out.push({k:'warn', txt:`${m}: ${dadas} aulas dadas e ${n} ${n === 1 ? 'aluno ainda sem nível' : 'alunos ainda sem nível'}.`, a:'todo'}); });
+  if (p === 1 && t.ciclo !== '1' && als.length) { const pr = aiProg(t), d = diasAte(aiPrazo()); if (d >= -7 && d <= 45 && (!pr.tot || pr.done < pr.tot)) out.push({k:d <= 10 ? 'bad' : 'warn', txt:pr.tot ? `Avaliação inicial: ${pr.done} de ${pr.tot} registos; ${d >= 0 ? 'faltam ' + d + ' dias para ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) : 'o prazo de ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) + ' passou'}.` : `Avaliação inicial por fazer (até ${fmtDate(aiPrazo(), {day:'numeric', month:'long'})}): escolha as matérias e registe os níveis.`, a:'ai'}); }
   const np = rows.filter(x => x.r.EST === 'Não apto'); if (np.length) out.push({k:'bad', txt:`Previsão de Não apto: ${np.map(x => x.al.nome.split(' ')[0]).join(', ')}.`, a:'pauta'});
   if (p > 1) { const dn = als.filter(al => { const a = calc(t, p - 1, al).zones.vaivem, b = calc(t, p, al).zones.vaivem; return a != null && b != null && b < a; }); if (dn.length) out.push({k:'warn', txt:`Vaivém: ${dn.length} ${dn.length === 1 ? 'aluno desceu' : 'alunos desceram'} de zona face ao período anterior (${dn.map(a => a.nome.split(' ')[0]).join(', ')}).`, a:'fit'}); }
   const sd = als.filter(al => !al.sexo || !al.nasc).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou data de nascimento: necessários para as zonas do FITescola.`, a:'alunos'});
@@ -3199,6 +3249,327 @@ function makeDemo() {
   normTab(); if (!S.turmas[UI.turma] && UI.tab !== 'defs') UI.tab = 'inicio';
   render();
 })();
+/* ---------- banco de exercícios ---------- */
+// Exercícios de base por matéria e nível (I = Introdução, E = Elementar, A = Avançado). O professor junta os seus,
+// que ficam em CFG.exs e entram também na partilha com o grupo. Cada exercício tem nome, organização e critérios de êxito.
+const EXB = {
+  'Voleibol':[
+    ['I', 'Toque de dedos a pares', 'A pares, 3 m de distância, bola afável. Lança-se a bola e o colega devolve em toque de dedos; depois sequências contínuas.', 'Mãos em concha acima da testa; pernas fletidas antes do contacto; extensão de braços e pernas.'],
+    ['I', 'Manchete em sequência', 'A pares: um lança baixo, o outro devolve em manchete para as mãos do lançador. 10 repetições e troca.', 'Braços estendidos e unidos; contacto nos antebraços; desloca-se para ficar atrás da bola.'],
+    ['I', 'Serviço por baixo ao alvo', 'Serviço por baixo a 3–4,5 m da rede, para meio-campo indicado (arcos no chão como alvos).', 'Pé contrário à mão que bate à frente; bola largada à frente; braço em pêndulo.'],
+    ['I', 'Jogo 2x2 em campo reduzido', 'Campo 6 m x 3 m, rede a 2 m, bola afável. Obrigatório passar ao companheiro antes de enviar.', 'Chama a bola; posiciona-se debaixo da trajetória; envia para zona livre.'],
+    ['E', 'Jogo 4x4 com rotação', 'Campo 12 m x 6 m. Serviço por baixo ou por cima; 3 toques por equipa; rotação a cada serviço ganho.', 'Receção dirigida ao passador; passe alto para a frente; ocupação equilibrada do campo.'],
+    ['E', 'Remate em apoio após passe', 'Em coluna junto à zona 4: o passador coloca a bola alta e o atacante remata em apoio para o meio-campo contrário.', 'Chamada a dois pés; armação do braço; batimento no ponto mais alto.'],
+    ['E', 'Defesa baixa de remate', 'Um atacante remata de cima de um banco; dois defensores em posição baixa defendem em manchete para o alvo.', 'Posição baixa e equilibrada; braços orientados para o alvo; sem balanço de braços.'],
+    ['A', 'Jogo 6x6 com sistema 3:3', 'Jogo formal com passador definido. Distribuição para o atacante de zona 2 ou 4 e bloco individual.', 'Receção a 2–3 m da rede; bloco no tempo do remate; cobertura ao atacante.']],
+  'Basquetebol':[
+    ['I', 'Drible com mudança de mão', 'Percurso de cones em ziguezague; drible de progressão e de proteção, mudando de mão em cada cone.', 'Bola ao lado e à frente; olhar levantado; mão do lado contrário ao defensor.'],
+    ['I', 'Passe e corte', 'Grupos de 3: passa de peito ou picado e corta para o cesto para receber de novo.', 'Passe tenso à altura do peito; corte com mudança de ritmo; mãos-alvo para receber.'],
+    ['I', 'Lançamento na passada', 'Em duas colunas: drible, dois apoios e lançamento na passada, com ressalto e passe à coluna seguinte.', 'Ritmo direita-esquerda (mão direita); impulsão vertical; tabela no quadrado.'],
+    ['I', 'Jogo 3x3 a meio-campo', 'Meio-campo, um cesto. Sem drible na primeira posse; recupera-se a bola atrás da linha de 3 pontos.', 'Ocupa espaços livres; passa e desmarca-se; defesa individual.'],
+    ['E', 'Passe e vai com bloqueio direto', '3x3: o portador passa e vai bloquear o defensor do colega com bola, que ataca o cesto.', 'Bloqueio parado, de frente; uso do bloqueio pelo lado certo; rolar para o cesto.'],
+    ['E', 'Contra-ataque 3x2', 'Após ressalto defensivo, saída rápida em 3 corredores contra 2 defensores recuados.', 'Bola no corredor central; ocupação dos corredores laterais; finalização em vantagem.'],
+    ['E', 'Lançamento em suspensão', 'Receção a 3–4 m do cesto, enquadramento e lançamento em suspensão. 5 posições.', 'Pés alinhados com o cesto; extensão completa; flexão do pulso no final.'],
+    ['A', 'Jogo 5x5 com defesa à zona', 'Jogo formal; a defesa alterna entre individual e zona 2:3 a cada 3 minutos.', 'Circulação rápida da bola; ataque aos espaços entre defensores; ressalto ofensivo.']],
+  'Andebol':[
+    ['I', 'Passe e receção em deslocamento', 'Em trios, ao longo do campo, passe de ombro em corrida, sem drible.', 'Braço armado atrás; receção com as duas mãos; passa para a frente do colega.'],
+    ['I', 'Remate em salto', 'Em coluna: receção, três apoios e remate em salto na zona dos 9 m sobre o guarda-redes.', 'Impulsão no pé contrário ao braço que remata; remate no ponto alto; para os cantos.'],
+    ['I', 'Jogo 4x4 sem drible', 'Meio-campo com balizas reduzidas e área. Obrigatório 3 passes antes de rematar.', 'Desmarcação para a frente; defesa entre o adversário e a baliza; respeito pela área.'],
+    ['E', 'Penetração e passe ao pivot', '3x2 frente à área: o lateral penetra, fixa o defensor e passa ao pivot ou à ponta.', 'Fixação do defensor antes de passar; pivot de costas para a baliza; remate da ponta em ângulo.'],
+    ['E', 'Defesa 6:0 com deslocamentos', 'Seis defensores na linha dos 6 m; deslocam-se lateralmente acompanhando a circulação da bola.', 'Saída ao portador; cobertura ao colega; braços altos no remate.'],
+    ['A', 'Jogo 7x7 com contra-ataque', 'Jogo formal; um golo de contra-ataque vale dois.', 'Saída rápida do guarda-redes; ocupação dos corredores; transição defensiva.']],
+  'Futebol':[
+    ['I', 'Condução e passe', 'Percurso de cones em condução com as duas faces do pé, terminando num passe para um alvo a 8 m.', 'Bola perto do pé; olhar levantado; passe com a parte interna do pé.'],
+    ['I', 'Receção orientada a pares', 'A pares a 10 m: recebe com a parte interna orientando a bola para o lado e devolve.', 'Amortece a bola; orienta para o espaço livre; passa com o pé de apoio ao lado da bola.'],
+    ['I', 'Jogo 4x4 em campo reduzido', 'Campo 30 m x 20 m, balizas pequenas, sem guarda-redes.', 'Ocupa espaços livres; passa ao colega desmarcado; recupera a posição defensiva.'],
+    ['E', 'Remate após combinação', 'Tabela com um apoio à entrada da área e remate à baliza com guarda-redes.', 'Passe tenso para o apoio; desmarcação em profundidade; remate de peito do pé.'],
+    ['E', 'Jogo 5x5 com três zonas', 'Campo dividido em defesa, meio-campo e ataque; obrigatório a bola passar pelas três zonas.', 'Largura e profundidade no ataque; contenção e cobertura na defesa.'],
+    ['A', 'Jogo 7x7 com pressing', 'Jogo formal; a equipa que recupera a bola no meio-campo contrário ganha um ponto extra.', 'Pressão ao portador; fecho das linhas de passe; transição rápida.']],
+  'Futsal':[
+    ['I', 'Condução com a sola', 'Condução em espaço reduzido com a sola do pé, mudando de direção a cada sinal.', 'Bola sempre controlada; corpo entre o adversário e a bola.'],
+    ['I', 'Jogo 3x3 com guarda-redes', 'Meio-campo de futsal, balizas oficiais. O guarda-redes repõe com as mãos.', 'Passe rasteiro; desmarcação após passar; defesa ao portador.'],
+    ['E', 'Rotações em 4x0', 'Quatro jogadores em losango: passa e troca de posição com o colega do lado.', 'Ocupação dos quatro vértices; passe ao pé de apoio; comunicação.'],
+    ['E', 'Jogo 5x5 com regra de 4 segundos', 'Jogo formal; cada jogador só pode ter a bola 4 segundos.', 'Apoios próximos do portador; jogo rápido; pressão alta.']],
+  'Ginástica de Solo':[
+    ['I', 'Rolamento à frente engrupado', 'Em colchão inclinado e depois plano: rolamento à frente terminando de pé, sem apoio das mãos.', 'Queixo ao peito; apoio da nuca; pernas fletidas junto ao peito.'],
+    ['I', 'Rolamento à retaguarda', 'Em colchão inclinado: rolamento à retaguarda com repulsão dos braços, terminando de pé.', 'Mãos junto às orelhas; corpo engrupado; repulsão no final.'],
+    ['I', 'Apoio facial invertido com ajuda', 'Contra a parede ou com ajuda de dois colegas: apoio facial invertido, com regresso controlado.', 'Mãos à largura dos ombros; braços estendidos; olhar entre as mãos.'],
+    ['E', 'Roda', 'Com linha no chão: roda com apoio sucessivo das mãos e dos pés na mesma linha.', 'Braços e pernas estendidos; passagem pela vertical; saída de frente para a linha.'],
+    ['E', 'Sequência de solo', 'Sequência de 5–6 elementos com ligação: rolamentos, roda, avião, salto de gato e posição de equilíbrio.', 'Ligação sem paragens; amplitude; postura de início e final.'],
+    ['A', 'Rodada', 'Com ajuda: corrida, chamada, rodada e salto em extensão a seguir.', 'Quarto de volta antes da vertical; pés juntos na receção; repulsão dos braços.']],
+  'Ginástica de Aparelhos (Trampolins)':[
+    ['I', 'Salto em extensão no minitrampolim', 'Corrida de balanço, chamada a pés juntos e salto em extensão com receção no colchão.', 'Chamada a dois pés no centro; corpo estendido no ar; receção equilibrada.'],
+    ['I', 'Salto engrupado', 'Igual ao anterior, juntando os joelhos ao peito no ponto mais alto.', 'Agrupar no ponto alto; estender antes da receção.'],
+    ['E', 'Salto de carpa', 'Minitrampolim: salto com pernas estendidas e afastadas (carpa afastada) e receção em pé.', 'Pernas estendidas à horizontal; mãos tocam os pés; tronco direito na receção.'],
+    ['E', 'Salto ao eixo no boque', 'Boque transversal: corrida, chamada no trampolim, apoio das mãos e salto ao eixo.', 'Apoio das mãos à frente; afastamento das pernas; ajuda à frente do aparelho.']],
+  'Ginástica Acrobática':[
+    ['I', 'Figuras a pares', 'A pares: três figuras estáticas (base e volante), mantidas 3 segundos.', 'Base estável com costas direitas; montagem e desmontagem seguras.'],
+    ['E', 'Esquema de trios', 'Trios: esquema com 3 figuras, ligações coreográficas e música.', 'Sincronia; figuras mantidas 3 s; ajuda nas montagens.']],
+  'Ginástica Rítmica':[
+    ['I', 'Manipulação da bola', 'Lançamentos e receções, rolamentos no chão e sobre o corpo, ao ritmo da música.', 'Bola na palma da mão; braços estendidos; sem agarrar com os dedos.'],
+    ['I', 'Corda: saltos e balanços', 'Saltos a pés juntos e alternados com a corda, balanços e círculos.', 'Corda segura pelas pontas; saltos ritmados; braços afastados do corpo.'],
+    ['E', 'Sequência com aparelho', 'Sequência individual de 45 s com aparelho à escolha, ligando saltos, voltas e equilíbrios.', 'Aparelho em movimento contínuo; amplitude; relação com a música.']],
+  'Atletismo':[
+    ['I', 'Partida de pé e corrida de velocidade', 'Corridas de 30–40 m a partir de partida de pé, a pares.', 'Inclinação à frente; braços fletidos a 90°; elevação dos joelhos.'],
+    ['I', 'Estafetas com testemunho', 'Estafetas 4 x 50 m com zona de transmissão marcada.', 'Recetor parte na marca; transmissão sem olhar para trás; manter a pista.'],
+    ['I', 'Salto em comprimento: chamada', 'Corrida de 7 passadas e chamada numa zona de 1 m, com receção na caixa de areia.', 'Chamada com um pé; elevação do joelho livre; receção a dois pés.'],
+    ['E', 'Barreiras baixas', 'Corrida com 4 barreiras baixas a 7 m, com 3 passadas entre barreiras.', 'Ataque à barreira com a perna estendida; passagem rasante; ritmo de 3 apoios.'],
+    ['E', 'Lançamento do peso', 'Lançamento do peso de 2–3 kg sem deslocamento e depois com deslizamento.', 'Peso junto ao pescoço; extensão da perna de trás; braço empurra, não lança.'],
+    ['A', 'Salto em altura (Fosbury)', 'Corrida em curva de 5 passadas e transposição dorsal da fasquia elástica.', 'Corrida em curva; chamada com o pé de fora; arco dorsal sobre a fasquia.']],
+  'Badminton':[
+    ['I', 'Clear a pares', 'A pares, campo dividido: troca de clears altos e profundos.', 'Pega universal; batimento acima da cabeça; volante para o fundo.'],
+    ['I', 'Serviço curto e comprido', 'Serviço curto de esquerda e comprido de direita para alvos no campo contrário.', 'Volante largado à frente; raquete abaixo da cintura; trajetória rasante no curto.'],
+    ['E', 'Lob e amorti', 'Sequência: clear, amorti à rede, lob ao fundo, em cooperação.', 'Regresso à posição base; amorti cai junto à rede; lob alto e profundo.'],
+    ['E', 'Jogo de singulares', 'Jogo de 11 pontos com contagem oficial.', 'Variação de trajetórias; deslocamentos em passos laterais; regresso ao centro.']],
+  'Ténis de Mesa':[
+    ['I', 'Batimentos de direita e esquerda', 'A pares, cooperação: 10 batimentos seguidos de direita e depois de esquerda.', 'Pega de caneta ou clássica; batimento à frente do corpo; raquete inclinada.'],
+    ['E', 'Serviço e jogo de singulares', 'Serviço curto e longo; jogo de 11 pontos.', 'Serviço com lançamento vertical; variação de direção; posição base.']],
+  'Dança':[
+    ['I', 'Exploração do espaço e do ritmo', 'Deslocamentos livres ao ritmo da música, mudando de nível e direção a cada frase musical.', 'Respeita o ritmo; usa o espaço todo; varia níveis.'],
+    ['E', 'Coreografia em grupo', 'Grupos de 4: composição de 32 tempos com formação, cânone e uníssono.', 'Sincronia; transições claras; relação com a música.']],
+  'Danças Sociais':[
+    ['I', 'Passo básico de merengue', 'A pares: passo básico, voltas simples e deslocamentos em roda.', 'Marca o tempo; condução clara; postura de par.'],
+    ['E', 'Sequência de cha-cha-cha', 'Sequência com passo básico, new yorker e volta, sem paragens.', 'Ritmo 2, 3, 4 e 1; troca de papéis; ligação dos passos.']],
+  'Danças Tradicionais':[
+    ['I', 'Vira', 'Em roda: passos do vira e mudanças de par.', 'Ritmo ternário; giros no tempo certo; formação mantida.'],
+    ['E', 'Malhão', 'Coreografia do malhão em quadra, com cumprimentos e trocas.', 'Sequência completa; coordenação com o par; expressão.']],
+  'Patinagem':[
+    ['I', 'Posição base e deslize', 'Em linha: posição base, deslize em apoio bipedal e travagem em T.', 'Joelhos fletidos; peso à frente; olhar em frente.'],
+    ['I', 'Slalom entre cones', 'Percurso com cones afastados 2 m, em deslize contínuo.', 'Transferência de peso; curvas sem paragem.'],
+    ['E', 'Patinagem à retaguarda', 'Deslize à retaguarda em "limões" e travagem.', 'Olhar por cima do ombro; joelhos fletidos; controlo da velocidade.']],
+  'Orientação':[
+    ['I', 'Orientar o mapa', 'Percurso de 6 pontos no espaço escolar com mapa simplificado; sempre com o mapa orientado.', 'Mapa orientado pelo terreno; polegar no local onde está.'],
+    ['E', 'Percurso com bússola', 'Percurso em estrela com azimutes e cartão de controlo.', 'Leitura do azimute; contagem de passos; escolha do itinerário.']],
+  'Luta':[
+    ['I', 'Jogos de oposição em pé', 'A pares: empurrar o colega para fora de um círculo, mão com mão.', 'Base afastada; centro de gravidade baixo; respeito pelas regras de segurança.'],
+    ['E', 'Luta no solo', 'A pares, de joelhos: virar o colega de costas e imobilizar 10 segundos.', 'Controlo do adversário; saídas de imobilização; cumprimento no início e no fim.']],
+  'Judo':[
+    ['I', 'Quedas (ukemi)', 'Quedas à retaguarda e laterais, de sentado, de cócoras e de pé.', 'Queixo ao peito; batimento com o braço a 45°; sem apoiar a mão.'],
+    ['E', 'Projeção O-soto-gari', 'A pares (tori e uke): desequilíbrio e projeção O-soto-gari com queda controlada.', 'Desequilíbrio para trás; varrimento da perna; controlo do uke na queda.']],
+  'Natação':[
+    ['I', 'Respiração e flutuação', 'Expirações dentro de água, flutuação ventral e dorsal com apoio.', 'Expira debaixo de água; corpo horizontal; relaxamento.'],
+    ['E', 'Crawl coordenado', '4 x 25 m crawl com respiração bilateral (a cada 3 braçadas).', 'Rotação do corpo; braço entra à frente do ombro; pernada contínua.']],
+  'Softbol':[
+    ['I', 'Receção com luva e lançamento', 'A pares: lançamento por cima do ombro e receção com luva a 10 m.', 'Passo à frente com o pé contrário; luva aberta para a bola; segunda mão a fechar.'],
+    ['E', 'Batimento e corrida às bases', 'Batimento de bola parada (tee) e corrida à primeira base; jogo reduzido.', 'Pega da batida; rotação da anca; larga o taco antes de correr.']],
+  'Jogos Tradicionais Populares':[
+    ['I', 'Jogo da macaca', 'Em grupos: percurso da macaca com malha, ao pé-coxinho.', 'Equilíbrio num apoio; respeito pela vez; contagem das casas.'],
+    ['I', 'Tração à corda', 'Duas equipas de 6 com a corda e linha central.', 'Pés firmes; puxar em conjunto ao sinal; segurança ao largar.']]
+};
+// Aquecimento e retorno à calma: sugestões rápidas para a folha da aula.
+const EXAQ = ['Corrida contínua com mobilização articular (5 min).', 'Jogo de perseguição: apanhada com bola.', 'Ativação geral: skippings, calcanhares ao glúteo e deslocamentos laterais.', 'Jogo dos 10 passes em espaço reduzido.', 'Mobilização articular e alongamentos dinâmicos.'];
+const EXRC = ['Alongamentos estáticos dos grupos musculares solicitados.', 'Respiração e relaxamento.', 'Balanço da aula com os alunos.', 'Arrumação do material.'];
+// Todos os exercícios: os do banco e os do professor (CFG.exs).
+function exAll() {
+  const out = [];
+  Object.entries(EXB).forEach(([m, xs]) => xs.forEach(([lv, nome, desc, crit], i) => out.push({id:'b:' + m + ':' + i, m, lv, nome, desc, crit, base:true})));
+  ((CFG && CFG.exs) || []).forEach(x => out.push(Object.assign({}, x, {base:false})));
+  return out;
+}
+const exById = id => exAll().find(x => x.id === id);
+/* ---------- planear: avaliação inicial guiada, banco de exercícios e plano de aula ---------- */
+// A avaliação inicial fica na turma (t.ai = {mats, lv:{aluno:{matéria:nível}}}); as AE de 2026 pedem-na até meados de outubro.
+const AIL = ['NI', 'I', 'E', 'A'], AIG = {NI:'g0', I:'g1', E:'g2', A:'g3'};
+const nome2 = n => { const p = String(n || '').trim().split(/\s+/); return p.length > 1 ? p[0] + ' ' + p[p.length - 1] : p[0]; };
+const aiOf = t => t.ai || (t.ai = {mats:[], lv:{}});
+function aiPrazo() {
+  const ini = (CFG.per[0] || {}).ini, d = new Date(), y = ini ? +ini.slice(0, 4) : (d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1);
+  return y + '-10-15';
+}
+const diasAte = d => Math.round((new Date(d + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 864e5);
+const aiLv = (t, aid, m) => ((aiOf(t).lv || {})[aid] || {})[m];
+function aiProg(t) {
+  const ai = aiOf(t), als = alunosOf(t).filter(al => (REG[regAt(al, 1)] || REG.Normal).af > 0);
+  const tot = als.length * ai.mats.length, done = als.reduce((s, al) => s + ai.mats.filter(m => aiLv(t, al.id, m)).length, 0);
+  return {tot, done, als};
+}
+// Resultado por matéria: contagens, nível mediano da turma e índice de necessidade (0 = todos A, 1 = todos NI).
+function aiRes(t, m) {
+  const {als} = aiProg(t), c = {NI:0, I:0, E:0, A:0}; let n = 0, sum = 0;
+  als.forEach(al => { const l = aiLv(t, al.id, m); if (l) { c[l]++; n++; sum += AIL.indexOf(l); } });
+  let acc = 0, med = null; for (const l of AIL) { acc += c[l]; if (n && acc >= n / 2) { med = l; break; } }
+  return {c, n, med, need:n ? 1 - sum / n / 3 : null};
+}
+function aiPrior(t) { return aiOf(t).mats.map(m => ({m, r:aiRes(t, m)})).filter(x => x.r.n).sort((a, b) => b.r.need - a.r.need); }
+// Nível da turma numa matéria, para sugerir exercícios: avaliação inicial ou, sem ela, os níveis do período.
+function nivelTurma(t, m) {
+  const r = aiRes(t, m); if (r.med) return r.med === 'NI' ? 'I' : r.med;
+  const v = avalOf(t.id, UI.p), ls = alunosOf(t).map(al => (lvOf(v, al.id, m) || {}).l).filter(Boolean);
+  if (!ls.length) return 'I';
+  const k = ls.map(l => ({NI:0, PI:0, I:0, PE:1, E:1, PA:2, A:2}[l] ?? 0)).sort((a, b) => a - b)[Math.floor(ls.length / 2)];
+  return ['I', 'E', 'A'][k];
+}
+
+function vPlanear(t) {
+  const sub = UI.plv || 'ai';
+  let h = `<div class="seg block" role="group" aria-label="Planear">${[['ai', 'Avaliação inicial'], ['ex', 'Exercícios'], ['esp', 'Espaços']].map(([k, n]) => `<button data-a="plv" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  if (sub === 'ex') return h + vExercicios(t);
+  if (sub === 'esp') return h + (typeof vEspacos === 'function' ? vEspacos(t) : '');
+  return h + vAvInicial(t);
+}
+
+function vAvInicial(t) {
+  if (t.ciclo === '1') return `<div class="card empty"><h3>Avaliação inicial</h3><p>No 1.º ciclo a avaliação faz-se por blocos do programa, diretamente na grelha.</p></div>`;
+  const ai = aiOf(t), pr = aiProg(t), prazo = aiPrazo(), dias = diasAte(prazo), pct = pr.tot ? Math.round(pr.done / pr.tot * 100) : 0;
+  let h = `<div class="card ai-h"><div class="sec-h" style="margin:0"><h2 style="font-size:18px">Avaliação inicial</h2><span class="pill ${dias < 0 ? 'inc' : dias <= 10 ? 'bad' : 'ok'}">${dias < 0 ? 'Prazo terminado' : dias === 0 ? 'Termina hoje' : 'Faltam ' + dias + ' dias'}</span></div>
+    <p class="hint" style="margin:4px 0 10px">As Aprendizagens Essenciais de 2026 pedem a avaliação inicial até meados de outubro (${fmtDate(prazo)}). Observe cada matéria numa situação de jogo ou exercício critério e registe o nível de cada aluno: daqui saem as prioridades, os grupos de nível e o plano da turma.</p>
+    <div class="pl-b big" role="img" aria-label="${pr.done} de ${pr.tot} registos"><i style="width:${pct}%"></i></div><p class="small muted num-t" style="margin:6px 0 0">${pr.done} de ${pr.tot} registos (${pct}%) · ${ai.mats.length} ${ai.mats.length === 1 ? 'matéria' : 'matérias'} · ${pr.als.length} alunos</p></div>`;
+  h += `<div class="sec-h"><h2>Matérias a observar</h2><button class="link" data-a="ai-mats">Escolher</button></div>`;
+  if (!ai.mats.length) return h + `<div class="card empty">${ART}<h3>Escolha as matérias</h3><p>Normalmente observam-se as matérias nucleares que vai lecionar no ano. Pode começar pelas sugeridas para o ${anoOf(t)}.º ano.</p><div class="btn-row" style="justify-content:center"><button class="btn primary" data-a="ai-sug">Usar as sugeridas</button><button class="btn" data-a="ai-mats">Escolher</button></div></div>`;
+  if (!ai.mats.includes(UI.aim)) UI.aim = ai.mats[0];
+  const m = UI.aim;
+  h += `<div class="chips">${ai.mats.map(x => { const r = aiRes(t, x); return `<button class="chip ${x === m ? 'on' : ''}" data-a="ai-m" data-m="${esc(x)}">${subIcon(x, anoOf(t))}${esc(x)} <span class="muted num-t">${r.n}/${pr.als.length}</span></button>`; }).join('')}</div>`;
+  // protocolo: o que observar e em que situação
+  const cs = compsOf(t.ciclo, m), sit = (cs.find(c => c.k === 'I' && c.ctx) || cs.find(c => c.k === 'E' && c.ctx) || {}).ctx;
+  h += `<div class="card"><b>Protocolo · ${esc(m)}</b>${sit ? `<p class="small" style="margin:6px 0"><span class="muted">Situação de observação sugerida:</span> ${esc(sit)}.</p>` : ''}
+    <p class="hint" style="margin:6px 0">NI: não cumpre o nível Introdução. I: cumpre a Introdução. E: cumpre o Elementar. A: cumpre o Avançado.</p>
+    ${['I', 'E'].map(k => { const xs = cs.filter(c => c.k === k); return xs.length ? `<details class="desc"><summary>O que observar · ${LVN[k]} (${xs.length})</summary>${compList(xs)}</details>` : ''; }).join('')}</div>`;
+  // registo rápido
+  h += `<div class="card ai-reg"><div class="sec-h" style="margin:0 0 6px"><h3 style="margin:0;font-size:15px">Registo</h3><span class="small muted">Restantes: ${AIL.map(l => `<button class="link" data-a="ai-rest" data-l="${l}">${l}</button>`).join(' · ')}</span></div>
+    ${pr.als.map(al => { const l = aiLv(t, al.id, m); return `<div class="ai-r"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="ai-lv" role="group" aria-label="Nível inicial de ${esc(al.nome)}">${AIL.map(x => `<button class="${AIG[x]}${l === x ? ' on' : ''}" data-a="ai-set" data-aid="${esc(al.id)}" data-l="${x}" aria-pressed="${l === x}">${x}</button>`).join('')}</span></div>`; }).join('')}</div>`;
+  // grupos de nível da matéria
+  const gs = AIL.map(l => ({l, xs:pr.als.filter(al => aiLv(t, al.id, m) === l)})).filter(g => g.xs.length);
+  if (gs.length) h += `<div class="sec-h"><h2>Grupos de nível · ${esc(m)}</h2></div><div class="ai-gs">${gs.map(g => `<div class="ai-g ${AIG[g.l]}"><b>${LVN[g.l] || g.l} <span class="num-t">(${g.xs.length})</span></b><div>${g.xs.map(al => `<span>${esc(nome2(al.nome))}</span>`).join('')}</div></div>`).join('')}</div>`;
+  // resultados e prioridades
+  const pri = aiPrior(t);
+  if (pri.length) {
+    h += `<div class="sec-h"><h2>Prioridades da turma</h2><button class="link" data-a="ai-plano">Gerar plano anual</button></div><div class="card"><p class="hint" style="margin:0 0 8px">Da matéria em que a turma está mais atrás para a mais avançada. As primeiras pedem mais aulas e começam mais cedo.</p>`;
+    h += pri.map(({m, r}, i) => `<div class="ai-pr"><span class="ai-i num-t">${i + 1}</span><span class="ai-m">${esc(m)}<span class="small muted"> · turma: ${r.med ? esc(LVN[r.med] || r.med) : '—'}</span></span><span class="ai-bar" role="img" aria-label="${AIL.map(l => l + ' ' + r.c[l]).join(', ')}">${AIL.map(l => r.c[l] ? `<i class="${AIG[l]}" style="flex:${r.c[l]}" title="${l}: ${r.c[l]}">${r.c[l]}</i>` : '').join('')}</span></div>`).join('');
+    h += `<div class="legend" style="margin-top:8px">${AIL.map(l => `<span><i class="sw ${AIG[l]}"></i>${l}</span>`).join('')}</div></div>`;
+  }
+  return h;
+}
+function sheetAiMats() {
+  const t = turma(), ai = aiOf(t);
+  openSheet('Matérias da avaliação inicial', `<p class="hint">Toque para juntar ou retirar.</p>` + matChips(t, m => `<button class="chip ${ai.mats.includes(m) ? 'on' : ''}" data-a="ai-mt" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`, ai.mats), `<button class="btn primary" data-a="sh-close">Feito</button>`);
+}
+const AISUG = ['Voleibol', 'Basquetebol', 'Andebol', 'Futebol', 'Ginástica de Solo', 'Ginástica de Aparelhos (Trampolins)', 'Atletismo', 'Badminton', 'Dança'];
+// Plano anual a partir das prioridades: as matérias em serpentina pelos períodos e mais aulas onde a turma está mais atrás.
+function aiPlano(t, porPer) {
+  const pri = aiPrior(t), np = CFG.per.filter(p => p.ini || p.fim).length >= 2 ? Math.min(3, CFG.per.length) : 3, per = Array.from({length:np}, () => []);
+  pri.forEach((x, i) => { const r = Math.floor(i / np), c = i % np; per[r % 2 ? np - 1 - c : c].push(x); });
+  return per.map(xs => { const w = xs.map(x => 1 + x.r.need * 1.5), sw = w.reduce((a, b) => a + b, 0) || 1; return xs.map((x, i) => ({m:x.m, n:Math.max(4, Math.round(porPer * w[i] / sw))})); });
+}
+function sheetAiPlano() {
+  const t = turma(); UI.aiN = UI.aiN || 26; const pl = aiPlano(t, UI.aiN), has = [1, 2, 3].some(p => planOf(t, p).length);
+  const body = `<div class="form"><div class="field"><label for="ai-n">Aulas por período (aproximado)</label><input id="ai-n" type="number" min="6" max="80" inputmode="numeric" data-in="ai-n" value="${UI.aiN}"></div>
+    ${pl.map((us, i) => `<div class="card"><b>${perLabel(i + 1, true)}</b>${us.length ? us.map(u => `<div class="pl-r"><span class="pl-n">${subIcon(u.m, anoOf(t))} ${esc(u.m)}</span><span class="pl-v num-t">${u.n} aulas</span></div>`).join('') : '<p class="hint">Sem matérias.</p>'}</div>`).join('')}
+    ${has ? '<p class="note warn">Substitui os planos de período que já existem.</p>' : ''}</div>`;
+  const foot = `<button class="btn primary" data-a="ai-plano-go">${has ? 'Substituir os planos' : 'Criar os planos'}</button>`;
+  if ($('#sheet').hidden) openSheet('Plano anual da turma', body, foot); else updSheet(body, foot);
+}
+
+/* banco de exercícios */
+function vExercicios(t) {
+  const m = UI.exm || '', lv = UI.exl || '', xs = exAll().filter(x => (!m || x.m === m) && (!lv || x.lv === lv));
+  let h = `<div class="card"><div class="grid2"><div class="field"><label for="ex-m">Matéria</label><select id="ex-m" data-in="ex-f" data-k="exm"><option value="">Todas</option>${matOpts(t, m)}</select></div>
+    <div class="field"><span class="lbl">Nível</span><div class="seg block">${[['', 'Todos'], ['I', 'I'], ['E', 'E'], ['A', 'A']].map(([k, n]) => `<button data-a="ex-l" data-k="${k}" class="${lv === k ? 'on' : ''}">${n}</button>`).join('')}</div></div></div>
+    <button class="btn block" data-a="ex-new">+ Novo exercício</button></div>`;
+  h += `<p class="small muted">${xs.length} ${xs.length === 1 ? 'exercício' : 'exercícios'}. Os seus exercícios entram no pacote partilhado com o grupo de EF.</p>`;
+  h += xs.length ? `<div class="ex-list">${xs.map(x => exCard(x)).join('')}</div>` : `<div class="card empty"><h3>Sem exercícios</h3><p>Ainda não há exercícios para esta matéria e nível. Crie o primeiro.</p></div>`;
+  return h;
+}
+function exCard(x, add) {
+  return `<div class="card ex"><div class="ex-h"><span class="pill ${AIG[x.lv] || ''} lvp">${esc(x.lv)}</span><b>${esc(x.nome)}</b><span class="small muted">${esc(x.m)}${x.base ? '' : ' · meu'}</span>
+    ${add ? `<button class="btn sm primary" data-a="pa-add" data-id="${esc(x.id)}">Juntar</button>` : x.base ? '' : `<button class="link" data-a="ex-edit" data-id="${esc(x.id)}">Editar</button>`}</div>
+    ${x.desc ? `<p class="small" style="margin:6px 0 0">${esc(x.desc)}</p>` : ''}${x.crit ? `<p class="small muted" style="margin:4px 0 0"><b>Critérios de êxito:</b> ${esc(x.crit)}</p>` : ''}</div>`;
+}
+function sheetEx(x) {
+  const t = turma(); UI.draft = x; const isNew = !((CFG.exs || []).some(e => e.id === x.id));
+  const body = `<div class="form"><div class="grid2"><div class="field"><label for="ex-dm">Matéria</label><select id="ex-dm">${matOpts(t, x.m)}</select></div>
+    <div class="field"><span class="lbl">Nível</span><div class="seg block">${['I', 'E', 'A'].map(k => `<button data-a="ex-dl" data-k="${k}" class="${x.lv === k ? 'on' : ''}">${k}</button>`).join('')}</div></div></div>
+    <div class="field"><label for="ex-dn">Nome</label><input id="ex-dn" type="text" value="${esc(x.nome)}" placeholder="Ex.: Jogo 3x3 com obrigatoriedade de passe"></div>
+    <div class="field"><label for="ex-dd">Organização</label><textarea id="ex-dd" placeholder="Espaço, grupos, material e regras.">${esc(x.desc || '')}</textarea></div>
+    <div class="field"><label for="ex-dc">Critérios de êxito</label><textarea id="ex-dc" placeholder="O que o aluno tem de fazer bem.">${esc(x.crit || '')}</textarea></div></div>`;
+  openSheet(isNew ? 'Novo exercício' : 'Editar exercício', body, (isNew ? '' : `<button class="btn danger" data-a="ex-del">Eliminar</button>`) + `<button class="btn primary" data-a="ex-save">Guardar</button>`);
+}
+
+/* plano de aula: aquecimento, parte fundamental com exercícios do banco e retorno à calma */
+const paOf = a => a.plano || (a.plano = {dur:50, aq:{txt:'', min:10}, pf:[], rc:{txt:'', min:5}});
+// Unidade didática de cada matéria da aula e o número da aula dentro dela.
+function udInfo(t, a) {
+  const p = periodOf(a.data), pl = planOf(t, p);
+  return (a.materias || []).map(m => { const u = pl.find(x => x.m === m); if (!u) return null;
+    const k = aulasOf(t.id).filter(x => x.id !== a.id && periodOf(x.data) === p && (x.materias || []).includes(m) && x.data <= a.data).length + 1;
+    return `${esc(m)}: aula ${k} de ${u.n}`; }).filter(Boolean);
+}
+function paHtml(a) {
+  const t = turma(), P = paOf(a), tot = (+P.aq.min || 0) + (+P.rc.min || 0) + P.pf.reduce((s, x) => s + (+x.min || 0), 0), ud = udInfo(t, a);
+  let h = `${ud.length ? `<p class="small" style="margin:0 0 8px"><span class="muted">Unidade didática ·</span> ${ud.join(' · ')}</p>` : ''}
+    <div class="pa-tot"><span class="pl-b" role="img" aria-label="${tot} de ${P.dur} minutos"><i class="${tot > P.dur ? 'over' : ''}" style="width:${Math.min(100, tot / (P.dur || 1) * 100)}%"></i></span><span class="small num-t">${tot}/<input type="number" min="20" max="180" inputmode="numeric" data-in="pa" data-k="dur" value="${P.dur}" aria-label="Duração da aula em minutos"> min</span></div>
+    <div class="pa-p"><div class="pa-ph"><b>Aquecimento</b><input type="number" min="0" max="60" inputmode="numeric" data-in="pa" data-k="aqm" value="${P.aq.min}" aria-label="Minutos de aquecimento"> min</div>
+    <textarea data-in="pa" data-k="aq" rows="2" placeholder="Ex.: corrida contínua e mobilização articular.">${esc(P.aq.txt)}</textarea><div class="sug">${EXAQ.map(x => `<button data-a="pa-sug" data-k="aq" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    <div class="pa-p"><div class="pa-ph"><b>Parte fundamental</b><span class="small muted">${P.pf.length} ${P.pf.length === 1 ? 'exercício' : 'exercícios'}</span></div>
+    ${P.pf.map((x, i) => `<div class="pa-ex"><span class="pill ${AIG[x.lv] || ''} lvp">${esc(x.lv || '·')}</span><span class="pa-exn"><input type="text" data-in="pa-ex" data-i="${i}" data-k="nome" value="${esc(x.nome)}" aria-label="Exercício"><span class="small muted">${esc(x.m || '')}${x.crit ? ' · ' + esc(x.crit) : ''}</span></span><input type="number" min="0" max="90" inputmode="numeric" data-in="pa-ex" data-i="${i}" data-k="min" value="${x.min}" aria-label="Minutos"><span class="small">min</span><button class="icon-btn" data-a="pa-up" data-i="${i}" aria-label="Subir">↑</button><button class="icon-btn" data-a="pa-rm" data-i="${i}" aria-label="Retirar">×</button></div>`).join('')}
+    <div class="btn-row"><button class="btn sm" data-a="pa-pick">${UI.paPick ? 'Fechar o banco' : '+ Do banco de exercícios'}</button><button class="btn sm ghost" data-a="pa-free">+ Exercício livre</button></div>
+    ${UI.paPick ? paPicker(t, a) : ''}</div>
+    <div class="pa-p"><div class="pa-ph"><b>Retorno à calma</b><input type="number" min="0" max="30" inputmode="numeric" data-in="pa" data-k="rcm" value="${P.rc.min}" aria-label="Minutos de retorno à calma"> min</div>
+    <textarea data-in="pa" data-k="rc" rows="2" placeholder="Ex.: alongamentos e balanço da aula.">${esc(P.rc.txt)}</textarea><div class="sug">${EXRC.map(x => `<button data-a="pa-sug" data-k="rc" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}</div>`;
+  return h;
+}
+function paPrev(t, a) { return aulasOf(t.id).filter(x => x.id !== a.id && x.plano && x.plano.pf && x.plano.pf.length && x.data <= a.data && (!a.materias.length || (x.materias || []).some(m => a.materias.includes(m)))).pop(); }
+function paPicker(t, a) {
+  const ms = a.materias.length ? a.materias : null, all = exAll().filter(x => !ms || ms.includes(x.m));
+  if (!all.length) return `<p class="hint">Sem exercícios no banco para ${ms ? 'estas matérias' : 'a turma'}. Crie-os em Turma › Planear › Exercícios.</p>`;
+  const byM = {}; all.forEach(x => (byM[x.m] = byM[x.m] || []).push(x));
+  return `<div class="pa-pick">${Object.entries(byM).map(([m, xs]) => { const nv = nivelTurma(t, m); xs.sort((p, q) => (q.lv === nv) - (p.lv === nv));
+    return `<div class="small muted" style="margin:8px 0 4px"><b>${esc(m)}</b> · nível da turma: ${esc(LVN[nv] || nv)} (sugeridos primeiro)</div>` + xs.map(x => exCard(x, true)).join(''); }).join('')}</div>`;
+}
+function paBox(a) { return `<details class="aplano" id="pa-det"${a.plano && (a.plano.pf.length || a.plano.aq.txt) ? ' open' : ''}><summary><span class="lbl" style="margin:0">Plano da aula</span> <span class="small muted">aquecimento, parte fundamental e retorno à calma</span></summary><div id="pa-box">${paHtml(a)}</div></details>`; }
+function paRefresh() { const b = $('#pa-box'); if (b && UI.draft) b.innerHTML = paHtml(UI.draft); }
+
+/* ações */
+Object.assign(A, {
+  'plv': el => { UI.plv = el.dataset.k; render(); },
+  'ai-m': el => { UI.aim = el.dataset.m; render(); },
+  'ai-mats': () => sheetAiMats(),
+  'ai-mt': el => { const t = turma(), ai = aiOf(t), m = el.dataset.m, i = ai.mats.indexOf(m); i >= 0 ? ai.mats.splice(i, 1) : ai.mats.push(m); const o = MATS[t.ciclo] || GR; ai.mats.sort((a, b) => o.indexOf(a) - o.indexOf(b)); el.classList.toggle('on', i < 0); Store.save('turmas', t); render(); },
+  'ai-sug': () => { const t = turma(), ai = aiOf(t), o = MATS[t.ciclo] || GR; ai.mats = AISUG.filter(m => o.includes(m)); Store.save('turmas', t); render(); },
+  'ai-set': el => { const t = turma(), ai = aiOf(t), aid = el.dataset.aid, l = el.dataset.l; ai.lv[aid] = ai.lv[aid] || {}; if (ai.lv[aid][UI.aim] === l) delete ai.lv[aid][UI.aim]; else ai.lv[aid][UI.aim] = l; Store.save('turmas', t); render(); },
+  'ai-rest': el => { const t = turma(), ai = aiOf(t); let n = 0; aiProg(t).als.forEach(al => { ai.lv[al.id] = ai.lv[al.id] || {}; if (!ai.lv[al.id][UI.aim]) { ai.lv[al.id][UI.aim] = el.dataset.l; n++; } }); Store.save('turmas', t); render(); toast(n + ' ' + (n === 1 ? 'aluno marcado' : 'alunos marcados') + ' com ' + el.dataset.l + '.'); },
+  'ai-plano': () => sheetAiPlano(),
+  'ai-plano-go': () => { const t = turma(), pl = aiPlano(t, UI.aiN || 26); t.plano = t.plano || {}; pl.forEach((us, i) => { t.plano[i + 1] = us; }); Store.save('turmas', t); closeSheet(); UI.tsub = 'aulas'; render(); toast('Plano anual criado a partir da avaliação inicial.'); },
+  'ex-l': el => { UI.exl = el.dataset.k; render(); },
+  'ex-new': () => sheetEx({id:uid(), m:UI.exm || (matsOf(turma(), UI.p)[0] || (MATS[turma().ciclo] || GR)[0]), lv:UI.exl || 'I', nome:'', desc:'', crit:''}),
+  'ex-edit': el => { const x = (CFG.exs || []).find(e => e.id === el.dataset.id); if (x) sheetEx(clone(x)); },
+  'ex-dl': el => { UI.draft.lv = el.dataset.k; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
+  'ex-save': () => { const x = UI.draft; x.m = $('#ex-dm').value; x.nome = $('#ex-dn').value.trim(); x.desc = $('#ex-dd').value.trim(); x.crit = $('#ex-dc').value.trim();
+    if (!x.nome) { toast('Dê um nome ao exercício.', 'bad'); return; }
+    CFG.exs = (CFG.exs || []).filter(e => e.id !== x.id).concat([x]); Store.save('cfg', CFG); closeSheet(); render(); toast('Exercício guardado.'); },
+  'ex-del': el => { if (!armed(el, 'Toque de novo para eliminar')) return; CFG.exs = (CFG.exs || []).filter(e => e.id !== UI.draft.id); Store.save('cfg', CFG); closeSheet(); render(); toast('Exercício eliminado.'); },
+  'pa-pick': () => { UI.paPick = !UI.paPick; paRefresh(); },
+  'pa-add': el => { const x = exById(el.dataset.id); if (!x) return; paOf(UI.draft).pf.push({ex:x.id, nome:x.nome, m:x.m, lv:x.lv, crit:x.crit || '', min:10}); UI.paPick = false; paRefresh(); },
+  'pa-free': () => { const a = UI.draft; paOf(a).pf.push({ex:null, nome:'', m:a.materias[0] || '', lv:'', crit:'', min:10}); paRefresh(); const ins = document.querySelectorAll('#pa-box [data-in="pa-ex"][data-k="nome"]'); if (ins.length) ins[ins.length - 1].focus(); },
+  'pa-rm': el => { paOf(UI.draft).pf.splice(+el.dataset.i, 1); paRefresh(); },
+  'pa-up': el => { const pf = paOf(UI.draft).pf, i = +el.dataset.i; if (i > 0) [pf[i - 1], pf[i]] = [pf[i], pf[i - 1]]; paRefresh(); },
+  'pa-sug': el => { const P = paOf(UI.draft), o = P[el.dataset.k]; o.txt = (o.txt.trim() ? o.txt.trim() + ' ' : '') + el.dataset.t; paRefresh(); },
+  'pa-copy': () => { const t = turma(), p = paPrev(t, UI.draft); if (!p) return; const dur = paOf(UI.draft).dur; UI.draft.plano = clone(p.plano); UI.draft.plano.dur = dur || p.plano.dur; paRefresh(); toast('Plano copiado da aula de ' + fmtDate(p.data) + '.'); },
+  'pa-sum': () => { const P = paOf(UI.draft), by = {}; P.pf.filter(x => x.nome).forEach(x => (by[x.m || 'Aula'] = by[x.m || 'Aula'] || []).push(x.nome.charAt(0).toLowerCase() + x.nome.slice(1)));
+    const s = Object.entries(by).map(([m, xs]) => `${m}: ${xs.join('; ')}.`).join(' ') + (P.aq.txt ? '' : '');
+    if (!s) { toast('Junte primeiro exercícios à parte fundamental.', 'bad'); return; }
+    const ta = $('#d-sum'); ta.value = s; UI.draft.sumario = s; toast('Sumário escrito a partir do plano.'); }
+});
+// A matéria da aula muda os exercícios sugeridos.
+const _dMat = A['d-mat']; A['d-mat'] = el => { _dMat(el); if (UI.paPick) paRefresh(); };
+document.addEventListener('input', e => {
+  const el = e.target, k = el.dataset && el.dataset.in; if (!k || !UI.draft) return;
+  if (k === 'pa') { const P = paOf(UI.draft), f = el.dataset.k, n = Math.max(0, parseInt(el.value, 10) || 0);
+    if (f === 'aq' || f === 'rc') P[f].txt = el.value; else if (f === 'aqm') P.aq.min = n; else if (f === 'rcm') P.rc.min = n; else if (f === 'dur') P.dur = n || 50;
+    if (f !== 'aq' && f !== 'rc') paTot(); }
+  else if (k === 'pa-ex') { const x = paOf(UI.draft).pf[+el.dataset.i]; if (!x) return; if (el.dataset.k === 'min') { x.min = Math.max(0, parseInt(el.value, 10) || 0); paTot(); } else x.nome = el.value; }
+});
+// Atualiza só a barra do tempo, sem tirar o foco do campo.
+function paTot() {
+  const P = paOf(UI.draft), tot = (+P.aq.min || 0) + (+P.rc.min || 0) + P.pf.reduce((s, x) => s + (+x.min || 0), 0), i = $('#pa-box .pa-tot i'), s = $('#pa-box .pa-tot .small');
+  if (i) { i.style.width = Math.min(100, tot / (P.dur || 1) * 100) + '%'; i.classList.toggle('over', tot > P.dur); }
+  if (s && s.firstChild) s.firstChild.nodeValue = tot + '/';
+}
+document.addEventListener('change', e => {
+  const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'ex-f') { UI[el.dataset.k] = el.value; render(); }
+  else if (k === 'ai-n') { UI.aiN = Math.max(6, Math.min(80, parseInt(el.value, 10) || 26)); sheetAiPlano(); }
+});
 </script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }</script>
 </body>

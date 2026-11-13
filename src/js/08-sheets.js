@@ -9,7 +9,7 @@ function armed(el, label) { if (el.dataset.armed) return true; el.dataset.armed 
 
 function sheetAula(a) {
   const t = turma(); const isNew = !S.aulas[a.id];
-  UI.draft = a;
+  UI.draft = a; UI.paPick = false;
   const all = aulasOf(t.id); const n = isNew ? all.filter(x => x.data <= a.data).length + 1 : all.findIndex(x => x.id === a.id) + 1;
   const last = all.filter(x => x.id !== a.id && x.sumario).pop();
   const body = `<div class="form">
@@ -19,6 +19,7 @@ function sheetAula(a) {
     <div class="field"><label for="d-sum">Sumário</label><textarea id="d-sum" data-in="d-sum" placeholder="Ex.: Voleibol: passe e manchete em situação de 2x2. Condição física: resistência.">${esc(a.sumario)}</textarea>
     <div class="sug">${[...a.materias.flatMap(m => SUMB[m] || []), ...SUMG].map(x => `<button data-a="d-sug" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     ${last ? `<button class="link" style="align-self:flex-start" data-a="d-last">Copiar o sumário da lição anterior</button>` : ''}</div>
+    ${paBox(a)}
     <button class="btn block" data-a="aula-aval">Avaliar nesta aula: níveis e registos +/−</button>
     <div class="field"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Presenças</span><button class="link" data-a="d-allp">Todos presentes</button></div>
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>

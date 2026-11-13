@@ -200,7 +200,7 @@ const A = {
   'cd-reset': () => { const T = TOOL; clearInterval(T.iv); wake(false); T.run = false; T.n = 0; $('#cd-n').textContent = '0'; $('#cd-b').style.width = '0'; $('#cd-go').textContent = 'Iniciar'; },
   'eq-go': () => { eqMake(); $('#eq-out').innerHTML = eqHtml(); },
   'eq-copy': async () => { const t = turma(), E = UI.eq, nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome; const txt = E.res.map((ids, i) => 'Equipa ' + (i + 1) + ': ' + ids.map(nm).join(', ')).join('\n'); try { await navigator.clipboard.writeText(txt); toast('Equipas copiadas.'); } catch (e) { toast('Não foi possível copiar.', 'bad'); } },
-  'alert-go': el => { const k = el.dataset.k; if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
+  'alert-go': el => { const k = el.dataset.k; if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
   'alerts-all': () => { UI.allAlerts = true; render(); },
   'plano-edit': () => sheetPlano(),
   'pl-add': () => { const t = turma(), ms = MATS[t.ciclo] || GR, used = UI.draft.map(u => u.m); UI.draft.push({m:ms.find(m => !used.includes(m)) || ms[0], n:8}); planoRender(); },

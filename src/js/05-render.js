@@ -29,10 +29,11 @@ function vTurma(t) {
     return `<div class="split"><div class="split-l">${vTurmaSeg(sub)}${vAlunos(t)}</div><div class="split-r">${vAlunoPage(t, sel, true)}</div></div>`;
   }
   if (sub === 'alunos' && al) return vAlunoPage(t, al, false);
+  if (sub === 'planear') return `<div class="stack">${vTurmaSeg(sub)}${vPlanear(t)}</div>`;
   return `<div class="stack">${vTurmaSeg(sub)}</div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
 }
 function vTurmaSeg(sub) {
-  return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos'], ['planear', 'Planear']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
