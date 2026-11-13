@@ -1,26 +1,41 @@
 /* ---------- render ---------- */
 function render() {
-  saveUI();
-  const t = turma();
-  const ts = Object.values(S.turmas).sort((a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true}));
+  normTab(); saveUI();
+  const t = turma(), ts = Object.values(S.turmas).sort(byNome), c = tcor(t);
+  document.documentElement.style.setProperty('--tc', `var(--v${c})`);
   let top = '<div class="brand">Caderno <b>EF</b></div>';
   if (t) {
-    top += '<div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma">' +
-      ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') +
-      '<option value="__new">+ Nova turma…</option></select></div>';
-    top += '<div class="seg" role="group" aria-label="Período">' + CFG.per.slice(0, CFG.nper).map((_, i) => `<button data-a="per" data-p="${i + 1}" class="${UI.p === i + 1 ? 'on' : ''}">${perLabel(i + 1)}</button>`).join('') + '</div>';
-  }
+    top += `<span class="tdot" aria-hidden="true"></span><div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma (deslize no cabeçalho para mudar)">` +
+      ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') + '<option value="__new">+ Nova turma…</option></select></div>';
+    top += `<select class="perchip" data-in="per-sel" aria-label="Período">${CFG.per.slice(0, CFG.nper).map((_, i) => `<option value="${i + 1}"${UI.p === i + 1 ? ' selected' : ''}>${perLabel(i + 1)}</option>`).join('')}</select>`;
+  } else top += '<span style="flex:1"></span>';
+  top += `<button class="icon-btn gear${UI.tab === 'defs' ? ' on' : ''}" data-a="tab" data-t="defs" aria-label="Definições" title="Definições">${IC.defs}</button>`;
   morph($('#top'), '<div class="wrap top-in">' + top + '</div>');
   document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px');
-  $('#nav').hidden = !t && UI.tab !== 'mais';
+  $('#nav').hidden = !t && UI.tab !== 'defs';
   morph($('#nav-in'), TABS.map(([k, n]) => `<button data-a="tab" data-t="${k}" class="${UI.tab === k ? 'on' : ''}" aria-current="${UI.tab === k ? 'page' : 'false'}">${IC[k]}<span>${n}</span></button>`).join(''));
   let h;
-  if (!ts.length && UI.tab !== 'mais' || !t && UI.tab !== 'mais' && UI.tab !== 'inicio') h = vWelcome();
+  if (!ts.length && UI.tab !== 'defs' || !t && UI.tab !== 'defs' && UI.tab !== 'inicio') h = vWelcome();
   else if (UI.tab === 'inicio') h = vInicio();
-  else h = ({aulas:vAulas, alunos:vAlunos, avaliar:vAvaliar, pauta:vPauta, mais:vMais})[UI.tab](t);
+  else h = ({turma:vTurma, avaliar:vAvaliar, relatorios:vPauta, defs:vDefs})[UI.tab](t);
   morph($('#main'), '<div class="wrap">' + h + '</div>');
   gEditor();
 }
+function vTurma(t) {
+  const sub = UI.tsub || 'aulas';
+  return `<div class="stack"><div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
+}
+// Definições arrumadas por secções (as secções vêm de vMais).
+const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
+function vDefs(t) {
+  const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
+  body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
+  const sec = DSECS.find(x => x[0] === UI.dsec) || DSECS[0];
+  let h = `<div class="stack"><h1 class="ptitle">Definições</h1><div class="chips">${DSECS.map(([k, n]) => `<button class="chip ${sec[0] === k ? 'on' : ''}" data-a="dsec" data-k="${k}">${n}</button>`).join('')}</div>`;
+  h += sec[0] === 'ver' ? vAparencia() : sec[2].map(n => parts[n] || '').join('');
+  return h + '</div>';
+}
+function vAparencia() { return '<div class="card"><p class="hint" style="margin:0">Em breve.</p></div>'; }
 
 function storageNote() {
   if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
@@ -88,7 +103,7 @@ function vAlunos(t) {
 
 function vAvaliar(t) {
   const als = alunosOf(t);
-  let h = `<div class="stack"><div class="seg block" role="group" aria-label="Modo de avaliar">${[['grelha','Grelha da turma'],['dominio','Aluno a aluno']].map(([k, n]) => `<button data-a="avmode" data-k="${k}" class="${(UI.avMode === 'dominio') === (k === 'dominio') ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  let h = `<div class="stack">${UI.avMode === 'dominio' ? gToolbar(false) : ''}`;
   if (!als.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>Adicione alunos à turma para começar a avaliar.</p></div></div>`;
   if (UI.avMode !== 'dominio') return h + vGrelha(t) + '</div>';
   h += `<div class="seg block" role="group" aria-label="Domínio">` +
@@ -158,3 +173,13 @@ function avatar(al, cls) {
   return `<span class="${c}" aria-hidden="true">${esc(((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase())}</span>`;
 }
 
+
+// Deslizar no cabeçalho para o lado muda para a turma anterior ou seguinte.
+let TSW = null;
+document.addEventListener('touchstart', e => { TSW = e.target.closest && e.target.closest('#top') ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : null; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (!TSW) return; const tt = e.changedTouches[0], dx = tt.clientX - TSW.x, dy = tt.clientY - TSW.y; TSW = null;
+  if (Math.abs(dx) < 70 || Math.abs(dy) > 40) return;
+  const ts = Object.values(S.turmas).sort(byNome), i = ts.findIndex(x => x.id === UI.turma), n = ts[(i + (dx < 0 ? 1 : -1) + ts.length) % ts.length];
+  if (!n || n.id === UI.turma) return; UI.turma = n.id; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); toast(n.nome);
+});

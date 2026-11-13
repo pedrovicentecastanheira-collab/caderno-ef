@@ -23,3 +23,11 @@
 .dom b{font-family:var(--f-display);letter-spacing:.02em}
 .dom .ok{color:var(--ok)} .dom .nx{color:var(--warn)}
 body.ged-on #main{padding-bottom:calc(84px + var(--ged-h,160px) + env(safe-area-inset-bottom,0px))}
+/* folha de edição: no telemóvel começa recolhida (só valores); a pega abre o resumo e as competências */
+.ged-grab{display:none;border:0;background:none;width:100%;padding:4px 0 0;height:18px}
+.ged-grab i{display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto}
+@media (max-width:899px){ .ged-grab{display:block} #ged{border-radius:16px 16px 0 0;max-height:70vh;overflow:auto} }
+#ged.min .domd,#ged.min .pin,#ged.min .wrap>.hint,#ged.min .aebox{display:none}
+@keyframes flash{0%{transform:scale(1.12);box-shadow:0 0 0 3px var(--accent)}100%{transform:none;box-shadow:none}}
+.flash{animation:flash .5s ease-out}
+@media (prefers-reduced-motion: reduce){ .flash{animation:none} }

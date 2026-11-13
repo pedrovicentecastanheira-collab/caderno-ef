@@ -7,5 +7,12 @@ const IC = {
   inicio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>',
   mais:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg>'
 };
-const TABS = [['inicio','Início'],['aulas','Aulas'],['alunos','Alunos'],['avaliar','Avaliar'],['pauta','Pauta'],['mais','Mais']];
+const TABS = [['inicio','Início'],['turma','Turma'],['avaliar','Avaliar'],['relatorios','Relatórios']];
+IC.turma = IC.alunos; IC.relatorios = IC.pauta;
+IC.defs = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+// Nomes antigos dos separadores (usados por ações antigas) passam para a navegação nova.
+const OLDTAB = {aulas:['turma', 'aulas'], alunos:['turma', 'alunos'], pauta:['relatorios'], mais:['defs']};
+function normTab() { const o = OLDTAB[UI.tab]; if (o) { UI.tab = o[0]; if (o[1]) UI.tsub = o[1]; } }
+const byNome = (a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true});
+function tcor(t) { if (!t) return 1; if (t.cor) return t.cor; const i = Object.values(S.turmas).sort(byNome).indexOf(t); return i < 0 ? 1 : i % 8 + 1; }
 

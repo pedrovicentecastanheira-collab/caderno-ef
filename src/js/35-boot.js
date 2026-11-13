@@ -11,6 +11,6 @@
   if (!S.turmas[UI.turma]) UI.turma = Object.keys(S.turmas)[0] || null;
   if (!UI._pSet) { UI.p = periodOf(today()); }
   if (UI.p > CFG.nper) UI.p = CFG.nper;
-  if (!S.turmas[UI.turma] && UI.tab !== 'mais') UI.tab = 'inicio';
+  normTab(); if (!S.turmas[UI.turma] && UI.tab !== 'defs') UI.tab = 'inicio';
   render();
 })();

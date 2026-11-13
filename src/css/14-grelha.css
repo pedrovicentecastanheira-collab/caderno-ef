@@ -32,3 +32,14 @@ table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-con
 .gt2 tfoot td,.gt2 tfoot th{position:sticky;bottom:0;background:var(--surface-2);font-size:12px;color:var(--muted);padding:4px;z-index:2}
 .gt2 tfoot th{left:0;z-index:3;text-align:left;padding-left:8px}
 .gk-mat{--gk:var(--accent)} .gk-fit{--gk:var(--ok)} .gk-con{--gk:var(--warn)} .gk-av{--gk:var(--mat)} .gk-fin{--gk:var(--ink)}
+.gtool{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gtool .sp{flex:1}
+.gt-dom{display:inline-flex;gap:4px}
+.gt-dom button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px;min-height:36px}
+.gt-dom button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gt-lay button{display:inline-flex;align-items:center;gap:5px}
+.gt-lay svg,.gtool .icon-btn svg,.gt-f svg{width:18px;height:18px}
+.gt-lay span{display:none}
+@media (min-width:900px){ .gt-lay span{display:inline} }
+.gt-f{min-height:36px;padding:6px 12px}
+.gt-f.on{border-color:var(--accent);color:var(--accent)}

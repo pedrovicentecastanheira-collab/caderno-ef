@@ -1,15 +1,22 @@
 /* header */
-#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:3px solid var(--tc,var(--line))}
 .wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top-in{display:flex;align-items:center;gap:10px;padding-block:10px}
-.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.top-in{display:flex;align-items:center;gap:8px;padding-block:8px;min-height:56px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;margin-right:6px}
 .brand b{color:var(--accent)}
+@media (max-width:639px){ .top-in .brand{display:none} }
+.tdot{width:12px;height:12px;border-radius:4px;background:var(--tc);flex:none}
 .turma-sel{flex:1;min-width:0;position:relative}
-.turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:22px;padding:2px 22px 2px 0;text-overflow:ellipsis}
+.turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.1;padding:2px 22px 2px 0;text-overflow:ellipsis;min-height:44px}
 .turma-sel::after{content:"";position:absolute;right:4px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.perchip{appearance:none;-webkit-appearance:none;width:auto;min-height:36px;padding:6px 26px 6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235A6879' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 10px center;font-weight:700;font-size:14px;flex:none}
+.gear{flex:none}
+.gear svg{width:22px;height:22px}
+.gear.on{color:var(--accent)}
+.ptitle{font-size:28px}
 .seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:2px;gap:2px}
-.seg button{border:0;background:transparent;border-radius:8px;padding:6px 9px;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap}
+.seg button{border:0;background:transparent;border-radius:8px;padding:6px 9px;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap;min-height:36px}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 .seg.block{display:flex;width:100%}
 .seg.block button{flex:1}
-
+@media (min-width:640px){ .turma-sel{flex:0 1 auto} .turma-sel select{width:auto;max-width:420px} .perchip{margin-left:auto} }

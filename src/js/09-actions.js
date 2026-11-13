@@ -1,6 +1,8 @@
 /* ---------- actions ---------- */
 const A = {
   'tab': el => { UI.tab = el.dataset.t; if (UI.tab !== 'avaliar') SEL = null; render(); window.scrollTo(0, 0); },
+  'tsub': el => { UI.tsub = el.dataset.k; render(); },
+  'dsec': el => { UI.dsec = el.dataset.k; render(); window.scrollTo(0, 0); },
   'per': el => { UI.p = +el.dataset.p; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; render(); },
   'sh-close': () => closeSheet(),
   'avtab': el => { UI.avTab = el.dataset.k; render(); },
@@ -104,7 +106,7 @@ const A = {
   'avmode': el => { UI.avMode = el.dataset.k; SEL = null; render(); },
   'cell': el => {
     const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === el.dataset.k), al = (t.alunos || []).find(x => x.id === el.dataset.aid); if (!col || !al) return;
-    SEL = {aid:al.id, k:col.k};
+    SEL = {aid:al.id, k:col.k}; UI.hintSeen = true; if (window.innerWidth < 900) UI.gedOpen = false;
     if (PIN && PIN.val != null && PIN.type === col.type && gEditable(col, al)) { gSnap(c, col); gSet(c, col, al, PIN.val); }
     gRefresh(col.type === 'num' && gEditable(col, al) && !matchMedia('(pointer:coarse)').matches);
   },
@@ -119,7 +121,10 @@ const A = {
     UNDO = UNDOS[UNDOS.length - 1] || null; gRefresh(); toast(UNDOS.length ? 'Desfeito. Pode desfazer mais ' + UNDOS.length + '.' : 'Desfeito.');
   },
   'g-grp': el => { UI.hide[el.dataset.g] = !UI.hide[el.dataset.g]; gRefresh(); },
-  'g-lay': el => { UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
+  'g-lay': el => { if (el.dataset.k === 'dominio') { UI.avMode = 'dominio'; SEL = null; render(); return; } UI.avMode = 'grelha'; UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
+  'g-filtros': () => sheetFiltros(),
+  'f-dir': el => { UI.sort.d = +el.dataset.v; sheetFiltros(); gRefresh(); },
+  'ged-tog': () => { UI.gedOpen = !UI.gedOpen; gEditor(); },
   'g-todo': () => { UI.todo = !UI.todo; gRefresh(); },
   'g-colstep': el => gColStep(+el.dataset.d),
   'g-unfocus': () => { FOCUS = null; SEL = null; render(); },
@@ -299,6 +304,9 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
   if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); } }
+  else if (k === 'f-todo') { UI.todo = el.checked; gRefresh(); }
+  else if (k === 'f-sort') { UI.sort = el.value ? {k:el.value, d:-1} : null; sheetFiltros(); gRefresh(); }
+  else if (k === 'per-sel') { A.per({dataset:{p:el.value}}); }
   else if (k === 'd-data') { UI.draft.data = el.value || today(); }
   else if (k === 'avo') { const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; v.av = v.av || {}; v.av[aid] = v.av[aid] || {}; v.av[aid][el.dataset.k] = el.value === '' ? null : +el.value; touchAval(v); updAV(aid); }
   else if (k === 'cfg-ano') { CFG.ano = el.value.trim(); Store.save('cfg', CFG); }
@@ -394,7 +402,7 @@ document.addEventListener('touchend', e => {
   if (!SW) return; const t = e.changedTouches[0], dx = t.clientX - SW.x, dy = t.clientY - SW.y; SW = null;
   if (Math.abs(dx) > 60 && Math.abs(dy) < 45) gColStep(dx < 0 ? 1 : -1);
 });
-window.addEventListener('resize', () => { gFit(); if (UI.tab === 'pauta' && UI.pview === 'graf') { clearTimeout(window._rz); window._rz = setTimeout(render, 200); } });
+window.addEventListener('resize', () => { gFit(); if (UI.tab === 'relatorios' && UI.pview === 'graf') { clearTimeout(window._rz); window._rz = setTimeout(render, 200); } });
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('domd')) { UI.domOpen = e.target.open; saveUI(); const g = $('#ged'); document.documentElement.style.setProperty('--ged-h', g.offsetHeight + 'px'); gFit(); } }, true);
 $('#file-xls').addEventListener('change', async e => {
   const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;

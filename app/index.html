@@ -62,20 +62,27 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-
 .num-t{font-variant-numeric:tabular-nums}
 
 /* header */
-#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:3px solid var(--tc,var(--line))}
 .wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top-in{display:flex;align-items:center;gap:10px;padding-block:10px}
-.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.top-in{display:flex;align-items:center;gap:8px;padding-block:8px;min-height:56px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;margin-right:6px}
 .brand b{color:var(--accent)}
+@media (max-width:639px){ .top-in .brand{display:none} }
+.tdot{width:12px;height:12px;border-radius:4px;background:var(--tc);flex:none}
 .turma-sel{flex:1;min-width:0;position:relative}
-.turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:22px;padding:2px 22px 2px 0;text-overflow:ellipsis}
+.turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.1;padding:2px 22px 2px 0;text-overflow:ellipsis;min-height:44px}
 .turma-sel::after{content:"";position:absolute;right:4px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.perchip{appearance:none;-webkit-appearance:none;width:auto;min-height:36px;padding:6px 26px 6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235A6879' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 10px center;font-weight:700;font-size:14px;flex:none}
+.gear{flex:none}
+.gear svg{width:22px;height:22px}
+.gear.on{color:var(--accent)}
+.ptitle{font-size:28px}
 .seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:2px;gap:2px}
-.seg button{border:0;background:transparent;border-radius:8px;padding:6px 9px;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap}
+.seg button{border:0;background:transparent;border-radius:8px;padding:6px 9px;font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap;min-height:36px}
 .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 .seg.block{display:flex;width:100%}
 .seg.block button{flex:1}
-
+@media (min-width:640px){ .turma-sel{flex:0 1 auto} .turma-sel select{width:auto;max-width:420px} .perchip{margin-left:auto} }
 /* main */
 #main{padding-block:16px calc(84px + env(safe-area-inset-bottom,0px))}
 .stack{display:flex;flex-direction:column;gap:12px}
@@ -214,8 +221,8 @@ details.desc dd{margin:0;font-size:13.5px}
 
 /* bottom nav */
 #nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-#nav .wrap{display:grid;grid-template-columns:repeat(6,1fr)}
-#nav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 9px;font-size:11.5px;font-weight:600;color:var(--muted)}
+#nav .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+#nav button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 9px;font-size:12.5px;min-height:56px;font-weight:600;color:var(--muted)}
 #nav button svg{width:22px;height:22px}
 #nav button.on{color:var(--accent)}
 
@@ -277,6 +284,17 @@ table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-con
 .gt2 tfoot td,.gt2 tfoot th{position:sticky;bottom:0;background:var(--surface-2);font-size:12px;color:var(--muted);padding:4px;z-index:2}
 .gt2 tfoot th{left:0;z-index:3;text-align:left;padding-left:8px}
 .gk-mat{--gk:var(--accent)} .gk-fit{--gk:var(--ok)} .gk-con{--gk:var(--warn)} .gk-av{--gk:var(--mat)} .gk-fin{--gk:var(--ink)}
+.gtool{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gtool .sp{flex:1}
+.gt-dom{display:inline-flex;gap:4px}
+.gt-dom button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 11px;font-weight:700;font-size:13px;min-height:36px}
+.gt-dom button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gt-lay button{display:inline-flex;align-items:center;gap:5px}
+.gt-lay svg,.gtool .icon-btn svg,.gt-f svg{width:18px;height:18px}
+.gt-lay span{display:none}
+@media (min-width:900px){ .gt-lay span{display:inline} }
+.gt-f{min-height:36px;padding:6px 12px}
+.gt-f.on{border-color:var(--accent);color:var(--accent)}
 /* one column at a time (phone) */
 .gcnav{display:grid;grid-template-columns:44px 1fr 44px;gap:6px;align-items:center}
 .gcnav select{font-weight:600}
@@ -313,6 +331,14 @@ table.gt2{border-collapse:separate;border-spacing:0;font-size:14px;width:max-con
 .dom b{font-family:var(--f-display);letter-spacing:.02em}
 .dom .ok{color:var(--ok)} .dom .nx{color:var(--warn)}
 body.ged-on #main{padding-bottom:calc(84px + var(--ged-h,160px) + env(safe-area-inset-bottom,0px))}
+/* folha de edição: no telemóvel começa recolhida (só valores); a pega abre o resumo e as competências */
+.ged-grab{display:none;border:0;background:none;width:100%;padding:4px 0 0;height:18px}
+.ged-grab i{display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto}
+@media (max-width:899px){ .ged-grab{display:block} #ged{border-radius:16px 16px 0 0;max-height:70vh;overflow:auto} }
+#ged.min .domd,#ged.min .pin,#ged.min .wrap>.hint,#ged.min .aebox{display:none}
+@keyframes flash{0%{transform:scale(1.12);box-shadow:0 0 0 3px var(--accent)}100%{transform:none;box-shadow:none}}
+.flash{animation:flash .5s ease-out}
+@media (prefers-reduced-motion: reduce){ .flash{animation:none} }
 /* charts */
 .vfig{margin:0;display:flex;flex-direction:column;gap:10px}
 .vfig figcaption{display:flex;flex-direction:column;gap:2px}
@@ -741,31 +767,53 @@ const IC = {
   inicio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>',
   mais:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg>'
 };
-const TABS = [['inicio','Início'],['aulas','Aulas'],['alunos','Alunos'],['avaliar','Avaliar'],['pauta','Pauta'],['mais','Mais']];
+const TABS = [['inicio','Início'],['turma','Turma'],['avaliar','Avaliar'],['relatorios','Relatórios']];
+IC.turma = IC.alunos; IC.relatorios = IC.pauta;
+IC.defs = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+// Nomes antigos dos separadores (usados por ações antigas) passam para a navegação nova.
+const OLDTAB = {aulas:['turma', 'aulas'], alunos:['turma', 'alunos'], pauta:['relatorios'], mais:['defs']};
+function normTab() { const o = OLDTAB[UI.tab]; if (o) { UI.tab = o[0]; if (o[1]) UI.tsub = o[1]; } }
+const byNome = (a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true});
+function tcor(t) { if (!t) return 1; if (t.cor) return t.cor; const i = Object.values(S.turmas).sort(byNome).indexOf(t); return i < 0 ? 1 : i % 8 + 1; }
 
 /* ---------- render ---------- */
 function render() {
-  saveUI();
-  const t = turma();
-  const ts = Object.values(S.turmas).sort((a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true}));
+  normTab(); saveUI();
+  const t = turma(), ts = Object.values(S.turmas).sort(byNome), c = tcor(t);
+  document.documentElement.style.setProperty('--tc', `var(--v${c})`);
   let top = '<div class="brand">Caderno <b>EF</b></div>';
   if (t) {
-    top += '<div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma">' +
-      ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') +
-      '<option value="__new">+ Nova turma…</option></select></div>';
-    top += '<div class="seg" role="group" aria-label="Período">' + CFG.per.slice(0, CFG.nper).map((_, i) => `<button data-a="per" data-p="${i + 1}" class="${UI.p === i + 1 ? 'on' : ''}">${perLabel(i + 1)}</button>`).join('') + '</div>';
-  }
+    top += `<span class="tdot" aria-hidden="true"></span><div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma (deslize no cabeçalho para mudar)">` +
+      ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') + '<option value="__new">+ Nova turma…</option></select></div>';
+    top += `<select class="perchip" data-in="per-sel" aria-label="Período">${CFG.per.slice(0, CFG.nper).map((_, i) => `<option value="${i + 1}"${UI.p === i + 1 ? ' selected' : ''}>${perLabel(i + 1)}</option>`).join('')}</select>`;
+  } else top += '<span style="flex:1"></span>';
+  top += `<button class="icon-btn gear${UI.tab === 'defs' ? ' on' : ''}" data-a="tab" data-t="defs" aria-label="Definições" title="Definições">${IC.defs}</button>`;
   morph($('#top'), '<div class="wrap top-in">' + top + '</div>');
   document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px');
-  $('#nav').hidden = !t && UI.tab !== 'mais';
+  $('#nav').hidden = !t && UI.tab !== 'defs';
   morph($('#nav-in'), TABS.map(([k, n]) => `<button data-a="tab" data-t="${k}" class="${UI.tab === k ? 'on' : ''}" aria-current="${UI.tab === k ? 'page' : 'false'}">${IC[k]}<span>${n}</span></button>`).join(''));
   let h;
-  if (!ts.length && UI.tab !== 'mais' || !t && UI.tab !== 'mais' && UI.tab !== 'inicio') h = vWelcome();
+  if (!ts.length && UI.tab !== 'defs' || !t && UI.tab !== 'defs' && UI.tab !== 'inicio') h = vWelcome();
   else if (UI.tab === 'inicio') h = vInicio();
-  else h = ({aulas:vAulas, alunos:vAlunos, avaliar:vAvaliar, pauta:vPauta, mais:vMais})[UI.tab](t);
+  else h = ({turma:vTurma, avaliar:vAvaliar, relatorios:vPauta, defs:vDefs})[UI.tab](t);
   morph($('#main'), '<div class="wrap">' + h + '</div>');
   gEditor();
 }
+function vTurma(t) {
+  const sub = UI.tsub || 'aulas';
+  return `<div class="stack"><div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
+}
+// Definições arrumadas por secções (as secções vêm de vMais).
+const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
+function vDefs(t) {
+  const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
+  body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
+  const sec = DSECS.find(x => x[0] === UI.dsec) || DSECS[0];
+  let h = `<div class="stack"><h1 class="ptitle">Definições</h1><div class="chips">${DSECS.map(([k, n]) => `<button class="chip ${sec[0] === k ? 'on' : ''}" data-a="dsec" data-k="${k}">${n}</button>`).join('')}</div>`;
+  h += sec[0] === 'ver' ? vAparencia() : sec[2].map(n => parts[n] || '').join('');
+  return h + '</div>';
+}
+function vAparencia() { return '<div class="card"><p class="hint" style="margin:0">Em breve.</p></div>'; }
 
 function storageNote() {
   if (Store.mode === 'cloud') return 'Os dados ficam guardados na sua área privada desta app: só o Pedro os vê, em qualquer dispositivo onde abra o caderno com a sua conta.';
@@ -833,7 +881,7 @@ function vAlunos(t) {
 
 function vAvaliar(t) {
   const als = alunosOf(t);
-  let h = `<div class="stack"><div class="seg block" role="group" aria-label="Modo de avaliar">${[['grelha','Grelha da turma'],['dominio','Aluno a aluno']].map(([k, n]) => `<button data-a="avmode" data-k="${k}" class="${(UI.avMode === 'dominio') === (k === 'dominio') ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  let h = `<div class="stack">${UI.avMode === 'dominio' ? gToolbar(false) : ''}`;
   if (!als.length) return h + `<div class="card empty"><h3>Sem alunos</h3><p>Adicione alunos à turma para começar a avaliar.</p></div></div>`;
   if (UI.avMode !== 'dominio') return h + vGrelha(t) + '</div>';
   h += `<div class="seg block" role="group" aria-label="Domínio">` +
@@ -903,6 +951,16 @@ function avatar(al, cls) {
   return `<span class="${c}" aria-hidden="true">${esc(((w[0] || '?')[0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase())}</span>`;
 }
 
+
+// Deslizar no cabeçalho para o lado muda para a turma anterior ou seguinte.
+let TSW = null;
+document.addEventListener('touchstart', e => { TSW = e.target.closest && e.target.closest('#top') ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : null; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if (!TSW) return; const tt = e.changedTouches[0], dx = tt.clientX - TSW.x, dy = tt.clientY - TSW.y; TSW = null;
+  if (Math.abs(dx) < 70 || Math.abs(dy) > 40) return;
+  const ts = Object.values(S.turmas).sort(byNome), i = ts.findIndex(x => x.id === UI.turma), n = ts[(i + (dx < 0 ? 1 : -1) + ts.length) % ts.length];
+  if (!n || n.id === UI.turma) return; UI.turma = n.id; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); toast(n.nome);
+});
 /* ---------- atualização do ecrã sem redesenhar tudo ---------- */
 // Compara o HTML novo com o que está no ecrã e só muda o que mudou: mantém o scroll, o foco, o texto a ser escrito e o que está aberto.
 function morph(el, html) { const t = document.createElement('template'); t.innerHTML = html; morphKids(el, t.content); }
@@ -1116,13 +1174,36 @@ function vGrelha(t) {
   if (SEL && !COLS.includes(SEL.k)) SEL = null;
   let h = '';
   if (FOCUS && S.aulas[FOCUS]) { const a = S.aulas[FOCUS]; h += `<div class="note">A avaliar a aula de <b>${esc(fmtDate(a.data))}</b>${(a.materias || []).length ? ': ' + esc(a.materias.join(', ')) : ' (sem matérias marcadas)'}. Registe também +/− de participação. <button class="link" data-a="g-unfocus">Ver o período todo</button></div>`; }
-  else h += `<div class="chips">${Object.entries(GN).map(([g, n]) => `<button class="chip ${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}">${n}</button>`).join('')}<button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
+  h += gToolbar(!FOCUS);
+  if (!UI.hintSeen) h += `<p class="hint">Toque numa célula para lançar o valor. Toque no título de uma coluna para preencher a turma toda, ordenar, ver descritivos ou criar indicadores.</p>`;
   const lay = gLayout();
-  h += `<div class="vt"><div class="seg" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna'], ['cartoes', 'Cartões']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}">${n}</button>`).join('')}</div>
-    <div class="btn-row" style="flex:none">${UNDO ? '<button class="link" data-a="g-undo">Desfazer</button>' : ''}<button class="chip ${UI.todo ? 'on' : ''}" data-a="g-todo" aria-pressed="${!!UI.todo}">Só por avaliar</button></div></div>`;
-  if (!SEL) h += `<p class="hint">Toque numa célula para lançar o valor. Toque no título de uma coluna para preencher a turma toda, ordenar, ver descritivos ou criar indicadores.</p>`;
   if (!als.length) return h + `<div class="card empty"><h3>${UI.todo ? 'Tudo avaliado' : 'Sem alunos'}</h3><p>${UI.todo ? 'Não há alunos com avaliações em falta nas colunas já começadas.' : 'Adicione alunos à turma.'}</p></div>`;
   return h + (lay === 'coluna' ? vColuna(c, cols, als) : lay === 'cartoes' ? vCartoes(c, cols, als) : vTabela(c, cols, als));
+}
+// Uma só barra: domínios visíveis, disposição, desfazer e filtros.
+const GICO = {
+  tabela:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9 4.5v15"/></svg>',
+  coluna:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  cartoes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="15.5" y="4" width="5" height="7" rx="1.5"/></svg>',
+  dominio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="2.5"/><path d="M12 6h8M12 9h5"/><circle cx="7" cy="17" r="2.5"/><path d="M12 16h8M12 19h5"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4 12l5 5"/><path d="M4 12h10a6 6 0 0 1 0 12h-2" transform="translate(0 -6)"/></svg>',
+  filtro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>'
+};
+const GDL = {mat:'Mat.', fit:'Apt.', con:'Con.', av:'Atit.'};
+function gToolbar(doms) {
+  const lay = UI.avMode === 'dominio' ? 'dominio' : gLayout(), nf = (UI.todo ? 1 : 0) + (UI.sort ? 1 : 0);
+  return `<div class="gtool">${doms ? `<div class="gt-dom" role="group" aria-label="Domínios visíveis">${Object.keys(GN).map(g => `<button class="${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}" title="${esc(GN[g])}">${GDL[g]}</button>`).join('')}</div>` : ''}
+    <div class="seg gt-lay" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna'], ['cartoes', 'Cartões'], ['dominio', 'Aluno a aluno']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}" title="${n}" aria-label="${n}">${GICO[k]}<span>${n}</span></button>`).join('')}</div>
+    <span class="sp"></span>${UNDO ? `<button class="icon-btn" data-a="g-undo" title="Desfazer${UNDOS.length > 1 ? ' (' + UNDOS.length + ')' : ''}" aria-label="Desfazer">${GICO.undo}</button>` : ''}
+    <button class="btn gt-f${nf ? ' on' : ''}" data-a="g-filtros">${GICO.filtro}<span>Filtros${nf ? ' · ' + nf : ''}</span></button></div>`;
+}
+function sheetFiltros() {
+  const t = turma(), cols = gCols(t, avalOf(t.id, UI.p)).filter(x => x.type !== 'reg');
+  openSheet('Filtros e ordem', `<div class="form">
+    <label class="pin"><input type="checkbox" data-in="f-todo"${UI.todo ? ' checked' : ''}> Só alunos com avaliações em falta</label>
+    <div class="field"><label for="f-sort">Ordenar os alunos por</label><select id="f-sort" data-in="f-sort"><option value="">Número</option>${cols.map(c => `<option value="${esc(c.k)}"${UI.sort && UI.sort.k === c.k ? ' selected' : ''}>${esc(c.title)}</option>`).join('')}</select></div>
+    ${UI.sort ? `<div class="seg block">${[[-1, 'Do maior para o menor'], [1, 'Do menor para o maior']].map(([v, n]) => `<button data-a="f-dir" data-v="${v}" class="${UI.sort.d === v ? 'on' : ''}">${n}</button>`).join('')}</div>` : ''}
+    <button class="btn" data-a="mat-add">+ Acrescentar matéria ao período</button></div>`, `<button class="btn primary" data-a="sh-close">Ver resultado</button>`);
 }
 function vTabela(c, cols, als) {
   const grp = []; cols.forEach(col => { const l = grp[grp.length - 1]; if (l && l.g === col.g) l.n++; else grp.push({g:col.g, n:1}); });
@@ -1130,7 +1211,7 @@ function vTabela(c, cols, als) {
     <tr class="cols">${cols.map(col => `<th class="gk-${col.g}${col.sub ? ' sub' : ''}${UI.sort && UI.sort.k === col.k ? ' srt' : ''}" data-a="col-menu" data-k="${esc(col.k)}" title="${esc(col.title)}">${col.sub ? '↳ ' : ''}${esc(col.label)}${col.unit ? `<small>${esc(col.unit)}</small>` : ''}</th>`).join('')}</tr></thead><tbody>`;
   als.forEach(al => {
     h += `<tr class="${SEL && SEL.aid === al.id ? 'rsel' : ''}"><th class="rh" data-a="aluno-edit" data-id="${esc(al.id)}" title="${esc(al.nome)}"><span class="rhi"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nmx">${esc(al.nome)}</span></span></th>` +
-      cols.map(col => { const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k; return `<td class="c ${s.cls}${s.auto ? ' auto' : ''}${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${esc(s.txt)}</td>`; }).join('') + '</tr>';
+      cols.map(col => { const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k; return `<td class="c ${s.cls}${s.auto ? ' auto' : ''}${on ? ' sel' : ''}${isFlash(al, col) ? ' flash' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${esc(s.txt)}</td>`; }).join('') + '</tr>';
   });
   h += `</tbody><tfoot><tr><th>Avaliados</th>${cols.map(col => {
     if (col.k === 't:FIN') { const n = als.filter(al => gCalc(c, al).EST === 'Apto').length; return `<td title="Aptos">${n} aptos</td>`; }
@@ -1146,7 +1227,7 @@ function vColuna(c, cols, als) {
   h += `<div class="vt"><span class="hint">Deslize para o lado para mudar de coluna.</span><button class="link" data-a="col-menu" data-k="${esc(col.k)}">Preencher, ordenar…</button></div>`;
   h += `<div class="gcl" id="gcl">${als.map(al => {
     const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k, r = gCalc(c, al);
-    return `<button class="gcr${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${avatar(al)}<span class="who"><span class="nm">${esc(al.num ?? '')} · ${esc(al.nome)}</span><span class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}</span></span><span class="c ${s.cls}${s.auto ? ' auto' : ''}">${esc(s.txt) || '·'}</span></button>`;
+    return `<button class="gcr${on ? ' sel' : ''}${isFlash(al, col) ? ' flash' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${avatar(al)}<span class="who"><span class="nm">${esc(al.num ?? '')} · ${esc(al.nome)}</span><span class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}</span></span><span class="c ${s.cls}${s.auto ? ' auto' : ''}">${esc(s.txt) || '·'}</span></button>`;
   }).join('')}</div>`;
   return h;
 }
@@ -1160,7 +1241,7 @@ function gEditor() {
   const c = gCtx(t), col = gCols(t, c.v).find(x => x.k === SEL.k), al = (t.alunos || []).find(x => x.id === SEL.aid);
   if (!col || !al) { SEL = null; return off(); }
   const ok = gEditable(col, al), ch = gChoices(col), cur = gGet(c, col, al);
-  let h = `<div class="ged-h">${avatar(al, 'sm')}<span class="t"><b>${esc(al.nome)}</b> <span class="muted">· ${esc(col.title)}</span></span><button class="icon-btn" data-a="g-move" data-d="-1" aria-label="Aluno anterior">↑</button><button class="icon-btn" data-a="g-move" data-d="1" aria-label="Aluno seguinte">↓</button><button class="icon-btn" data-a="g-desel" aria-label="Fechar">×</button></div>`;
+  let h = `<button class="ged-grab" data-a="ged-tog" aria-label="${UI.gedOpen ? 'Recolher' : 'Ver mais'}"><i></i></button><div class="ged-h">${avatar(al, 'sm')}<span class="t"><b>${esc(al.nome)}</b> <span class="muted">· ${esc(col.title)}</span></span><button class="icon-btn" data-a="g-move" data-d="-1" aria-label="Aluno anterior">↑</button><button class="icon-btn" data-a="g-move" data-d="1" aria-label="Aluno seguinte">↓</button><button class="icon-btn" data-a="g-desel" aria-label="Fechar">×</button></div>`;
   if (!ok) h += `<p class="hint">${col.type === 'calc' ? 'Calculado automaticamente.' : col.type === 'reg' ? 'Os registos +/− lançam-se numa aula: Aulas → abrir a aula → Avaliar nesta aula.' : 'Não se aplica a este aluno (dispensa).'}</p>`;
   else if (ch) {
     h += `<div class="gbr" role="group" aria-label="Valor">${ch.map(x => `<button class="lv ${x.cls}${cur === x.v ? ' on' : ''}" data-a="g-set" data-v="${x.v}" title="${esc(x.title || '')}" aria-pressed="${cur === x.v}">${esc(x.label)}</button>`).join('')}<button class="lv" data-a="g-set" data-v="" title="Apagar" aria-label="Apagar">⌫</button></div>`;
@@ -1178,6 +1259,7 @@ function gEditor() {
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
   el.innerHTML = `<div class="wrap">${h}</div>`; el.hidden = false; document.body.classList.add('ged-on');
+  el.classList.toggle('min', !UI.gedOpen && window.innerWidth < 900);
   const sc2 = el.querySelector('.cl'); if (sc2) sc2.scrollTop = st;
   document.documentElement.style.setProperty('--ged-h', el.offsetHeight + 'px'); gFit();
 }
@@ -1202,9 +1284,11 @@ function gMove(dr, dc, focusNum) {
   const {col} = gHere(); gRefresh(focusNum && col && col.type === 'num');
 }
 // Aplica um valor à célula escolhida; sem pincel, passa ao aluno seguinte (como numa folha de cálculo).
+let FLASH = null;
+const isFlash = (al, col) => FLASH && FLASH.aid === al.id && FLASH.k === col.k && Date.now() - FLASH.ts < 900;
 function gApply(val, advance) {
   const {c, col, al} = gHere(); if (!col || !al || !gEditable(col, al)) return;
-  gSnap(c, col); gSet(c, col, al, val);
+  gSnap(c, col); gSet(c, col, al, val); FLASH = {aid:al.id, k:col.k, ts:Date.now()};
   if (PIN && val != null && col.type !== 'reg') { PIN = {type:col.type, val, label:(gChoices(col) || []).find(x => x.v === val)?.label || String(val)}; }
   if (advance && !PIN && col.type !== 'reg') gMove(1, 0); else gRefresh();
 }
@@ -1393,6 +1477,8 @@ function sheetMatAdd() {
 /* ---------- actions ---------- */
 const A = {
   'tab': el => { UI.tab = el.dataset.t; if (UI.tab !== 'avaliar') SEL = null; render(); window.scrollTo(0, 0); },
+  'tsub': el => { UI.tsub = el.dataset.k; render(); },
+  'dsec': el => { UI.dsec = el.dataset.k; render(); window.scrollTo(0, 0); },
   'per': el => { UI.p = +el.dataset.p; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; render(); },
   'sh-close': () => closeSheet(),
   'avtab': el => { UI.avTab = el.dataset.k; render(); },
@@ -1496,7 +1582,7 @@ const A = {
   'avmode': el => { UI.avMode = el.dataset.k; SEL = null; render(); },
   'cell': el => {
     const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === el.dataset.k), al = (t.alunos || []).find(x => x.id === el.dataset.aid); if (!col || !al) return;
-    SEL = {aid:al.id, k:col.k};
+    SEL = {aid:al.id, k:col.k}; UI.hintSeen = true; if (window.innerWidth < 900) UI.gedOpen = false;
     if (PIN && PIN.val != null && PIN.type === col.type && gEditable(col, al)) { gSnap(c, col); gSet(c, col, al, PIN.val); }
     gRefresh(col.type === 'num' && gEditable(col, al) && !matchMedia('(pointer:coarse)').matches);
   },
@@ -1511,7 +1597,10 @@ const A = {
     UNDO = UNDOS[UNDOS.length - 1] || null; gRefresh(); toast(UNDOS.length ? 'Desfeito. Pode desfazer mais ' + UNDOS.length + '.' : 'Desfeito.');
   },
   'g-grp': el => { UI.hide[el.dataset.g] = !UI.hide[el.dataset.g]; gRefresh(); },
-  'g-lay': el => { UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
+  'g-lay': el => { if (el.dataset.k === 'dominio') { UI.avMode = 'dominio'; SEL = null; render(); return; } UI.avMode = 'grelha'; UI.glay = el.dataset.k; if (SEL) UI.gcol = SEL.k; gRefresh(); },
+  'g-filtros': () => sheetFiltros(),
+  'f-dir': el => { UI.sort.d = +el.dataset.v; sheetFiltros(); gRefresh(); },
+  'ged-tog': () => { UI.gedOpen = !UI.gedOpen; gEditor(); },
   'g-todo': () => { UI.todo = !UI.todo; gRefresh(); },
   'g-colstep': el => gColStep(+el.dataset.d),
   'g-unfocus': () => { FOCUS = null; SEL = null; render(); },
@@ -1691,6 +1780,9 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
   if (k === 'turma') { if (el.value === '__new') { el.value = UI.turma; A['turma-new'](); } else { UI.turma = el.value; UI.mat = null; FOCUS = null; SEL = null; UNDO = null; UNDOS.length = 0; UI.sort = null; render(); } }
+  else if (k === 'f-todo') { UI.todo = el.checked; gRefresh(); }
+  else if (k === 'f-sort') { UI.sort = el.value ? {k:el.value, d:-1} : null; sheetFiltros(); gRefresh(); }
+  else if (k === 'per-sel') { A.per({dataset:{p:el.value}}); }
   else if (k === 'd-data') { UI.draft.data = el.value || today(); }
   else if (k === 'avo') { const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; v.av = v.av || {}; v.av[aid] = v.av[aid] || {}; v.av[aid][el.dataset.k] = el.value === '' ? null : +el.value; touchAval(v); updAV(aid); }
   else if (k === 'cfg-ano') { CFG.ano = el.value.trim(); Store.save('cfg', CFG); }
@@ -1786,7 +1878,7 @@ document.addEventListener('touchend', e => {
   if (!SW) return; const t = e.changedTouches[0], dx = t.clientX - SW.x, dy = t.clientY - SW.y; SW = null;
   if (Math.abs(dx) > 60 && Math.abs(dy) < 45) gColStep(dx < 0 ? 1 : -1);
 });
-window.addEventListener('resize', () => { gFit(); if (UI.tab === 'pauta' && UI.pview === 'graf') { clearTimeout(window._rz); window._rz = setTimeout(render, 200); } });
+window.addEventListener('resize', () => { gFit(); if (UI.tab === 'relatorios' && UI.pview === 'graf') { clearTimeout(window._rz); window._rz = setTimeout(render, 200); } });
 document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('domd')) { UI.domOpen = e.target.open; saveUI(); const g = $('#ged'); document.documentElement.style.setProperty('--ged-h', g.offsetHeight + 'px'); gFit(); } }, true);
 $('#file-xls').addEventListener('change', async e => {
   const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
@@ -2810,7 +2902,7 @@ function vCartoes(c, cols, als) {
     <p class="hint">Arraste o cartão para outra coluna (no telemóvel, mantenha o dedo um instante antes de arrastar). Um toque abre a barra de valores.</p><div class="kb" id="kb">`;
   ch.forEach(x => {
     const xs = buck[String(x.v)] || [];
-    h += `<div class="kc" data-v="${x.v == null ? '' : esc(String(x.v))}"><div class="kc-h ${x.cls || ''}"><b>${esc(x.label)}</b><span>${xs.length}</span></div><div class="kc-b">${xs.map(({al, auto}) => `<div class="kcard${SEL && SEL.aid === al.id && SEL.k === col.k ? ' sel' : ''}${auto ? ' auto' : ''}" data-aid="${esc(al.id)}" data-k="${esc(col.k)}" tabindex="0">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
+    h += `<div class="kc" data-v="${x.v == null ? '' : esc(String(x.v))}"><div class="kc-h ${x.cls || ''}"><b>${esc(x.label)}</b><span>${xs.length}</span></div><div class="kc-b">${xs.map(({al, auto}) => `<div class="kcard${SEL && SEL.aid === al.id && SEL.k === col.k ? ' sel' : ''}${auto ? ' auto' : ''}${isFlash(al, col) ? ' flash' : ''}" data-aid="${esc(al.id)}" data-k="${esc(col.k)}" tabindex="0">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
   });
   if (off.length) h += `<div class="kc offc"><div class="kc-h"><b>Não se aplica</b><span>${off.length}</span></div><div class="kc-b">${off.map(al => `<div class="kcard off">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
   return h + '</div>';
@@ -2845,7 +2937,7 @@ document.addEventListener('pointerup', e => {
   const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === k), al = (t.alunos || []).find(x => x.id === aid); if (!col || !al || !gEditable(col, al)) return;
   const raw = kc.dataset.v, val = raw === '' ? null : col.type === 'q4' ? +raw : raw;
   if (val === gGet(c, col, al)) return;
-  gSnap(c, col); gSet(c, col, al, val); SEL = {aid, k}; gRefresh(); toast(al.nome.split(' ')[0] + ': ' + (val == null ? 'sem valor' : (gChoices(col).find(x => x.v === val) || {}).label));
+  gSnap(c, col); gSet(c, col, al, val); FLASH = {aid, k, ts:Date.now()}; SEL = {aid, k}; gRefresh(); toast(al.nome.split(' ')[0] + ': ' + (val == null ? 'sem valor' : (gChoices(col).find(x => x.v === val) || {}).label));
 });
 document.addEventListener('pointercancel', () => { if (DRAG) { clearTimeout(DRAG.timer); clearInterval(DRAG.as); if (DRAG.g) DRAG.g.remove(); DRAG.card.classList.remove('dragging'); DRAG = null; } });
 
@@ -2884,7 +2976,7 @@ function makeDemo() {
   if (!S.turmas[UI.turma]) UI.turma = Object.keys(S.turmas)[0] || null;
   if (!UI._pSet) { UI.p = periodOf(today()); }
   if (UI.p > CFG.nper) UI.p = CFG.nper;
-  if (!S.turmas[UI.turma] && UI.tab !== 'mais') UI.tab = 'inicio';
+  normTab(); if (!S.turmas[UI.turma] && UI.tab !== 'defs') UI.tab = 'inicio';
   render();
 })();
 </script>

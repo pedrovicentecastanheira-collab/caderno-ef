@@ -15,7 +15,7 @@ function vCartoes(c, cols, als) {
     <p class="hint">Arraste o cartão para outra coluna (no telemóvel, mantenha o dedo um instante antes de arrastar). Um toque abre a barra de valores.</p><div class="kb" id="kb">`;
   ch.forEach(x => {
     const xs = buck[String(x.v)] || [];
-    h += `<div class="kc" data-v="${x.v == null ? '' : esc(String(x.v))}"><div class="kc-h ${x.cls || ''}"><b>${esc(x.label)}</b><span>${xs.length}</span></div><div class="kc-b">${xs.map(({al, auto}) => `<div class="kcard${SEL && SEL.aid === al.id && SEL.k === col.k ? ' sel' : ''}${auto ? ' auto' : ''}" data-aid="${esc(al.id)}" data-k="${esc(col.k)}" tabindex="0">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
+    h += `<div class="kc" data-v="${x.v == null ? '' : esc(String(x.v))}"><div class="kc-h ${x.cls || ''}"><b>${esc(x.label)}</b><span>${xs.length}</span></div><div class="kc-b">${xs.map(({al, auto}) => `<div class="kcard${SEL && SEL.aid === al.id && SEL.k === col.k ? ' sel' : ''}${auto ? ' auto' : ''}${isFlash(al, col) ? ' flash' : ''}" data-aid="${esc(al.id)}" data-k="${esc(col.k)}" tabindex="0">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
   });
   if (off.length) h += `<div class="kc offc"><div class="kc-h"><b>Não se aplica</b><span>${off.length}</span></div><div class="kc-b">${off.map(al => `<div class="kcard off">${avatar(al, 'sm')}<span>${esc(al.nome)}</span></div>`).join('')}</div></div>`;
   return h + '</div>';
@@ -50,7 +50,7 @@ document.addEventListener('pointerup', e => {
   const t = turma(), c = gCtx(t), col = gCols(t, c.v).find(x => x.k === k), al = (t.alunos || []).find(x => x.id === aid); if (!col || !al || !gEditable(col, al)) return;
   const raw = kc.dataset.v, val = raw === '' ? null : col.type === 'q4' ? +raw : raw;
   if (val === gGet(c, col, al)) return;
-  gSnap(c, col); gSet(c, col, al, val); SEL = {aid, k}; gRefresh(); toast(al.nome.split(' ')[0] + ': ' + (val == null ? 'sem valor' : (gChoices(col).find(x => x.v === val) || {}).label));
+  gSnap(c, col); gSet(c, col, al, val); FLASH = {aid, k, ts:Date.now()}; SEL = {aid, k}; gRefresh(); toast(al.nome.split(' ')[0] + ': ' + (val == null ? 'sem valor' : (gChoices(col).find(x => x.v === val) || {}).label));
 });
 document.addEventListener('pointercancel', () => { if (DRAG) { clearTimeout(DRAG.timer); clearInterval(DRAG.as); if (DRAG.g) DRAG.g.remove(); DRAG.card.classList.remove('dragging'); DRAG = null; } });
 

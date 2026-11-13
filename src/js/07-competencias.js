@@ -175,13 +175,36 @@ function vGrelha(t) {
   if (SEL && !COLS.includes(SEL.k)) SEL = null;
   let h = '';
   if (FOCUS && S.aulas[FOCUS]) { const a = S.aulas[FOCUS]; h += `<div class="note">A avaliar a aula de <b>${esc(fmtDate(a.data))}</b>${(a.materias || []).length ? ': ' + esc(a.materias.join(', ')) : ' (sem matérias marcadas)'}. Registe também +/− de participação. <button class="link" data-a="g-unfocus">Ver o período todo</button></div>`; }
-  else h += `<div class="chips">${Object.entries(GN).map(([g, n]) => `<button class="chip ${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}">${n}</button>`).join('')}<button class="chip add" data-a="mat-add">+ Matéria</button></div>`;
+  h += gToolbar(!FOCUS);
+  if (!UI.hintSeen) h += `<p class="hint">Toque numa célula para lançar o valor. Toque no título de uma coluna para preencher a turma toda, ordenar, ver descritivos ou criar indicadores.</p>`;
   const lay = gLayout();
-  h += `<div class="vt"><div class="seg" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna'], ['cartoes', 'Cartões']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}">${n}</button>`).join('')}</div>
-    <div class="btn-row" style="flex:none">${UNDO ? '<button class="link" data-a="g-undo">Desfazer</button>' : ''}<button class="chip ${UI.todo ? 'on' : ''}" data-a="g-todo" aria-pressed="${!!UI.todo}">Só por avaliar</button></div></div>`;
-  if (!SEL) h += `<p class="hint">Toque numa célula para lançar o valor. Toque no título de uma coluna para preencher a turma toda, ordenar, ver descritivos ou criar indicadores.</p>`;
   if (!als.length) return h + `<div class="card empty"><h3>${UI.todo ? 'Tudo avaliado' : 'Sem alunos'}</h3><p>${UI.todo ? 'Não há alunos com avaliações em falta nas colunas já começadas.' : 'Adicione alunos à turma.'}</p></div>`;
   return h + (lay === 'coluna' ? vColuna(c, cols, als) : lay === 'cartoes' ? vCartoes(c, cols, als) : vTabela(c, cols, als));
+}
+// Uma só barra: domínios visíveis, disposição, desfazer e filtros.
+const GICO = {
+  tabela:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9 4.5v15"/></svg>',
+  coluna:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  cartoes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="11" rx="1.5"/><rect x="15.5" y="4" width="5" height="7" rx="1.5"/></svg>',
+  dominio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="7" r="2.5"/><path d="M12 6h8M12 9h5"/><circle cx="7" cy="17" r="2.5"/><path d="M12 16h8M12 19h5"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4 12l5 5"/><path d="M4 12h10a6 6 0 0 1 0 12h-2" transform="translate(0 -6)"/></svg>',
+  filtro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>'
+};
+const GDL = {mat:'Mat.', fit:'Apt.', con:'Con.', av:'Atit.'};
+function gToolbar(doms) {
+  const lay = UI.avMode === 'dominio' ? 'dominio' : gLayout(), nf = (UI.todo ? 1 : 0) + (UI.sort ? 1 : 0);
+  return `<div class="gtool">${doms ? `<div class="gt-dom" role="group" aria-label="Domínios visíveis">${Object.keys(GN).map(g => `<button class="${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}" title="${esc(GN[g])}">${GDL[g]}</button>`).join('')}</div>` : ''}
+    <div class="seg gt-lay" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna'], ['cartoes', 'Cartões'], ['dominio', 'Aluno a aluno']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}" title="${n}" aria-label="${n}">${GICO[k]}<span>${n}</span></button>`).join('')}</div>
+    <span class="sp"></span>${UNDO ? `<button class="icon-btn" data-a="g-undo" title="Desfazer${UNDOS.length > 1 ? ' (' + UNDOS.length + ')' : ''}" aria-label="Desfazer">${GICO.undo}</button>` : ''}
+    <button class="btn gt-f${nf ? ' on' : ''}" data-a="g-filtros">${GICO.filtro}<span>Filtros${nf ? ' · ' + nf : ''}</span></button></div>`;
+}
+function sheetFiltros() {
+  const t = turma(), cols = gCols(t, avalOf(t.id, UI.p)).filter(x => x.type !== 'reg');
+  openSheet('Filtros e ordem', `<div class="form">
+    <label class="pin"><input type="checkbox" data-in="f-todo"${UI.todo ? ' checked' : ''}> Só alunos com avaliações em falta</label>
+    <div class="field"><label for="f-sort">Ordenar os alunos por</label><select id="f-sort" data-in="f-sort"><option value="">Número</option>${cols.map(c => `<option value="${esc(c.k)}"${UI.sort && UI.sort.k === c.k ? ' selected' : ''}>${esc(c.title)}</option>`).join('')}</select></div>
+    ${UI.sort ? `<div class="seg block">${[[-1, 'Do maior para o menor'], [1, 'Do menor para o maior']].map(([v, n]) => `<button data-a="f-dir" data-v="${v}" class="${UI.sort.d === v ? 'on' : ''}">${n}</button>`).join('')}</div>` : ''}
+    <button class="btn" data-a="mat-add">+ Acrescentar matéria ao período</button></div>`, `<button class="btn primary" data-a="sh-close">Ver resultado</button>`);
 }
 function vTabela(c, cols, als) {
   const grp = []; cols.forEach(col => { const l = grp[grp.length - 1]; if (l && l.g === col.g) l.n++; else grp.push({g:col.g, n:1}); });
@@ -189,7 +212,7 @@ function vTabela(c, cols, als) {
     <tr class="cols">${cols.map(col => `<th class="gk-${col.g}${col.sub ? ' sub' : ''}${UI.sort && UI.sort.k === col.k ? ' srt' : ''}" data-a="col-menu" data-k="${esc(col.k)}" title="${esc(col.title)}">${col.sub ? '↳ ' : ''}${esc(col.label)}${col.unit ? `<small>${esc(col.unit)}</small>` : ''}</th>`).join('')}</tr></thead><tbody>`;
   als.forEach(al => {
     h += `<tr class="${SEL && SEL.aid === al.id ? 'rsel' : ''}"><th class="rh" data-a="aluno-edit" data-id="${esc(al.id)}" title="${esc(al.nome)}"><span class="rhi"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nmx">${esc(al.nome)}</span></span></th>` +
-      cols.map(col => { const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k; return `<td class="c ${s.cls}${s.auto ? ' auto' : ''}${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${esc(s.txt)}</td>`; }).join('') + '</tr>';
+      cols.map(col => { const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k; return `<td class="c ${s.cls}${s.auto ? ' auto' : ''}${on ? ' sel' : ''}${isFlash(al, col) ? ' flash' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${esc(s.txt)}</td>`; }).join('') + '</tr>';
   });
   h += `</tbody><tfoot><tr><th>Avaliados</th>${cols.map(col => {
     if (col.k === 't:FIN') { const n = als.filter(al => gCalc(c, al).EST === 'Apto').length; return `<td title="Aptos">${n} aptos</td>`; }
@@ -205,7 +228,7 @@ function vColuna(c, cols, als) {
   h += `<div class="vt"><span class="hint">Deslize para o lado para mudar de coluna.</span><button class="link" data-a="col-menu" data-k="${esc(col.k)}">Preencher, ordenar…</button></div>`;
   h += `<div class="gcl" id="gcl">${als.map(al => {
     const s = gShow(c, col, al), on = SEL && SEL.aid === al.id && SEL.k === col.k, r = gCalc(c, al);
-    return `<button class="gcr${on ? ' sel' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${avatar(al)}<span class="who"><span class="nm">${esc(al.num ?? '')} · ${esc(al.nome)}</span><span class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}</span></span><span class="c ${s.cls}${s.auto ? ' auto' : ''}">${esc(s.txt) || '·'}</span></button>`;
+    return `<button class="gcr${on ? ' sel' : ''}${isFlash(al, col) ? ' flash' : ''}" data-a="cell" data-aid="${esc(al.id)}" data-k="${esc(col.k)}">${avatar(al)}<span class="who"><span class="nm">${esc(al.num ?? '')} · ${esc(al.nome)}</span><span class="meta">Final ${r.FIN ?? '—'} · ${esc(r.EST)}</span></span><span class="c ${s.cls}${s.auto ? ' auto' : ''}">${esc(s.txt) || '·'}</span></button>`;
   }).join('')}</div>`;
   return h;
 }
@@ -219,7 +242,7 @@ function gEditor() {
   const c = gCtx(t), col = gCols(t, c.v).find(x => x.k === SEL.k), al = (t.alunos || []).find(x => x.id === SEL.aid);
   if (!col || !al) { SEL = null; return off(); }
   const ok = gEditable(col, al), ch = gChoices(col), cur = gGet(c, col, al);
-  let h = `<div class="ged-h">${avatar(al, 'sm')}<span class="t"><b>${esc(al.nome)}</b> <span class="muted">· ${esc(col.title)}</span></span><button class="icon-btn" data-a="g-move" data-d="-1" aria-label="Aluno anterior">↑</button><button class="icon-btn" data-a="g-move" data-d="1" aria-label="Aluno seguinte">↓</button><button class="icon-btn" data-a="g-desel" aria-label="Fechar">×</button></div>`;
+  let h = `<button class="ged-grab" data-a="ged-tog" aria-label="${UI.gedOpen ? 'Recolher' : 'Ver mais'}"><i></i></button><div class="ged-h">${avatar(al, 'sm')}<span class="t"><b>${esc(al.nome)}</b> <span class="muted">· ${esc(col.title)}</span></span><button class="icon-btn" data-a="g-move" data-d="-1" aria-label="Aluno anterior">↑</button><button class="icon-btn" data-a="g-move" data-d="1" aria-label="Aluno seguinte">↓</button><button class="icon-btn" data-a="g-desel" aria-label="Fechar">×</button></div>`;
   if (!ok) h += `<p class="hint">${col.type === 'calc' ? 'Calculado automaticamente.' : col.type === 'reg' ? 'Os registos +/− lançam-se numa aula: Aulas → abrir a aula → Avaliar nesta aula.' : 'Não se aplica a este aluno (dispensa).'}</p>`;
   else if (ch) {
     h += `<div class="gbr" role="group" aria-label="Valor">${ch.map(x => `<button class="lv ${x.cls}${cur === x.v ? ' on' : ''}" data-a="g-set" data-v="${x.v}" title="${esc(x.title || '')}" aria-pressed="${cur === x.v}">${esc(x.label)}</button>`).join('')}<button class="lv" data-a="g-set" data-v="" title="Apagar" aria-label="Apagar">⌫</button></div>`;
@@ -237,6 +260,7 @@ function gEditor() {
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
   el.innerHTML = `<div class="wrap">${h}</div>`; el.hidden = false; document.body.classList.add('ged-on');
+  el.classList.toggle('min', !UI.gedOpen && window.innerWidth < 900);
   const sc2 = el.querySelector('.cl'); if (sc2) sc2.scrollTop = st;
   document.documentElement.style.setProperty('--ged-h', el.offsetHeight + 'px'); gFit();
 }
@@ -261,9 +285,11 @@ function gMove(dr, dc, focusNum) {
   const {col} = gHere(); gRefresh(focusNum && col && col.type === 'num');
 }
 // Aplica um valor à célula escolhida; sem pincel, passa ao aluno seguinte (como numa folha de cálculo).
+let FLASH = null;
+const isFlash = (al, col) => FLASH && FLASH.aid === al.id && FLASH.k === col.k && Date.now() - FLASH.ts < 900;
 function gApply(val, advance) {
   const {c, col, al} = gHere(); if (!col || !al || !gEditable(col, al)) return;
-  gSnap(c, col); gSet(c, col, al, val);
+  gSnap(c, col); gSet(c, col, al, val); FLASH = {aid:al.id, k:col.k, ts:Date.now()};
   if (PIN && val != null && col.type !== 'reg') { PIN = {type:col.type, val, label:(gChoices(col) || []).find(x => x.v === val)?.label || String(val)}; }
   if (advance && !PIN && col.type !== 'reg') gMove(1, 0); else gRefresh();
 }
