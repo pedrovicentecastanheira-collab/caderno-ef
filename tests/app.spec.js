@@ -228,3 +228,27 @@ test('avaliação inicial guiada gera prioridades e plano anual; plano de aula c
   await page.click('[data-a="ex-new"]'); await page.fill('#ex-dn', 'Circuito de manchete'); await page.click('[data-a="ex-save"]');
   await expect(page.locator('.card.ex', {hasText: 'Circuito de manchete'})).toHaveCount(1);
 });
+
+test('espaços, lembretes, partilha com o grupo e consistência das notas', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="tsub"][data-k="planear"]'); await page.click('[data-a="plv"][data-k="esp"]');
+  await page.selectOption('#esp-s0', 'Pavilhão'); await page.selectOption('#esp-s1', 'Exterior');
+  await expect(page.locator('.esp-r').first()).toContainText('Pavilhão');
+  expect(await page.evaluate(() => [espOf(turma(), '2026-09-14'), espOf(turma(), '2026-09-28')])).toEqual(['Pavilhão', 'Exterior']);
+  await page.locator('[data-a="esp-wk"]').first().click();
+  await expect.poll(() => page.evaluate(() => espOf(turma(), '2026-09-14'))).toBe('Ginásio');
+  // lembretes: lista do dia e teste (sem notificações, aparece dentro da app)
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="lemb"]');
+  await page.click('[data-a="lemb-test"]'); await expect(page.locator('#toast')).toContainText('Caderno EF');
+  // pacote do grupo: exportar e importar noutro caderno
+  const pkg = await page.evaluate(() => { CFG.exs = [{id: 'x1', m: 'Voleibol', lv: 'I', nome: 'Rede baixa 1x1', desc: '', crit: ''}]; const t = turma(), v = avalOf(t.id, 1); v.ind = {Voleibol: [{id: 'i1', n: 'Passe'}]}; S.aval[v.id] = v; return pkgBuild(); });
+  expect(pkg.ind['7'].Voleibol).toEqual(['Passe']);
+  await page.evaluate(p => { CFG.exs = []; const t = turma(), v = avalOf(t.id, UI.p); v.ind = {}; S.aval[v.id] = v; pkgOpen(p); }, pkg);
+  await page.click('[data-a="pkg-go"]');
+  expect(await page.evaluate(() => [CFG.exs.length, avalOf(turma().id, UI.p).ind.Voleibol[0].n])).toEqual([1, 'Passe']);
+  // consistência: nível acima das competências assinaladas trava a exportação
+  await page.evaluate(() => { const t = turma(), v = avalOf(t.id, 1), al = t.alunos[1]; v.af[al.id] = Object.assign(v.af[al.id] || {}, {Voleibol: 'E'}); v.comp = {[al.id]: {Voleibol: {I1: true}}}; S.aval[v.id] = v; UI.p = 1; UI.tab = 'relatorios'; UI.pview = 'pauta'; render(); });
+  await expect(page.locator('details.cons')).toContainText('nível E em Voleibol');
+  await page.click('[data-a="xlsx"]');
+  await expect(page.locator('#sheet .sh-h h2')).toHaveText('Antes de exportar a pauta');
+});

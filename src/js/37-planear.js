@@ -126,7 +126,8 @@ function udInfo(t, a) {
 }
 function paHtml(a) {
   const t = turma(), P = paOf(a), tot = (+P.aq.min || 0) + (+P.rc.min || 0) + P.pf.reduce((s, x) => s + (+x.min || 0), 0), ud = udInfo(t, a);
-  let h = `${ud.length ? `<p class="small" style="margin:0 0 8px"><span class="muted">Unidade didática ·</span> ${ud.join(' · ')}</p>` : ''}
+  const es = espOf(t, a.data), fora = es ? (a.materias || []).filter(m => !espPode(es, m)) : [];
+  let h = `${ud.length || es ? `<p class="small" style="margin:0 0 8px">${es ? `<span class="muted">Espaço ·</span> <b>${esc(es)}</b>${fora.length ? ` <span class="bad-t">(${esc(fora.join(', '))} fora deste espaço)</span>` : ''}${ud.length ? ' · ' : ''}` : ''}${ud.length ? `<span class="muted">Unidade didática ·</span> ${ud.join(' · ')}` : ''}</p>` : ''}
     <div class="pa-tot"><span class="pl-b" role="img" aria-label="${tot} de ${P.dur} minutos"><i class="${tot > P.dur ? 'over' : ''}" style="width:${Math.min(100, tot / (P.dur || 1) * 100)}%"></i></span><span class="small num-t">${tot}/<input type="number" min="20" max="180" inputmode="numeric" data-in="pa" data-k="dur" value="${P.dur}" aria-label="Duração da aula em minutos"> min</span></div>
     <div class="pa-p"><div class="pa-ph"><b>Aquecimento</b><input type="number" min="0" max="60" inputmode="numeric" data-in="pa" data-k="aqm" value="${P.aq.min}" aria-label="Minutos de aquecimento"> min</div>
     <textarea data-in="pa" data-k="aq" rows="2" placeholder="Ex.: corrida contínua e mobilização articular.">${esc(P.aq.txt)}</textarea><div class="sug">${EXAQ.map(x => `<button data-a="pa-sug" data-k="aq" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>

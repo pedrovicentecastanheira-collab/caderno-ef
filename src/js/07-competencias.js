@@ -360,6 +360,7 @@ function vPauta(t) {
   let h = `<div class="stack">${seg}<div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
   h += `<div class="tiles"><div class="tile"><b>${rows.length}</b><span>Alunos</span></div><div class="tile ok"><b>${nA}</b><span>Aptos</span></div><div class="tile bad"><b>${nN}</b><span>Não aptos</span></div><div class="tile"><b>${nI}</b><span>Incompletos</span></div></div>`;
   if (!rows.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>A pauta aparece quando a turma tiver alunos.</p></div></div>`;
+  h += vConsist(t);
   const cell = (x, cls) => `<td class="${x != null && x < 10 ? 'low' : ''} ${cls || ''}">${f1(x)}</td>`;
   h += `<div class="tbl-wrap"><table><thead><tr><th>Nº</th><th class="l">Aluno</th><th>AF</th><th>Apt.</th><th>Con.</th><th>Atit.</th><th>Final</th>${t.ciclo !== 'S' ? '<th>' + nivelLbl(t) + '</th>' : ''}<th>Estado</th>${AE[anoOf(t)] ? '<th title="Aprendizagens Essenciais: atividades físicas / aptidão física / conhecimentos">AE</th>' : ''}<th>F</th></tr></thead><tbody>`;
   rows.forEach(({al, r}) => {

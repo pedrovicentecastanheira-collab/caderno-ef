@@ -1,5 +1,5 @@
 // Caderno EF — service worker: funciona sem internet.
-const VERSAO = 'caderno-ef-v1';
+const VERSAO = 'caderno-ef-v2';
 const BASE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -22,4 +22,11 @@ self.addEventListener('fetch', e => {
     if (r && (r.ok || r.type === 'opaque')) { const c = r.clone(); caches.open(VERSAO).then(ca => ca.put(req, c)); }
     return r;
   })));
+});
+// Lembretes: tocar na notificação abre (ou traz para a frente) o caderno.
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({type: 'window', includeUncontrolled: true}).then(cs => {
+    const c = cs.find(x => 'focus' in x); return c ? c.focus() : self.clients.openWindow('./');
+  }));
 });
