@@ -1,0 +1,16 @@
+/* home dashboard */
+.hello h1{font-size:30px;margin-top:2px}
+.nowc{display:flex;flex-direction:column;gap:12px}
+.now{display:flex;flex-direction:column;gap:6px}
+.now-h{display:flex;align-items:baseline;gap:10px}
+.now-h b{font-family:var(--f-display);font-size:34px;line-height:1;color:var(--accent)}
+.now-h span{font-family:var(--f-display);font-weight:700;font-size:22px}
+.tgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.tcard{display:flex;flex-direction:column;gap:6px;text-align:left}
+.tc-h{display:flex;justify-content:space-between;align-items:baseline}
+.tc-h b{font-family:var(--f-display);font-size:20px}
+.tc-l{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.tc-l b{color:var(--ink)}
+.tcard .pl-b{display:block}
+.tc-s{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.tc-s .low{color:var(--bad);font-weight:600}

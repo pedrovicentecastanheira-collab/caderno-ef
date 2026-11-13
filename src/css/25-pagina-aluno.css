@@ -1,0 +1,37 @@
+/* student page, split view, wizard, icons, accessibility */
+body.wide .wrap{max-width:1200px}
+.split{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+.split-l{display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(var(--top-h) + 12px);max-height:calc(100vh - var(--top-h) - 90px);overflow:auto;padding-bottom:12px}
+.split-r{min-width:0}
+.li.on{background:var(--accent-soft)}
+.apage{display:flex;flex-direction:column;gap:12px}
+.ap-back{align-self:flex-start;font-size:15px}
+.ap-id{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.ap-nm h1{font-size:28px}
+.ap-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ap-fin{border:2px solid var(--line);border-radius:14px;padding:8px 14px;text-align:center;display:flex;flex-direction:column;min-width:92px;background:var(--surface)}
+.ap-fin b{font-family:var(--f-display);font-size:38px;line-height:1}
+.ap-fin span{font-size:12px;color:var(--muted);font-weight:600}
+.ap-fin.ok{border-color:var(--ok)} .ap-fin.ok b{color:var(--ok)} .ap-fin.bad{border-color:var(--bad)} .ap-fin.bad b{color:var(--bad)}
+.ap-tabs{overflow-x:auto}
+.ap-tabs button{flex:1 0 auto}
+@media (max-width:520px){ .ap-id{grid-template-columns:auto 1fr} .ap-fin{grid-column:1 / -1;flex-direction:row;justify-content:center;gap:12px;align-items:baseline} .ap-nm h1{font-size:24px} }
+.acomp{display:flex;flex-direction:column;gap:8px}
+.ac-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ac-h .sp{flex:1}
+.lvpill{font-family:var(--f-display);font-weight:700;border-radius:8px;padding:2px 9px;background:var(--gs);color:var(--gc)}
+.si{width:18px;height:18px;flex:none;vertical-align:-4px;margin-right:4px}
+.chip .si{width:15px;height:15px;margin-right:2px}
+.cores{display:flex;gap:8px;flex-wrap:wrap}
+.cores button{width:36px;height:36px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.cores button.on{box-shadow:0 0 0 3px var(--ink)}
+.art{width:120px;height:80px;display:block;margin:0 auto 6px}
+.wiz{display:flex;flex-direction:column;gap:12px;padding:22px 18px}
+.wiz .art{margin:0}
+.wiz h1{font-size:32px}
+.wz-steps{display:flex;gap:6px}
+.wz-steps i{height:5px;flex:1;border-radius:3px;background:var(--line)}
+.wz-steps i.on{background:var(--accent)}
+.wiz-h{border-left:4px solid var(--accent)}
+/* toques de pelo menos 44 px em ecrãs táteis */
+@media (pointer:coarse){ button.chip,.seg button,.gt-dom button,.perchip,.btn,.lv,.icon-btn{min-height:44px} .icon-btn{min-width:44px} .link{min-height:40px} }

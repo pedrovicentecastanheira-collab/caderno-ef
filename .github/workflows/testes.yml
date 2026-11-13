@@ -1,0 +1,28 @@
+# Constrói a app a partir de src/, confirma que app/index.html está atualizado e corre os testes no computador e no telemóvel.
+name: Testes
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  testes:
+    # O Playwright 1.56 ainda não suporta o Ubuntu 26.04 (o atual ubuntu-latest).
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: app/index.html corresponde a src/
+        run: node build.mjs && git diff --exit-code app/index.html
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: relatorio-testes
+          path: playwright-report/
