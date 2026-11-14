@@ -1451,15 +1451,19 @@ function descHtml(ciclo, m, open) {
   return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.${of ? ` <button class="link" data-a="cal-ed" data-m="${esc(m)}">Ver e editar a linguagem do aluno</button>` : ''}</p></details>`;
 }
 // O que domina e o que falta: pelas competências assinaladas ou, sem elas, pelo nível escolhido.
+// Competências que contam para o nível: as motoras e táticas. As de cooperação, regras e conhecimento registam-se,
+// mas não travam a passagem de nível (avaliam-se em Atitudes e em Conhecimentos). Sem nenhuma motora num nível, contam todas.
+const contaNivel = c => !c.of || !geralC(c);
+function compsNivel(cs, k) { const xs = cs.filter(c => c.k === k), ys = xs.filter(contaNivel); return ys.length ? ys : xs; }
 function compSplit(ciclo, m, l, ticks) {
   const cs = compsOf(ciclo, m); if (!cs.length) return null;
   if (ticks && Object.values(ticks).some(Boolean)) {
-    const low = ['I', 'E', 'A'].find(k => cs.some(c => c.k === k && !ticks[c.id]));
-    return {dom:cs.filter(c => ticks[c.id]), mel:low ? cs.filter(c => c.k === low && !ticks[c.id]) : [], parcial:false, exato:true};
+    const low = ['I', 'E', 'A'].find(k => compsNivel(cs, k).some(c => !ticks[c.id]));
+    return {dom:cs.filter(c => ticks[c.id]), mel:low ? compsNivel(cs, low).filter(c => !ticks[c.id]) : [], parcial:false, exato:true};
   }
   if (!(l in LVP)) return null;
   const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I', 'E'], PA:['I', 'E'], A:['I', 'E', 'A']}[l], part = {PI:'I', PE:'E', PA:'A'}[l], next = {NI:'I', I:'E', E:'A'}[l];
-  return {dom:cs.filter(c => full.includes(c.k)), mel:cs.filter(c => c.k === (part || next)), parcial:!!part, exato:false};
+  return {dom:cs.filter(c => full.includes(c.k)), mel:(part || next) ? compsNivel(cs, part || next) : [], parcial:!!part, exato:false};
 }
 function lvSummary(ciclo, m, l, ticks) {
   const x = compSplit(ciclo, m, l, ticks); if (!x) return '';
@@ -1474,7 +1478,7 @@ function lvShort(ciclo, m, l, ticks) {
 }
 // Nível a partir das competências assinaladas (PI, PE, PA = pelo menos metade do nível).
 function lvFromTicks(ciclo, m, ticks) {
-  const cs = compsOf(ciclo, m), f = k => { const xs = cs.filter(c => c.k === k); return xs.length ? xs.filter(c => ticks[c.id]).length / xs.length : 0; };
+  const cs = compsOf(ciclo, m), f = k => { const xs = compsNivel(cs, k); return xs.length ? xs.filter(c => ticks[c.id]).length / xs.length : 0; };
   const fI = f('I'), fE = f('E'), fA = f('A');
   return fI < 1 ? (fI >= .5 ? 'PI' : 'NI') : fE < 1 ? (fE >= .5 ? 'PE' : 'I') : fA < 1 ? (fA >= .5 ? 'PA' : 'E') : 'A';
 }
@@ -1484,9 +1488,9 @@ function checkList(ciclo, m, ticks, ev, inp, all, cnt, N) {
   const cs = compsOf(ciclo, m); ticks = ticks || {}; const of = UI.clOf;
   const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}${cnt ? ` <span class="cl-n${cnt[c.id] && cnt[c.id] < N ? ' parc' : ''}">${cnt[c.id] || 0}/${N}</span>` : ''}</span></label>`;
   return (cs.some(c => c.of) ? `<div class="cl-top"><button class="link" data-a="cl-of">${of ? 'Ver frases curtas' : 'Ver o texto oficial'}</button></div>` : '') + ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return '';
-    const on = xs.every(c => ticks[c.id]), n = xs.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
-    return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xs.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
-      + key.map(item).join('') + (out.length ? `<details class="cl-more"${out.some(c => ticks[c.id]) ? '' : ''}><summary>Cooperação, regras e conhecimento (${out.filter(c => ticks[c.id]).length}/${out.length})</summary>${out.map(item).join('')}</details>` : ''); }).join('');
+    const on = xs.every(c => ticks[c.id]), xn = compsNivel(cs, k), n = xn.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
+    return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xn.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
+      + key.map(item).join('') + (out.length ? `<details class="cl-more"${out.some(c => ticks[c.id]) ? '' : ''}><summary>Cooperação, regras e conhecimento (${out.filter(c => ticks[c.id]).length}/${out.length}) · não contam para o nível</summary>${out.map(item).join('')}</details>` : ''); }).join('');
 }
 function compCheck(ciclo, m, ticks, ev) { return checkList(ciclo, m, ticks, ev, 'comp', 'comp-all'); }
 function regOf(t, p, aid) {
@@ -4206,7 +4210,7 @@ function obsRender(open) {
     if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
       b += `<div class="obs-nav"><button class="icon-btn" data-a="obs-al" data-d="-1" aria-label="Aluno anterior"${i <= 0 ? ' disabled' : ''}>‹</button>${avatar(al, 'sm')}<select data-in="obs-al" aria-label="Aluno">${als.map(x => `<option value="${esc(x.id)}"${x.id === al.id ? ' selected' : ''}>${esc(x.num ?? '')} · ${esc(x.nome)}</option>`).join('')}</select>${l ? `<span class="lvpill ${GLV[l]}">${l}</span>` : ''}<button class="icon-btn" data-a="obs-al" data-d="1" aria-label="Aluno seguinte"${i >= als.length - 1 ? ' disabled' : ''}>›</button></div>
         ${(() => { const so = semObs(t, p, O.m).filter(x => x.al.id !== al.id).slice(0, 4); return so.length ? `<div class="obs-falta"><span class="small muted">Há mais tempo sem observação:</span>${so.map(x => `<button class="chip" data-a="obs-ir" data-id="${esc(x.al.id)}">${esc(nome2(x.al.nome))} · ${x.n} aulas</button>`).join('')}</div>` : ''; })()}
-        <p class="hint" style="margin:0">Marque as competências que ${esc(al.nome.split(' ')[0])} já domina. O nível é calculado logo (PI, PE e PA: metade do nível).</p>
+        <p class="hint" style="margin:0">Marque as competências que ${esc(al.nome.split(' ')[0])} já domina: o nível sobe à medida que marca (metade de um nível dá PI, PE ou PA; todas dão I, E ou A). Contam as competências motoras e táticas; as de cooperação, regras e conhecimento ficam registadas mas não travam o nível.</p>
         <div class="cl obs-cl">${checkList(t.ciclo, O.m, tksOf(v, al.id, O.m), evMap(v, al.id, O.m), 'obs-tk', 'obs-all')}</div>`; }
   } else {
     if (!O.k) O.k = nivelTurma(t, O.m); let xs = cs.filter(c => c.k === O.k); if (!xs.length) { O.k = 'I'; xs = cs.filter(c => c.k === 'I'); }
