@@ -148,3 +148,19 @@ li.ok .bx{border-color:var(--ok);background:var(--ok-soft)}
 .sync-ol{margin:0;padding-left:20px;line-height:1.6}
 .sync-url{display:flex;gap:8px}
 .sync-url input{flex:1}
+.cl-top{display:flex;justify-content:flex-end}
+.clh{display:flex;align-items:baseline;gap:8px}
+.clh .link{margin-left:auto}
+details.cl-more{margin:2px 0 8px 28px}
+details.cl-more>summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600;padding:4px 0}
+.obs-nav{display:flex;align-items:center;gap:8px}
+.obs-nav select{flex:1;min-width:0}
+.obs-cl .cli{font-size:14.5px;padding:7px 0}
+.obs-cl .cli input{width:22px;height:22px}
+table.obs-t th span{display:block;font-size:10px;color:var(--muted)}
+table.obs-t td{padding:3px}
+table.obs-t .ob{width:44px;height:38px}
+table.obs-t .ob.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.obs-leg{margin:4px 0 0;padding-left:18px}
+.ki-f .chip{text-align:left;font-size:12.5px;padding:6px 10px;border-radius:10px;line-height:1.3}
