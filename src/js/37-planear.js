@@ -139,7 +139,7 @@ function paHtml(a) {
     ${difHtml(t, a)}
     <div class="pa-p"><div class="pa-ph"><b>Retorno à calma</b><input type="number" min="0" max="30" inputmode="numeric" data-in="pa" data-k="rcm" value="${P.rc.min}" aria-label="Minutos de retorno à calma"> min</div>
     <textarea data-in="pa" data-k="rc" rows="2" placeholder="Ex.: alongamentos e balanço da aula.">${esc(P.rc.txt)}</textarea><div class="sug">${EXRC.map(x => `<button data-a="pa-sug" data-k="rc" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
-    <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}</div>`;
+    <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}${turmasAno(t).length && (P.pf.length || P.dif) ? `<button class="btn sm ghost" data-a="pp-aula">Usar noutras turmas do ${anoOf(t)}.º ano</button>` : ''}</div>`;
   return reflAnterior(t, a) + apoioHtml(t, a) + h;
 }
 function paPrev(t, a) { return aulasOf(t.id).filter(x => x.id !== a.id && x.plano && x.plano.pf && x.plano.pf.length && x.data <= a.data && (!a.materias.length || (x.materias || []).some(m => a.materias.includes(m)))).pop(); }

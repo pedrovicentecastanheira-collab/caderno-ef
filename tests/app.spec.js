@@ -457,3 +457,29 @@ test('critérios: intervalos da conversão em nível são exclusivos', async ({p
   const r = await page.evaluate(() => [nivelFaixas(), [3, 4, 9, 10, 13, 14, 17, 18].map(x => nivel(turma(), x))]);
   expect(r).toEqual([['0–3', '4–9', '10–13', '14–17', '18–20'], [1, 2, 2, 3, 3, 4, 4, 5]]);
 });
+
+test('automatizar: aulas em falta, vários alunos, plano noutras turmas, níveis propostos e observações', async ({page}) => {
+  await demo(page);
+  const n = await page.evaluate(() => { const t = turma(); t.horario = [{d:3, h:'10:15'}, {d:5, h:'08:30'}]; t.plano = {1:[{m:'Voleibol', n:12}]};
+    S.turmas.tb = {id:'tb', nome:'7.º B', ciclo:'3', ano:7, escala:'0-20', alunos:[{id:'b1', num:1, nome:'Ana Sousa', sexo:'F', nasc:'2013-03-01', regime:'Normal', disp:[]}], horario:[{d:1, h:'09:00'}]}; return aulasEmFalta(t).length; });
+  expect(n).toBeGreaterThan(0);
+  await go(page, 'turma');
+  await page.click('[data-a="af-open"]'); await page.click('[data-a="af-go"]');
+  await expect.poll(() => page.evaluate(() => aulasEmFalta(turma()).length)).toBe(0);
+  // vários alunos: marcar uma competência para todos
+  await page.evaluate(() => { sheetObs(today(), ['Voleibol']); UI.obs.modo = 'grupo'; obsRender(); });
+  await page.click('[data-a="og-sel"][data-k="todos"]');
+  await page.locator('#sheet input[data-in="obs-tk"][data-id="I4.2"]').click();
+  expect(await page.evaluate(() => { const t = turma(), v = avalOf(t.id, 1); return alunosOf(t).filter(al => (REG[regAt(al, 1)] || REG.Normal).af > 0).every(al => (tksOf(v, al.id, 'Voleibol') || {})['I4.2']); })).toBe(true);
+  await page.evaluate(() => closeSheet());
+  // nível dado à mão não baixa ao assinalar
+  expect(await page.evaluate(() => { const t = turma(), v = avalOf(t.id, 1), al = t.alunos.find(a => { const l = ((v.af || {})[a.id] || {})['Ginástica de Solo']; return l === 'PI' || l === 'PE' || l === 'PA'; }); if (!al) return 'ok'; const l0 = v.af[al.id]['Ginástica de Solo']; tickSet(t, 1, al.id, 'Ginástica de Solo', id => id === 'I1.1', true); return LVI(avalOf(t.id, 1).af[al.id]['Ginástica de Solo']) >= LVI(l0) ? 'ok' : 'baixou'; })).toBe('ok');
+  // plano do período para a outra turma do 7.º ano
+  await page.evaluate(() => A['pp-per']()); await page.click('[data-a="pp-go"]');
+  expect(await page.evaluate(() => S.turmas.tb.plano[1][0].m)).toBe('Voleibol');
+  // níveis propostos e observações escritas
+  await go(page, 'relatorios'); await page.click('[data-a="pview"][data-k="fecho"]');
+  await page.click('[data-a="prop-open"]'); await page.click('[data-a="prop-go"]');
+  await page.click('[data-a="obs-auto-all"]');
+  expect(await page.evaluate(() => { const t = turma(), o = avalOf(t.id, 1).obs || {}; return Object.values(o).filter(x => x && x.length > 20).length; })).toBeGreaterThan(5);
+});

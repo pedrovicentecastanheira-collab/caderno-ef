@@ -90,9 +90,9 @@ function lvFromTicks(ciclo, m, ticks) {
 }
 // Lista de verificação por nível: as competências motoras e táticas à vista, em frase curta (texto oficial ao tocar
 // em "texto oficial"); as de cooperação, regras e conhecimento ficam agrupadas por baixo. inp/all: data-in e ação.
-function checkList(ciclo, m, ticks, ev, inp, all) {
+function checkList(ciclo, m, ticks, ev, inp, all, cnt, N) {
   const cs = compsOf(ciclo, m); ticks = ticks || {}; const of = UI.clOf;
-  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`;
+  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}${cnt ? ` <span class="cl-n${cnt[c.id] && cnt[c.id] < N ? ' parc' : ''}">${cnt[c.id] || 0}/${N}</span>` : ''}</span></label>`;
   return (cs.some(c => c.of) ? `<div class="cl-top"><button class="link" data-a="cl-of">${of ? 'Ver frases curtas' : 'Ver o texto oficial'}</button></div>` : '') + ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return '';
     const on = xs.every(c => ticks[c.id]), n = xs.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
     return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xs.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
