@@ -39,20 +39,31 @@ function sheetObs(d, ms) {
   obsRender(true);
 }
 // Assinala (ou retira) competências de um aluno e recalcula o nível, como na lista do Avaliar.
+// Um aluno com nível mas sem competências assinaladas: assinala primeiro as dos níveis que já tem, para o nível não cair.
+function seedTicks(t, v, aid, m, tk) {
+  if (Object.values(tk).some(Boolean)) return; const l = (((v.af || {})[aid]) || {})[m]; if (!l) return;
+  const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I', 'E'], PA:['I', 'E'], A:['I', 'E', 'A']}[l] || [];
+  compsOf(t.ciclo, m).forEach(c => { if (full.includes(c.k)) tk[c.id] = true; });
+}
 function tickSet(t, p, aid, m, match, on) {
   const v = avalOf(t.id, p); v.comp = v.comp || {}; v.comp[aid] = v.comp[aid] || {}; const tk = v.comp[aid][m] = v.comp[aid][m] || {};
+  const antes = Object.values(tk).some(Boolean) ? null : (((v.af || {})[aid]) || {})[m];   // nível dado sem competências
+  seedTicks(t, v, aid, m, tk);
   compsOf(t.ciclo, m).forEach(c => { if (match(c.id)) { if (on) tk[c.id] = true; else delete tk[c.id]; } });
-  v.af = v.af || {}; v.af[aid] = v.af[aid] || {};
-  if (Object.keys(tk).length) v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); else { delete v.comp[aid][m]; }
-  if (v.man && v.man[aid]) delete v.man[aid][m];
+  v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; if (v.man && v.man[aid]) delete v.man[aid][m];
+  if (Object.keys(tk).length) { const l = lvFromTicks(t.ciclo, m, tk);
+    // assinalar não baixa um nível já dado: fica o anterior, marcado como exceção, até as competências o alcançarem
+    if (on && antes && LVI(l) < LVI(antes)) { v.af[aid][m] = antes; v.man = v.man || {}; (v.man[aid] = v.man[aid] || {})[m] = 1; } else v.af[aid][m] = l; }
+  else { delete v.comp[aid][m]; }
   touchAval(v);
 }
 function obsRender(open) {
   const t = turma(), O = UI.obs, p = periodOf(O.d), v = avalOf(t.id, p), cs = compsOf(t.ciclo, O.m);
   const als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0);
-  let b = `<div class="form obs"><div class="seg block">${[['aluno', 'Por aluno'], ['turma', 'Por competência']].map(([k, n]) => `<button data-a="obs-modo" data-k="${k}" class="${O.modo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+  let b = `<div class="form obs"><div class="seg block">${[['aluno', 'Por aluno'], ['grupo', 'Vários alunos'], ['turma', 'Por competência']].map(([k, n]) => `<button data-a="obs-modo" data-k="${k}" class="${O.modo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
     <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>`;
   if (!cs.length) b += '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>';
+  else if (O.modo === 'grupo') b += obsGrupoHtml(t, O, p, v, als);
   else if (O.modo === 'aluno') {
     if (!als.some(al => al.id === O.aid)) O.aid = als[0] && als[0].id; const i = als.findIndex(al => al.id === O.aid), al = als[i];
     if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
@@ -80,7 +91,7 @@ Object.assign(A, {
   'obs-ir': el => { UI.obs.aid = el.dataset.id; obsRender(); $('#sheet .sh-b').scrollTop = 0; },
   'obs-modo': el => { UI.obs.modo = el.dataset.k; obsRender(); },
   'obs-al': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), i = als.findIndex(al => al.id === O.aid) + +el.dataset.d; if (als[i]) { O.aid = als[i].id; obsRender(); $('#sheet .sh-b').scrollTop = 0; } },
-  'obs-all': el => { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
+  'obs-all': el => { const t = turma(), O = UI.obs; if (O.modo === 'grupo') { (O.sel || []).forEach(aid => tickSet(t, periodOf(O.d), aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1')); obsRender(); return; } tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
   'obs-c': el => { const O = UI.obs, id = el.dataset.id, i = O.cids.indexOf(id); if (i >= 0) O.cids.splice(i, 1); else if (O.cids.length < 4) O.cids.push(id); else toast('No máximo 4 competências de cada vez.'); obsRender(); },
   'obs-cell': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), aid = el.dataset.aid, id = el.dataset.id, h = (evMap(avalOf(t.id, p), aid, O.m)[id] || []).find(x => x[0] === O.d);
     if (!h) evAdd(t, O.d, aid, O.m, id, 1); else if (h[1]) evAdd(t, O.d, aid, O.m, id, 0); else evAdd(t, O.d, aid, O.m, id, 0); obsRender(); },
@@ -88,6 +99,7 @@ Object.assign(A, {
 });
 document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k || !UI.obs) return;
   if (k === 'obs-al') { UI.obs.aid = el.value; obsRender(); }
+  else if (k === 'obs-tk' && UI.obs.modo === 'grupo') { const t = turma(), O = UI.obs; (O.sel || []).forEach(aid => tickSet(t, periodOf(O.d), aid, O.m, id => id === el.dataset.id, el.checked)); obsRender(); }
   else if (k === 'obs-tk') { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id === el.dataset.id, el.checked); obsRender(); } });
 
 /* próximo desafio: a primeira competência por dominar, escrita para o aluno */

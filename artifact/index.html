@@ -79,6 +79,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-
 @media (min-width:640px){ .turma-sel{flex:0 1 auto} .turma-sel select{width:auto;max-width:420px} .perchip{margin-left:auto} }
 .brand .logo{width:26px;height:26px;border-radius:7px;flex:none;margin-right:8px;vertical-align:middle;box-shadow:0 2px 6px rgba(15,47,134,.25)}
 .brand{display:inline-flex;align-items:center}
+.brand b{margin-left:.35em}
 /* main */
 #main{padding-block:16px calc(84px + env(safe-area-inset-bottom,0px))}
 .stack{display:flex;flex-direction:column;gap:12px}
@@ -807,6 +808,13 @@ table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
 .mp-new{display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px}
 @media (max-width:560px){.mp-new{grid-template-columns:1fr 1fr}.mp-new input{grid-column:1/-1}}
 td.c.trans,.gcr .c.trans{opacity:.55;font-style:italic}
+.og-als{display:flex;flex-wrap:wrap;gap:6px}
+.og-al{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-size:13px;font-weight:600}
+.og-al.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cl-n{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:6px;padding:1px 5px;white-space:nowrap}
+.cl-n.parc{color:var(--warn);background:var(--warn-soft)}
+table.prop-t select{min-width:70px}
+.obs-auto-b{float:right;font-size:13px}
 </style>
 
 <style>body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--surface)}</style>
@@ -1218,7 +1226,7 @@ function vAulas(t) {
   if (al.length) h += `<div class="card alerts"><span class="eyebrow">Atenção</span>${al.slice(0, UI.allAlerts ? 99 : 3).map(x => `<button class="alrt ${x.k}" data-a="alert-go" data-k="${x.a}"><span class="ai" aria-hidden="true">${x.k === 'bad' ? '!' : x.k === 'warn' ? '•' : 'i'}</span><span>${esc(x.txt)}</span></button>`).join('')}${al.length > 3 && !UI.allAlerts ? `<button class="link" style="align-self:flex-start" data-a="alerts-all">Ver mais ${al.length - 3}</button>` : ''}</div>`;
   h += vPlano(t);
   if (Store.local && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
-  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'} · <button class="link" data-a="sum-open">Copiar sumários</button></span></div>`;
+  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'} · <button class="link" data-a="sum-open">Copiar sumários</button>${(() => { const n = aulasEmFalta(t).length; return n ? ` · <button class="link" data-a="af-open">${n} por registar</button>` : ''; })()}</span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
   if (!list.length) h += `<div class="card empty">${ART}<h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
   list.forEach(a => {
@@ -1458,9 +1466,9 @@ function lvFromTicks(ciclo, m, ticks) {
 }
 // Lista de verificação por nível: as competências motoras e táticas à vista, em frase curta (texto oficial ao tocar
 // em "texto oficial"); as de cooperação, regras e conhecimento ficam agrupadas por baixo. inp/all: data-in e ação.
-function checkList(ciclo, m, ticks, ev, inp, all) {
+function checkList(ciclo, m, ticks, ev, inp, all, cnt, N) {
   const cs = compsOf(ciclo, m); ticks = ticks || {}; const of = UI.clOf;
-  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`;
+  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}${cnt ? ` <span class="cl-n${cnt[c.id] && cnt[c.id] < N ? ' parc' : ''}">${cnt[c.id] || 0}/${N}</span>` : ''}</span></label>`;
   return (cs.some(c => c.of) ? `<div class="cl-top"><button class="link" data-a="cl-of">${of ? 'Ver frases curtas' : 'Ver o texto oficial'}</button></div>` : '') + ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return '';
     const on = xs.every(c => ticks[c.id]), n = xs.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
     return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xs.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
@@ -2081,7 +2089,7 @@ const A = {
   'cd-reset': () => { const T = TOOL; clearInterval(T.iv); wake(false); T.run = false; T.n = 0; $('#cd-n').textContent = '0'; $('#cd-b').style.width = '0'; $('#cd-go').textContent = 'Iniciar'; },
   'eq-go': () => { eqMake(); $('#eq-out').innerHTML = eqHtml(); },
   'eq-copy': async () => { const t = turma(), E = UI.eq, nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome; const txt = E.res.map((ids, i) => 'Equipa ' + (i + 1) + ': ' + ids.map(nm).join(', ')).join('\n'); try { await navigator.clipboard.writeText(txt); toast('Equipas copiadas.'); } catch (e) { toast('Não foi possível copiar.', 'bad'); } },
-  'alert-go': el => { const k = el.dataset.k; if (k.startsWith('obs:')) { A['obs-falta']({dataset:{m:k.slice(4)}}); return; } if (k === 'fecho') { UI.tab = 'relatorios'; UI.pview = 'fecho'; render(); window.scrollTo(0, 0); return; } if (k === 'graf') { UI.tab = 'relatorios'; UI.pview = 'graf'; render(); window.scrollTo(0, 0); return; } if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
+  'alert-go': el => { const k = el.dataset.k; if (k === 'af') { A['af-open'](); return; } if (k.startsWith('obs:')) { A['obs-falta']({dataset:{m:k.slice(4)}}); return; } if (k === 'fecho') { UI.tab = 'relatorios'; UI.pview = 'fecho'; render(); window.scrollTo(0, 0); return; } if (k === 'graf') { UI.tab = 'relatorios'; UI.pview = 'graf'; render(); window.scrollTo(0, 0); return; } if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
   'alerts-all': () => { UI.allAlerts = true; render(); },
   'plano-edit': () => sheetPlano(),
   'pl-add': () => { const t = turma(), ms = MATS[t.ciclo] || GR, used = UI.draft.map(u => u.m); UI.draft.push({m:ms.find(m => !used.includes(m)) || ms[0], n:8}); planoRender(); },
@@ -2181,6 +2189,7 @@ const A = {
 function compSet(match, on) {
   const {c, col, al} = gHere(); if (!col || !al || !col.m) return;
   gSnap(c, col); const v = c.v; v.comp = v.comp || {}; v.comp[al.id] = v.comp[al.id] || {}; const tk = v.comp[al.id][col.m] = v.comp[al.id][col.m] || {};
+  seedTicks(c.t, v, al.id, col.m, tk);
   compsOf(c.t.ciclo, col.m).forEach(x => { if (match(x.id)) { if (on) tk[x.id] = true; else delete tk[x.id]; } });
   if (Object.keys(tk).length) { v.af = v.af || {}; v.af[al.id] = v.af[al.id] || {}; v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } else delete v.comp[al.id][col.m];
   if (v.man && v.man[al.id]) delete v.man[al.id][col.m];
@@ -2851,6 +2860,7 @@ function alertsOf(t, p) {
   if (p === 1 && t.ciclo !== '1' && als.length) { const pr = aiProg(t), d = diasAte(aiPrazo()); if (d >= -7 && d <= 45 && (!pr.tot || pr.done < pr.tot)) out.push({k:d <= 10 ? 'bad' : 'warn', txt:pr.tot ? `Avaliação inicial: ${pr.done} de ${pr.tot} registos; ${d >= 0 ? 'faltam ' + d + ' dias para ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) : 'o prazo de ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) + ' passou'}.` : `Avaliação inicial por fazer (até ${fmtDate(aiPrazo(), {day:'numeric', month:'long'})}): escolha as matérias e registe os níveis.`, a:'ai'}); }
   equidade(t, p).filter(x => Math.abs(x.d) >= 3).forEach(x => out.push({k:'info', txt:`Equidade em ${x.m}: ${x.d < 0 ? 'as raparigas' : 'os rapazes'} estão em média ${lvNear(Math.min(x.mf, x.mm))}, ${x.d < 0 ? 'os rapazes' : 'as raparigas'} ${lvNear(Math.max(x.mf, x.mm))}.`, a:'graf'}));
   matsOf(t, p).forEach(m => { const xs = semObs(t, p, m); if (xs.length) out.push({k:'info', txt:`${m}: ${xs.length} ${xs.length === 1 ? 'aluno sem observações' : 'alunos sem observações'} há 4 ou mais aulas (${xs.slice(0, 4).map(x => nome2(x.al.nome)).join(', ')}${xs.length > 4 ? '…' : ''}).`, a:'obs:' + m}); });
+  { const af = aulasEmFalta(t).length; if (af) out.unshift({k:'warn', txt:`Faltam registar ${af} ${af === 1 ? 'aula' : 'aulas'} do horário: registe-as todas de uma vez e corrija só as exceções.`, a:'af'}); }
   const np = rows.filter(x => x.r.EST === 'Não apto'); if (np.length) out.push({k:'bad', txt:`Previsão de Não apto: ${np.map(x => x.al.nome.split(' ')[0]).join(', ')}.`, a:'pauta'});
   if (p > 1) { const dn = als.filter(al => { const a = calc(t, p - 1, al).zones.vaivem, b = calc(t, p, al).zones.vaivem; return a != null && b != null && b < a; }); if (dn.length) out.push({k:'warn', txt:`Vaivém: ${dn.length} ${dn.length === 1 ? 'aluno desceu' : 'alunos desceram'} de zona face ao período anterior (${dn.map(a => a.nome.split(' ')[0]).join(', ')}).`, a:'fit'}); }
   const sd = als.filter(al => !al.sexo || !al.nasc).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou data de nascimento: necessários para as zonas do FITescola.`, a:'alunos'});
@@ -2866,7 +2876,7 @@ function vPlano(t) {
   if (!pl.length) return `<button class="card" data-a="plano-edit" style="text-align:left"><b>Planear o ${esc(perLabel(UI.p, true))}</b><p class="hint" style="margin:4px 0 0">Indique as unidades didáticas e o número de aulas de cada uma: as aulas novas já vêm com a matéria certa e vê aqui o que falta dar.</p></button>`;
   const rows = pl.map(u => { const d = dadasOf(t, UI.p, u.m); return {u, d}; });
   const tot = rows.reduce((s, x) => s + Math.min(x.d, x.u.n), 0), prev = rows.reduce((s, x) => s + x.u.n, 0);
-  return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><span><button class="link" data-a="mats-per">Modalidades</button> · <button class="link" data-a="doc-plan">Imprimir</button> · <button class="link" data-a="plano-edit">Editar</button></span></div>
+  return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><span><button class="link" data-a="mats-per">Modalidades</button> · ${turmasAno(t).length ? '<button class="link" data-a="pp-per">Usar noutras turmas</button> · ' : ''}<button class="link" data-a="doc-plan">Imprimir</button> · <button class="link" data-a="plano-edit">Editar</button></span></div>
     <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${subIcon(u.m, anoOf(t))} ${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
     ${rows.some(x => x.d >= Math.min(x.u.n, 3)) ? `<div class="pl-bals"><span class="small muted">Balanço da unidade:</span>${[...new Set(rows.filter(x => x.d >= Math.min(x.u.n, 3)).map(x => x.u.m))].map(m => `<button class="chip" data-a="ud-bal" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>` : ''}
     <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p>${planoRealHtml(t, UI.p)}</div>`;
@@ -3313,7 +3323,7 @@ function vAlunoPage(t, al, split) {
     h += fig('Comparação com a turma', perLabel(p, true), chCompare(compareRows(t, p, al)));
     const evo = CFG.per.slice(0, CFG.nper).map((_, i) => calc(t, i + 1, al)), ser = [{name:'Final', color:'var(--v1)', vals:evo.map(x => x.FIN)}, {name:'Matérias', color:'var(--v2)', vals:evo.map(x => x.AF)}, {name:'Apt. física', color:'var(--v3)', vals:evo.map(x => x.APF)}, {name:'Atitudes', color:'var(--v7)', vals:evo.map(x => x.AV)}];
     if (evo.filter(x => x.FIN != null || x.AF != null).length >= 1) h += fig('Evolução por período', 'Escala 0–20', chLine(evo.map((_, i) => perLabel(i + 1)), ser, {h:180, label:'Evolução por período'}) + legend(ser));
-    h += `<div class="card form"><label for="a-relobs" class="lbl">Observação do ${esc(perLabel(p, true))} (aparece no relatório)</label><textarea id="a-relobs" data-in="pg-obs" data-aid="${esc(al.id)}" placeholder="Ex.: Evoluiu no passe e na manchete; deve trabalhar a resistência aeróbia.">${esc((v.obs || {})[al.id] || '')}</textarea><div class="sug"><button data-a="obs-sug" style="border-style:solid;color:var(--accent);font-weight:600">Sugerir a partir dos dados</button>${OBSB.map((o, i) => `<button data-a="obs-add" data-i="${i}">${esc(o)}</button>`).join('')}</div></div>`;
+    h += `<div class="card form"><button class="link obs-auto-b" data-a="obs-auto" data-id="${esc(al.id)}">Escrever automaticamente</button><label for="a-relobs" class="lbl">Observação do ${esc(perLabel(p, true))} (aparece no relatório)</label><textarea id="a-relobs" data-in="pg-obs" data-aid="${esc(al.id)}" placeholder="Ex.: Evoluiu no passe e na manchete; deve trabalhar a resistência aeróbia.">${esc((v.obs || {})[al.id] || '')}</textarea><div class="sug"><button data-a="obs-sug" style="border-style:solid;color:var(--accent);font-weight:600">Sugerir a partir dos dados</button>${OBSB.map((o, i) => `<button data-a="obs-add" data-i="${i}">${esc(o)}</button>`).join('')}</div></div>`;
     const ac = autoCompare(t, p, al); if (ac) h += `<div class="card"><b>Autoavaliação</b>${ac}</div>`;
     { const M = medOf(al), pp = papeisDe(t, p, al.id), ms = [...M.u, ...M.s, ...M.a];
       h += `<div class="card"><div class="sec-h" style="margin:0"><b>Apoios e papéis</b><button class="link" data-a="med-open" data-id="${esc(al.id)}">${ms.length || M.obs ? 'Editar medidas' : 'Registar medidas de suporte'}</button></div>
@@ -3785,7 +3795,7 @@ function paHtml(a) {
     ${difHtml(t, a)}
     <div class="pa-p"><div class="pa-ph"><b>Retorno à calma</b><input type="number" min="0" max="30" inputmode="numeric" data-in="pa" data-k="rcm" value="${P.rc.min}" aria-label="Minutos de retorno à calma"> min</div>
     <textarea data-in="pa" data-k="rc" rows="2" placeholder="Ex.: alongamentos e balanço da aula.">${esc(P.rc.txt)}</textarea><div class="sug">${EXRC.map(x => `<button data-a="pa-sug" data-k="rc" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
-    <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}</div>`;
+    <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}${turmasAno(t).length && (P.pf.length || P.dif) ? `<button class="btn sm ghost" data-a="pp-aula">Usar noutras turmas do ${anoOf(t)}.º ano</button>` : ''}</div>`;
   return reflAnterior(t, a) + apoioHtml(t, a) + h;
 }
 function paPrev(t, a) { return aulasOf(t.id).filter(x => x.id !== a.id && x.plano && x.plano.pf && x.plano.pf.length && x.data <= a.data && (!a.materias.length || (x.materias || []).some(m => a.materias.includes(m)))).pop(); }
@@ -4150,20 +4160,31 @@ function sheetObs(d, ms) {
   obsRender(true);
 }
 // Assinala (ou retira) competências de um aluno e recalcula o nível, como na lista do Avaliar.
+// Um aluno com nível mas sem competências assinaladas: assinala primeiro as dos níveis que já tem, para o nível não cair.
+function seedTicks(t, v, aid, m, tk) {
+  if (Object.values(tk).some(Boolean)) return; const l = (((v.af || {})[aid]) || {})[m]; if (!l) return;
+  const full = {NI:[], PI:[], I:['I'], PE:['I'], E:['I', 'E'], PA:['I', 'E'], A:['I', 'E', 'A']}[l] || [];
+  compsOf(t.ciclo, m).forEach(c => { if (full.includes(c.k)) tk[c.id] = true; });
+}
 function tickSet(t, p, aid, m, match, on) {
   const v = avalOf(t.id, p); v.comp = v.comp || {}; v.comp[aid] = v.comp[aid] || {}; const tk = v.comp[aid][m] = v.comp[aid][m] || {};
+  const antes = Object.values(tk).some(Boolean) ? null : (((v.af || {})[aid]) || {})[m];   // nível dado sem competências
+  seedTicks(t, v, aid, m, tk);
   compsOf(t.ciclo, m).forEach(c => { if (match(c.id)) { if (on) tk[c.id] = true; else delete tk[c.id]; } });
-  v.af = v.af || {}; v.af[aid] = v.af[aid] || {};
-  if (Object.keys(tk).length) v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); else { delete v.comp[aid][m]; }
-  if (v.man && v.man[aid]) delete v.man[aid][m];
+  v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; if (v.man && v.man[aid]) delete v.man[aid][m];
+  if (Object.keys(tk).length) { const l = lvFromTicks(t.ciclo, m, tk);
+    // assinalar não baixa um nível já dado: fica o anterior, marcado como exceção, até as competências o alcançarem
+    if (on && antes && LVI(l) < LVI(antes)) { v.af[aid][m] = antes; v.man = v.man || {}; (v.man[aid] = v.man[aid] || {})[m] = 1; } else v.af[aid][m] = l; }
+  else { delete v.comp[aid][m]; }
   touchAval(v);
 }
 function obsRender(open) {
   const t = turma(), O = UI.obs, p = periodOf(O.d), v = avalOf(t.id, p), cs = compsOf(t.ciclo, O.m);
   const als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0);
-  let b = `<div class="form obs"><div class="seg block">${[['aluno', 'Por aluno'], ['turma', 'Por competência']].map(([k, n]) => `<button data-a="obs-modo" data-k="${k}" class="${O.modo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+  let b = `<div class="form obs"><div class="seg block">${[['aluno', 'Por aluno'], ['grupo', 'Vários alunos'], ['turma', 'Por competência']].map(([k, n]) => `<button data-a="obs-modo" data-k="${k}" class="${O.modo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
     <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>`;
   if (!cs.length) b += '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>';
+  else if (O.modo === 'grupo') b += obsGrupoHtml(t, O, p, v, als);
   else if (O.modo === 'aluno') {
     if (!als.some(al => al.id === O.aid)) O.aid = als[0] && als[0].id; const i = als.findIndex(al => al.id === O.aid), al = als[i];
     if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
@@ -4191,7 +4212,7 @@ Object.assign(A, {
   'obs-ir': el => { UI.obs.aid = el.dataset.id; obsRender(); $('#sheet .sh-b').scrollTop = 0; },
   'obs-modo': el => { UI.obs.modo = el.dataset.k; obsRender(); },
   'obs-al': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), i = als.findIndex(al => al.id === O.aid) + +el.dataset.d; if (als[i]) { O.aid = als[i].id; obsRender(); $('#sheet .sh-b').scrollTop = 0; } },
-  'obs-all': el => { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
+  'obs-all': el => { const t = turma(), O = UI.obs; if (O.modo === 'grupo') { (O.sel || []).forEach(aid => tickSet(t, periodOf(O.d), aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1')); obsRender(); return; } tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
   'obs-c': el => { const O = UI.obs, id = el.dataset.id, i = O.cids.indexOf(id); if (i >= 0) O.cids.splice(i, 1); else if (O.cids.length < 4) O.cids.push(id); else toast('No máximo 4 competências de cada vez.'); obsRender(); },
   'obs-cell': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), aid = el.dataset.aid, id = el.dataset.id, h = (evMap(avalOf(t.id, p), aid, O.m)[id] || []).find(x => x[0] === O.d);
     if (!h) evAdd(t, O.d, aid, O.m, id, 1); else if (h[1]) evAdd(t, O.d, aid, O.m, id, 0); else evAdd(t, O.d, aid, O.m, id, 0); obsRender(); },
@@ -4199,6 +4220,7 @@ Object.assign(A, {
 });
 document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k || !UI.obs) return;
   if (k === 'obs-al') { UI.obs.aid = el.value; obsRender(); }
+  else if (k === 'obs-tk' && UI.obs.modo === 'grupo') { const t = turma(), O = UI.obs; (O.sel || []).forEach(aid => tickSet(t, periodOf(O.d), aid, O.m, id => id === el.dataset.id, el.checked)); obsRender(); }
   else if (k === 'obs-tk') { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id === el.dataset.id, el.checked); obsRender(); } });
 
 /* próximo desafio: a primeira competência por dominar, escrita para o aluno */
@@ -4946,7 +4968,7 @@ function vFecho(t) {
   const p = UI.p, fim = fimPer(t, p), dias = fim ? diasAte(fim) : null, its = fechoItens(t, p), obr = its.filter(x => !x.opc), ok = obr.filter(x => !x.n).length;
   let h = `<div class="card fecho-h"><div class="sec-h" style="margin:0"><h2 style="font-size:18px">Fecho do ${esc(perLabel(p, true))}</h2>${dias != null ? `<span class="pill ${dias < 0 ? 'inc' : dias <= 7 ? 'bad' : 'ok'}">${dias < 0 ? 'Período terminado' : dias === 0 ? 'Termina hoje' : 'Faltam ' + dias + ' dias'}</span>` : ''}</div>
     <div class="pl-b big" role="img" aria-label="${ok} de ${obr.length} pontos completos"><i style="width:${ok / obr.length * 100}%"></i></div><p class="small muted num-t" style="margin:6px 0 0">${ok} de ${obr.length} pontos completos</p></div>
-    <div class="list fecho">${its.map(x => `<div class="li"><span class="fe-i ${x.n ? (x.opc ? 'opc' : 'nx') : 'ok'}">${x.n ? (x.n > 99 ? '99+' : x.n) : '✓'}</span><span class="who col"><b>${esc(x.t)}</b><span class="small muted">${x.n ? (x.k === 'mat' ? esc(x.d) : x.n + ' ' + esc(x.d)) : 'Completo.'}</span></span>${x.n ? `<button class="btn sm" data-a="fe-go" data-k="${x.k}">Resolver</button>` : ''}</div>`).join('')}</div>
+    <div class="list fecho">${its.map(x => `<div class="li"><span class="fe-i ${x.n ? (x.opc ? 'opc' : 'nx') : 'ok'}">${x.n ? (x.n > 99 ? '99+' : x.n) : '✓'}</span><span class="who col"><b>${esc(x.t)}</b><span class="small muted">${x.n ? (x.k === 'mat' ? esc(x.d) : x.n + ' ' + esc(x.d)) : 'Completo.'}</span></span>${x.n && x.k === 'mat' ? '<button class="btn sm primary" data-a="prop-open">Propor níveis</button>' : ''}${x.n && x.k === 'obs' ? '<button class="btn sm primary" data-a="obs-auto-all">Escrever</button>' : ''}${x.n ? `<button class="btn sm" data-a="fe-go" data-k="${x.k}">Resolver</button>` : ''}</div>`).join('')}</div>
     <div class="sec-h"><h2>Documentos do fecho</h2></div><div class="docs">
     ${[['xlsx', 'Pauta, sumários e presenças (Excel)'], ['doc-rel-all', 'Relatórios para os encarregados de educação'], ['doc-rel-alunos', 'Relatórios para os alunos'], ['cons-open', 'Síntese para o conselho de turma']].map(([a, n]) => `<button class="card doc" data-a="${a}"><b>${n}</b></button>`).join('')}</div>`;
   return h;
@@ -5011,4 +5033,121 @@ function vFitTrans() {
   return `<div class="sec-h"><h2>Aptidão física no último período</h2></div><div class="card form"><label class="cli"><input type="checkbox" data-in="fit-trans"${CFG.fitTransita !== false ? ' checked' : ''}> <span><b>A classificação do ${esc(perLabel(Math.max(1, CFG.nper - 1), true))} transita para o ${esc(perLabel(CFG.nper, true))}</b><br><span class="hint">Os resultados aparecem na grelha a cinzento. Se o aluno repetir um teste e melhorar, conta o melhor; se piorar, mantém-se o anterior.</span></span></label></div>`;
 }
 document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'fit-trans') { CFG.fitTransita = el.checked; Store.save('cfg', CFG); render(); } });
+/* ---------- tirar trabalho ao professor ---------- */
+// 1) aulas em falta criadas a partir do horário; 2) avaliar vários alunos de uma vez; 3) o mesmo plano para as turmas
+// do mesmo ano; 4) níveis em falta propostos no fecho; 5) observações do relatório escritas a partir dos dados.
+
+/* 1. aulas do horário que ainda não foram registadas (até hoje) */
+function aulasEmFalta(t) {
+  const desde = (aulasOf(t.id)[0] || {}).data || (CFG.per[0] || {}).ini, hoje = today(), out = [];
+  for (let p = 1; p <= CFG.nper; p++) {
+    const porDia = {}; slotsReais(t, p).forEach(s => { if (s.d >= desde && s.d <= hoje) porDia[s.d] = (porDia[s.d] || 0) + 1; });
+    Object.entries(porDia).forEach(([d, n]) => { const tem = aulasOf(t.id).filter(a => a.data === d).length; for (let i = tem; i < n; i++) out.push(d); });
+  }
+  return out;
+}
+function udNoDia(t, d) { const {us} = planoReal(t, periodOf(d)), u = us.find(x => x.ini && x.ini <= d && x.fim >= d); return u ? u.u.m : udAtual(t, periodOf(d)); }
+function sheetAulasFalta() {
+  const t = turma(), xs = aulasEmFalta(t); UI.afSel = UI.afSel && UI.afSel.t === t.id ? UI.afSel : {t:t.id, off:{}};
+  const body = `<div class="form"><p class="hint" style="margin:0">Aulas do horário de ${esc(t.nome)} ainda não registadas (sem feriados nem interrupções). São criadas com todos presentes (as dispensas ficam com D), a matéria da unidade prevista e o plano, se houver. Depois só corrige as exceções.</p>
+    ${xs.length ? `<div class="list">${xs.map((d, i) => { const m = udNoDia(t, d); return `<label class="li cli"><input type="checkbox" data-in="af-sel" data-k="${d}#${i}"${UI.afSel.off[d + '#' + i] ? '' : ' checked'}> <span class="who"><b>${esc(fmtDate(d, {weekday:'long', day:'numeric', month:'long'}))}</b><span class="small muted">${m ? esc(m) : 'sem unidade prevista'}</span></span></label>`; }).join('')}</div>` : '<p>Não há aulas em falta.</p>'}</div>`;
+  openSheet('Aulas por registar', body, xs.length ? `<button class="btn primary" data-a="af-go">Registar as aulas selecionadas</button>` : '');
+}
+function criarAula(t, d, base) {
+  const pres = {}; (t.alunos || []).forEach(al => { const x = dispOn(al, d); pres[al.id] = x && x.tipo !== 'Apenas registo' ? 'D' : 'P'; });
+  const m = udNoDia(t, d), a = {id:uid(), turmaId:t.id, data:d, c:Date.now(), materias:base ? base.materias.slice() : m ? [m] : [], sumario:'', presencas:pres, auto:true};
+  if (base && base.plano) a.plano = clone(base.plano);
+  if (a.plano) a.sumario = sumDoPlano(a);
+  S.aulas[a.id] = a; Store.save('aulas', a); return a;
+}
+
+/* 2. vários alunos de uma vez (folha Observar) */
+function obsGrupoHtml(t, O, p, v, als) {
+  O.sel = (O.sel || []).filter(id => als.some(al => al.id === id));
+  const grp = k => als.filter(al => { const l = (lvOf(v, al.id, O.m) || {}).l || aiLv(t, al.id, O.m); return l && DG[l] === k; }).map(al => al.id);
+  let b = `<p class="hint" style="margin:0">Escolha os alunos e marque as competências que todos já dominam. Cada aluno fica com o seu nível calculado. Depois afine os casos diferentes em "Por aluno".</p>
+    <div class="chips">${[['todos', 'Todos'], ['I', 'Grupo Introdução'], ['E', 'Grupo Elementar'], ['A', 'Grupo Avançado'], ['nenhum', 'Nenhum']].map(([k, n]) => `<button class="chip" data-a="og-sel" data-k="${k}"${['I', 'E', 'A'].includes(k) && !grp(k).length ? ' disabled' : ''}>${n}</button>`).join('')}</div>
+    <div class="og-als">${als.map(al => `<button class="og-al${O.sel.includes(al.id) ? ' on' : ''}" data-a="og-al" data-id="${esc(al.id)}">${esc(nome2(al.nome))}</button>`).join('')}</div>`;
+  if (!O.sel.length) return b + '<p class="note warn">Escolha pelo menos um aluno.</p>';
+  const cnt = {}; O.sel.forEach(aid => Object.entries(tksOf(v, aid, O.m) || {}).forEach(([c, x]) => { if (x) cnt[c] = (cnt[c] || 0) + 1; }));
+  const all = Object.fromEntries(Object.entries(cnt).filter(([, n]) => n === O.sel.length).map(([c]) => [c, true]));
+  return b + `<div class="cl obs-cl">${checkList(t.ciclo, O.m, all, null, 'obs-tk', 'obs-all', cnt, O.sel.length)}</div>`;
+}
+
+/* 3. o mesmo plano para as turmas do mesmo ano */
+const turmasAno = t => Object.values(S.turmas).filter(x => x.id !== t.id && anoOf(x) === anoOf(t) && x.ciclo === t.ciclo).sort(byNome);
+function proxAulaLivre(t) { for (let p = periodOf(today()); p <= CFG.nper; p++) { const s = slotsReais(t, p).find(x => x.d >= today() && !aulasOf(t.id).some(a => a.data === x.d && a.plano)); if (s) return s.d; } return null; }
+function sheetPartPlano(tipo) {
+  const t = turma(), ts = turmasAno(t); UI.ppSel = {tipo, ids:ts.map(x => x.id)};
+  const quem = tipo === 'periodo' ? `o plano do ${perLabel(UI.p, true)}` : 'este plano de aula';
+  const body = `<div class="form"><p class="hint" style="margin:0">Aplicar ${quem} às outras turmas do ${anoOf(t)}.º ano. ${tipo === 'periodo' ? 'As datas, as aulas reais e os espaços de cada turma são calculados pelo horário e pela rotação de cada uma. Substitui o plano do período que lá estiver.' : 'Fica na próxima aula de cada turma (pelo horário) que ainda não tenha plano; se essa aula não existir, é criada.'}</p>
+    ${ts.length ? ts.map(x => { const nx = tipo === 'aula' ? proxAulaLivre(x) : null; return `<label class="cli"><input type="checkbox" data-in="pp-sel" data-id="${esc(x.id)}" checked> <span><b>${esc(x.nome)}</b>${tipo === 'aula' ? ` <span class="small muted">${nx ? 'próxima aula: ' + esc(fmtDate(nx, {weekday:'short', day:'numeric', month:'short'})) : 'sem horário definido'}</span>` : planOf(x, UI.p).length ? ' <span class="small muted">já tem plano: será substituído</span>' : ''}</span></label>`; }).join('') : `<p>Não há outras turmas do ${anoOf(t)}.º ano.</p>`}</div>`;
+  openSheet('Usar noutras turmas', body, ts.length ? `<button class="btn primary" data-a="pp-go">Aplicar</button>` : '');
+}
+
+/* 4. níveis em falta propostos: evidências e competências, avaliação inicial ou período anterior */
+function propostaNivel(t, p, al, m) {
+  const v = avalOf(t.id, p), tk = Object.assign({}, tksOf(v, al.id, m) || {}), ev = evMap(v, al.id, m);
+  Object.keys(ev).forEach(c => { if (evState(ev[c]) === 'dom') tk[c] = true; });
+  if (Object.values(tk).some(Boolean) && compsOf(t.ciclo, m).length) return {l:lvFromTicks(t.ciclo, m, tk), fonte:'competências assinaladas e evidências'};
+  if (p > 1) { const x = lvOf(avalOf(t.id, p - 1), al.id, m); if (x) return {l:x.l, fonte:perLabel(p - 1, true)}; }
+  const ai = aiLv(t, al.id, m); if (ai) return {l:ai, fonte:'avaliação inicial'};
+  return {l:null, fonte:'sem dados'};
+}
+function sheetPropostas() {
+  const t = turma(), p = UI.p, v = avalOf(t.id, p), ms = matsOf(t, p), rows = [];
+  alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0).forEach(al => ms.forEach(m => { if (!lvOf(v, al.id, m)) rows.push({al, m, pr:propostaNivel(t, p, al, m)}); }));
+  rows.sort((a, b) => (b.pr.l ? 1 : 0) - (a.pr.l ? 1 : 0));
+  UI.prop = rows.map(r => ({aid:r.al.id, m:r.m, l:r.pr.l}));
+  const body = `<div class="form"><p class="hint" style="margin:0">Para cada nível em falta, a proposta vem das competências e evidências registadas, do período anterior ou da avaliação inicial. Reveja e altere antes de aceitar; as linhas sem proposta ficam por preencher.</p>
+    ${rows.length ? `<div class="tbl-wrap"><table class="prop-t"><thead><tr><th class="l">Aluno</th><th class="l">Matéria</th><th>Proposta</th><th class="l">De onde vem</th></tr></thead><tbody>${rows.map((r, i) => `<tr><td class="l">${esc(nome2(r.al.nome))}</td><td class="l">${esc(r.m)}</td><td><select data-in="prop" data-i="${i}" aria-label="Nível de ${esc(r.al.nome)} em ${esc(r.m)}"><option value="">—</option>${LV.map(l => `<option${r.pr.l === l ? ' selected' : ''}>${l}</option>`).join('')}</select></td><td class="l small muted">${esc(r.pr.fonte)}</td></tr>`).join('')}</tbody></table></div>` : '<p>Não há níveis em falta.</p>'}</div>`;
+  openSheet('Níveis em falta · ' + perLabel(p, true), body, rows.length ? `<button class="btn primary" data-a="prop-go">Aceitar as propostas</button>` : '');
+}
+
+/* 5. observação do relatório escrita a partir dos dados do período */
+function obsAuto(t, p, al) {
+  const r = calc(t, p, al), v = avalOf(t.id, p), f = al.sexo === 'F', o = (m, fm) => f ? fm : m, nome = al.nome.split(' ')[0], fr = [];
+  if (r.c.F === 0 && r.c.A <= 1) fr.push(`${nome} foi ${o('assíduo', 'assídua')} e ${o('pontual', 'pontual')}${r.c.M ? '' : ' e trouxe sempre o material'}.`);
+  else if (r.c.F >= 3) fr.push(`${nome} faltou a ${r.c.F} aulas, o que condicionou a sua evolução.`);
+  else fr.push(`${nome} teve ${r.c.F ? r.c.F + (r.c.F === 1 ? ' falta' : ' faltas') : 'uma assiduidade regular'}${r.c.A ? ' e ' + r.c.A + (r.c.A === 1 ? ' atraso' : ' atrasos') : ''}.`);
+  const lv = Object.entries(r.lv), bons = lv.filter(([, l]) => LVI(l) >= LVI('E')).map(([m]) => m), med = lv.filter(([, l]) => LVI(l) >= LVI('I') && LVI(l) < LVI('E')).map(([m]) => m), fracos = lv.filter(([, l]) => LVI(l) < LVI('I')).map(([m]) => m);
+  const lista = xs => xs.length > 1 ? xs.slice(0, -1).join(', ') + ' e ' + xs[xs.length - 1] : xs[0];
+  if (bons.length) fr.push(`Revela bom desempenho em ${lista(bons)}.`);
+  if (med.length) fr.push(`Em ${lista(med)} já cumpre o nível Introdução e está a progredir.`);
+  if (fracos.length) fr.push(`Em ${lista(fracos)} ainda não atingiu o nível Introdução.`);
+  const alvo = [...fracos, ...med, ...bons].map(m => ({m, d:desafioPlus(t, p, al, m)})).find(x => x.d && x.d.alvo);
+  if (alvo) fr.push(`Próximo passo em ${alvo.m}: ${alvo.d.alvo.charAt(0).toLowerCase() + alvo.d.alvo.slice(1)}`);
+  if (r.apfOn) { const fora = FIT.filter(x => r.zones[x.k] === 0).map(x => x.n.toLowerCase()), tem = FIT.some(x => r.zones[x.k] != null);
+    if (tem && !fora.length) fr.push('Encontra-se na Zona Saudável nos testes de aptidão física realizados.');
+    else if (fora.length) fr.push(`Deve melhorar a aptidão física (${lista(fora)})${pfitOf(t, al) ? ', seguindo o plano individual de treino que lhe foi entregue' : ''}.`); }
+  const pp = papeisDe(t, p, al.id); if (Object.keys(pp).length) fr.push(`Desempenhou com responsabilidade o papel de ${lista(Object.keys(pp).map(x => x.toLowerCase()))}.`);
+  if (r.AV != null) fr.push(r.AV >= 15.5 ? `Mostra empenho, respeito pelas regras e pelos colegas.` : r.AV >= 11.5 ? `Deve manter o empenho e a cooperação nas aulas.` : `Precisa de melhorar o empenho e o cumprimento das regras.`);
+  return fr.join(' ').replace(/\.\./g, '.');
+}
+
+Object.assign(A, {
+  'af-open': () => sheetAulasFalta(),
+  'af-go': () => { const t = turma(), xs = aulasEmFalta(t); let n = 0; xs.forEach((d, i) => { if (!UI.afSel.off[d + '#' + i]) { criarAula(t, d); n++; } }); closeSheet(); render(); toast(`${n} ${n === 1 ? 'aula registada' : 'aulas registadas'}: corrija só as faltas e os sumários.`); },
+  'og-al': el => { const O = UI.obs, id = el.dataset.id, i = (O.sel = O.sel || []).indexOf(id); i >= 0 ? O.sel.splice(i, 1) : O.sel.push(id); obsRender(); },
+  'og-sel': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), v = avalOf(t.id, p), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), k = el.dataset.k;
+    O.sel = k === 'todos' ? als.map(a => a.id) : k === 'nenhum' ? [] : als.filter(al => { const l = (lvOf(v, al.id, O.m) || {}).l || aiLv(t, al.id, O.m); return l && DG[l] === k; }).map(a => a.id); obsRender(); },
+  'pp-per': () => sheetPartPlano('periodo'),
+  'pp-aula': () => { const a = A['aula-save'](true); if (!a) return; UI.ppAula = a.id; sheetPartPlano('aula'); },
+  'pp-go': () => { const t = turma(), ids = [...document.querySelectorAll('#sheet [data-in="pp-sel"]')].filter(x => x.checked).map(x => x.dataset.id); let n = 0;
+    ids.forEach(id => { const x = S.turmas[id];
+      if (UI.ppSel.tipo === 'periodo') { x.plano = x.plano || {}; x.plano[UI.p] = clone(planOf(t, UI.p)); Store.save('turmas', x); n++; }
+      else { const base = S.aulas[UI.ppAula], d = proxAulaLivre(x); if (!base || !d) return; const ex = aulasOf(x.id).find(a => a.data === d);
+        if (ex) { ex.plano = clone(base.plano || null); ex.materias = base.materias.slice(); if (!ex.sumario) ex.sumario = sumDoPlano(ex); S.aulas[ex.id] = ex; Store.save('aulas', ex); } else criarAula(x, d, base); n++; } });
+    closeSheet(); render(); toast(n ? `Aplicado a ${n} ${n === 1 ? 'turma' : 'turmas'}.` : 'Nada aplicado.'); },
+  'prop-open': () => sheetPropostas(),
+  'prop-go': () => { const t = turma(), v = avalOf(t.id, UI.p); let n = 0; v.af = v.af || {};
+    (UI.prop || []).forEach(x => { if (x.l) { v.af[x.aid] = v.af[x.aid] || {}; v.af[x.aid][x.m] = x.l; n++; } }); touchAval(v); closeSheet(); render(); toast(`${n} ${n === 1 ? 'nível lançado' : 'níveis lançados'}.`); },
+  'obs-auto': el => { const t = turma(), al = alunosOf(t).find(x => x.id === el.dataset.id), ta = $('#a-relobs'); if (!al || !ta) return;
+    if (ta.value.trim() && !armed(el, 'Substituir o texto?')) return; ta.value = obsAuto(t, UI.p, al); ta.dispatchEvent(new Event('change', {bubbles:true})); },
+  'obs-auto-all': () => { const t = turma(), v = avalOf(t.id, UI.p); v.obs = v.obs || {}; let n = 0;
+    alunosOf(t).forEach(al => { if (!(v.obs[al.id] || '').trim()) { v.obs[al.id] = obsAuto(t, UI.p, al); n++; } }); touchAval(v); render(); toast(`${n} ${n === 1 ? 'observação escrita' : 'observações escritas'}: reveja-as na ficha de cada aluno.`); }
+});
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'af-sel') { UI.afSel.off[el.dataset.k] = !el.checked; }
+  else if (k === 'prop') { const x = (UI.prop || [])[+el.dataset.i]; if (x) x.l = el.value || null; } });
 </script>

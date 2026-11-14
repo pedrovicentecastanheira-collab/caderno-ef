@@ -187,3 +187,10 @@ table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
 .mp-new{display:grid;grid-template-columns:1.4fr 1fr auto;gap:6px}
 @media (max-width:560px){.mp-new{grid-template-columns:1fr 1fr}.mp-new input{grid-column:1/-1}}
 td.c.trans,.gcr .c.trans{opacity:.55;font-style:italic}
+.og-als{display:flex;flex-wrap:wrap;gap:6px}
+.og-al{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-size:13px;font-weight:600}
+.og-al.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cl-n{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:6px;padding:1px 5px;white-space:nowrap}
+.cl-n.parc{color:var(--warn);background:var(--warn-soft)}
+table.prop-t select{min-width:70px}
+.obs-auto-b{float:right;font-size:13px}
