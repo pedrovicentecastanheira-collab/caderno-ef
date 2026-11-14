@@ -48,6 +48,7 @@ function conselhoHtml(t, p) {
   if (rows[0] && rows[0].ae) { const A = rows[0].ae; h += `<h2>Aprendizagens Essenciais · ${A.ano}.º ano</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Não atinge</th><th>Proficiente</th><th>${esc(aeTop(A.A))}</th><th>Sem dados</th></tr></thead><tbody>${[['Atividades físicas', 'af'], ['Aptidão física', 'apf'], ['Conhecimentos', 'con']].map(([n, k]) => `<tr><td class="l">${n}</td>${[0, 1, 2, null].map(x => `<td>${rows.filter(r => r.ae && r.ae[k] === x).length}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
   h += `<h2>Alunos</h2><table class="rel-t cons"><thead><tr><th>N.º</th><th class="l">Nome</th><th>F/A/M</th><th>Final</th>${t.ciclo !== 'S' ? `<th>${nivelLbl(t)}</th>` : ''}<th>AE (AF/Apt/Con)</th><th class="l">Situações a sinalizar</th><th class="l">Medidas propostas</th></tr></thead><tbody>${rows.map(({al, r, ae, fl}) => `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td><td>${r.c.F}/${r.c.A}/${r.c.M}</td><td><b>${r.FIN ?? '—'}</b></td>${t.ciclo !== 'S' ? `<td>${esc(nivel(t, r.FIN) ?? '—')}</td>` : ''}<td>${ae ? [ae.af, ae.apf, ae.con].map(x => aeShort(ae, x)).join(' / ') : '—'}</td><td class="l small">${esc(fl.join('; '))}</td><td class="l small">${esc((v.med || {})[al.id] || '')}</td></tr>`).join('')}</tbody></table>
     <p class="rel-s">AE: P = Proficiente, ${rows[0] && rows[0].ae ? esc(aeTop(rows[0].ae.A)[0] + ' = ' + aeTop(rows[0].ae.A)) : 'E = Elevado'}, NA = não atinge, — = sem dados. F/A/M = faltas, atrasos e aulas sem material no período.</p>`;
+  h += conselhoExtra(t, p);
   return h + `<div class="rel-sig"><div><span>O(A) professor(a)${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Data</span></div></div></section>`;
 }
 function sheetConselho() {
@@ -76,6 +77,8 @@ function vDocs(t) {
     ['doc-rel-all', 'Relatórios individuais', `Um por aluno: classificação, o que domina e onde melhorar, Aprendizagens Essenciais, FITescola, atitudes, assiduidade, evolução, autoavaliação e observações (${als.length} alunos).`],
     ['doc-crit', 'Critérios de avaliação', 'Para entregar a alunos e encarregados de educação: domínios, ponderações, Aprendizagens Essenciais do ano, níveis, atitudes e conversão em níveis 1–5.'],
     ['cons-open', 'Conselho de turma', 'Síntese da turma com situações sinalizadas automaticamente e as medidas propostas para cada aluno.'],
+    ['doc-rel-alunos', 'Relatórios para os alunos', 'Uma página por aluno: o que já consegue e o próximo passo em cada matéria, com o exercício para treinar, em linguagem simples.'],
+    ['doc-pass', 'Passaportes de uma matéria', 'O caminho todo da matéria em linguagem do aluno, com as competências que já consegue assinaladas e o nível em que está.'],
     ['doc-des', 'Cartões de desafio', 'Um cartão por aluno com o próximo desafio em cada matéria, escrito para o aluno: a competência que lhe falta.'],
     ['doc-plan', 'Planificação anual', 'Unidades didáticas por período e verificação das matérias mínimas das Aprendizagens Essenciais.'],
     ['modo-aluno', 'Modo aluno', 'Autoavaliação e coavaliação por competência e questionários de conhecimentos: passa o telemóvel ou o tablet aos alunos, sem mostrar notas.'],

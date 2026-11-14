@@ -706,6 +706,77 @@ table.auto-c tr.off td{background:var(--warn-soft)}
 .rel-p{font-size:12.5px;margin:4px 0}
 .li .who.col{display:flex;flex-direction:column;min-width:0}
 .pl-bals{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+td.c.man,.gcr .c.man{position:relative}
+td.c.man::after,.gcr .c.man::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 1.5px var(--surface)}
+.man-n{margin:0 0 6px}
+.ma-h{display:flex;flex-direction:column;gap:6px}
+.ma-h h1{font-family:var(--f-display);font-size:26px;margin:2px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ma-h h1 .si{width:22px;height:22px}
+.ma-st button{display:flex;gap:6px;align-items:center;justify-content:center;font-size:14.5px;min-height:44px}
+.ma-st b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--surface-2);font-size:11.5px}
+.ma-st button.on b{background:var(--accent);color:#fff}
+.ma-p{border-top:1px solid var(--line);padding:8px 0}
+.ma-p>span{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.ma-p p{margin:2px 0 0;font-size:14.5px}
+.ma-plano .dif{margin:8px 0}
+.ma-ps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ma-pr{display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:14px;font-weight:600;text-align:left}
+.ma-pr span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ma-pr b{font-family:var(--f-display);font-size:16px}
+.ma-pr.ps-F{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.ma-pr.ps-A{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.ma-pr.ps-M{border-color:var(--v7);background:color-mix(in srgb,var(--v7) 12%,transparent)}
+.ma-pr.ps-D{border-color:var(--muted);background:var(--surface-2);color:var(--muted)}
+.ma-ac .btn{flex:1}
+.ma-pr .av{flex:none;width:34px;height:34px}
+.ma-h>.link{align-self:flex-start}
+.dp-a{font-size:15.5px;font-weight:600;line-height:1.4;margin:4px 0}
+.dp-l{font-size:13px;margin:3px 0;line-height:1.4}
+details.dp-of summary{font-size:12px;color:var(--muted);cursor:pointer}
+.cal-r{display:flex;flex-direction:column;gap:4px;padding:6px 0;border-top:1px solid var(--line)}
+.pass{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface);break-inside:avoid;page-break-inside:avoid}
+.pass.ecra{border:0;padding:0;background:none}
+.pass-h{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.pass-h>div{display:flex;flex-direction:column}
+.pass-k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.pass-h b{font-size:17px}
+.pass-n{font-family:var(--f-display);font-size:14px;color:var(--muted)}
+.pass-n b{font-size:22px;color:var(--ok)}
+.pass-bar{height:8px;border-radius:999px;background:var(--surface-2);margin:8px 0;overflow:hidden}
+.pass-bar i{display:block;height:100%;background:var(--ok);border-radius:999px}
+.pass-l{margin-top:8px;border-radius:10px;padding:6px 8px}
+.pass-l.aqui{background:var(--accent-soft)}
+.pass-lh{display:flex;gap:8px;align-items:baseline}
+.pass-lh span{font-size:12px;color:var(--muted)}
+.pass-lh em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--accent)}
+.pass-lh em.ok{color:var(--ok)}
+.pass-l ul{list-style:none;margin:4px 0 0;padding:0}
+.pass-l li{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;padding:3px 0}
+.pass-l li.ok{color:var(--muted)}
+.bx{flex:none;width:16px;height:16px;border:1.5px solid #888;border-radius:4px;display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--ok);margin-top:1px}
+li.ok .bx{border-color:var(--ok);background:var(--ok-soft)}
+.pass.ecra .pass-l li{font-size:16px}
+.pass-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.relal .ra-m{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;break-inside:avoid}
+.ra-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ra-h b{font-size:15px}
+.ra-sc{display:flex;gap:3px}
+.ra-sc i{font-style:normal;font-size:10.5px;padding:2px 6px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.ra-sc i.on{background:var(--ok);color:#fff}
+.ra-c{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.ra-c ul{margin:2px 0 0;padding-left:16px;font-size:12.5px}
+.ra-c p{font-size:12.5px;margin:2px 0}
+.ra-k{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ra-k.ok{color:var(--ok)} .ra-k.nx{color:var(--accent)}
+.relal .dp-a{font-size:13px}
+.ra-fit{display:flex;flex-wrap:wrap;gap:6px}
+.ra-fit span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:600}
+.ra-fit span.nx{background:var(--warn-soft);color:var(--warn)}
+.sync-st.ok{border-left:4px solid var(--ok)}
+.sync-st.warn{border-left:4px solid var(--warn);background:var(--warn-soft)}
+.sync-ol{margin:0;padding-left:20px;line-height:1.6}
+.sync-url{display:flex;gap:8px}
+.sync-url input{flex:1}
 </style>
 </head>
 <body>
@@ -1031,6 +1102,7 @@ function vTurma(t) {
     return `<div class="split"><div class="split-l">${vTurmaSeg(sub)}${vAlunos(t)}</div><div class="split-r">${vAlunoPage(t, sel, true)}</div></div>`;
   }
   if (sub === 'alunos' && al) return vAlunoPage(t, al, false);
+  if (sub === 'aula') return vModoAula(t);
   if (sub === 'planear') return `<div class="stack">${vTurmaSeg(sub)}${vPlanear(t)}</div>`;
   return `<div class="stack">${vTurmaSeg(sub)}</div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
 }
@@ -1038,8 +1110,8 @@ function vTurmaSeg(sub) {
   return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos'], ['planear', 'Planear']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
-const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
+const DEXTRA = {sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
@@ -1291,7 +1363,7 @@ function descHtml(ciclo, m, open) {
   const cs = compsOf(ciclo, m), of = cs.length && cs[0].of, d = (PNEF[ciclo] || []).find(x => x.m === m);
   const body = of ? ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); return xs.length ? `<div class="dlv"><b>${k} · ${LVN[k]}</b> <span class="muted small">${xs.length} competências</span>${compList(xs)}</div>` : ''; }).join('')
     : d ? `<dl>${['I','E','A'].map(k => `<dt>${k} · ${LVN[k]}</dt><dd>${esc(d[k] || '—')}</dd>`).join('')}</dl>` : '<p class="hint">Sem descritivo para esta matéria neste ciclo.</p>';
-  return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.</p></details>`;
+  return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.${of ? ` <button class="link" data-a="cal-ed" data-m="${esc(m)}">Ver e editar a linguagem do aluno</button>` : ''}</p></details>`;
 }
 // O que domina e o que falta: pelas competências assinaladas ou, sem elas, pelo nível escolhido.
 function compSplit(ciclo, m, l, ticks) {
@@ -1375,7 +1447,7 @@ function gShow(c, col, al) {
     if (col.k === 't:FIN') return {txt:n ?? '—', cls:'calc ' + (r.EST === 'Apto' ? 'fin-ok' : r.EST === 'Não apto' ? 'fin-bad' : 'fin-inc')};
     return {txt:f1(n), cls:'calc' + (n != null && n < 10 ? ' low' : '')};
   }
-  if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l], auto:d.auto} : {txt:'', cls:''}; }
+  if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l] + (isMan(c.v, al.id, col.m) ? ' man' : ''), auto:d.auto} : {txt:'', cls:''}; }
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
     const z = zoneOf(col.f, al, ageAt(al.nasc, refDate(c.p)), c.v), zc = z != null ? 'z' + z : '';
@@ -1408,7 +1480,10 @@ function gSet(c, col, al, val) {
     if (val == null) delete a.reg[id]; else { if (val > 0) r.p++; else r.n++; a.reg[id] = r; }
     Store.save('aulas', a); return;
   }
-  if (k.startsWith('m:')) { const o = at(at(v, 'af'), id); if (val == null) delete o[col.m]; else o[col.m] = val; }
+  if (k.startsWith('m:')) { const o = at(at(v, 'af'), id); if (val == null) delete o[col.m]; else o[col.m] = val;
+    // Regra única: o nível vem das competências; escolhido à mão contra elas, fica marcado como exceção.
+    const tk = tksOf(v, id, col.m), lt = tk && Object.values(tk).some(Boolean) ? lvFromTicks(c.t.ciclo, col.m, tk) : null;
+    if (val != null && lt && val !== lt) at(at(v, 'man'), id)[col.m] = 1; else if (v.man && v.man[id]) delete v.man[id][col.m]; }
   else if (k.startsWith('i:')) { const o = at(at(v, 'iv'), id); if (val == null) delete o[col.ind.id]; else o[col.ind.id] = val; }
   else if (k.startsWith('f:')) at(at(v, 'fit'), id)[col.f.k] = val;
   else if (k === 'con') { const max = c.t.escala === '1-5' ? 5 : 20; at(v, 'con')[id] = val == null ? null : Math.max(0, Math.min(max, val)); }
@@ -1514,7 +1589,7 @@ function gEditor() {
   }
   if (col.type === 'lvl' && col.m && !col.ind && compsOf(c.t.ciclo, col.m).length) {
     const l = (lvOf(c.v, al.id, col.m) || {}).l, tk = tksOf(c.v, al.id, col.m), sm = lvSummary(c.t.ciclo, col.m, l, tk), ex = tk && Object.values(tk).some(Boolean);
-    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk, evMap(c.v, al.id, col.m))}</div></details>`;
+    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl">${isMan(c.v, al.id, col.m) ? `<div class="note warn man-n">Nível escolhido à mão: as competências apontam para <b>${lvFromTicks(c.t.ciclo, col.m, tk)}</b>. <button class="link" data-a="man-clear">Usar o das competências</button></div>` : `<div class="hint">${ex ? 'Nível calculado pelas competências assinaladas e pelas evidências das aulas.' : 'Assinale as competências que o aluno já domina (ou registe evidências nas aulas): o nível passa a ser calculado.'}</div>`}${compCheck(c.t.ciclo, col.m, tk, evMap(c.v, al.id, col.m))}</div></details>`;
   } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem competências descritas para esta matéria neste ciclo.'}</p>`;
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
@@ -1674,7 +1749,7 @@ function sheetAula(a) {
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>
     <div class="list">${alunosOf(t).map(al => { const s = a.presencas[al.id] || 'P'; return `<div class="pr"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="ps" role="group" aria-label="Presença de ${esc(al.nome)}">${PS.map(k => `<button class="${k} ${s === k ? 'on' : ''}" data-a="d-pres" data-aid="${esc(al.id)}" data-s="${k}" title="${PSN[k]}" aria-pressed="${s === k}">${k}</button>`).join('')}</span></div>`; }).join('') || '<div class="empty">Sem alunos na turma.</div>'}</div></div>
   </div>`;
-  const foot = (isNew ? '' : `<button class="btn danger" data-a="aula-del">Eliminar</button>`) + `<button class="btn primary" data-a="aula-save">Guardar aula</button>`;
+  const foot = (isNew ? '' : `<button class="btn danger" data-a="aula-del">Eliminar</button>`) + (isNew || UI.tsub === 'aula' ? '' : `<button class="btn" data-a="ma-abrir" data-id="${esc(a.id)}">Modo aula</button>`) + `<button class="btn primary" data-a="aula-save">Guardar aula</button>`;
   openSheet(isNew ? 'Nova aula' : 'Lição ' + n, body, foot);
 }
 
@@ -2035,6 +2110,7 @@ function compSet(match, on) {
   gSnap(c, col); const v = c.v; v.comp = v.comp || {}; v.comp[al.id] = v.comp[al.id] || {}; const tk = v.comp[al.id][col.m] = v.comp[al.id][col.m] || {};
   compsOf(c.t.ciclo, col.m).forEach(x => { if (match(x.id)) { if (on) tk[x.id] = true; else delete tk[x.id]; } });
   if (Object.keys(tk).length) { v.af = v.af || {}; v.af[al.id] = v.af[al.id] || {}; v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } else delete v.comp[al.id][col.m];
+  if (v.man && v.man[al.id]) delete v.man[al.id][col.m];
   touchAval(v); UI.domOpen = true; gRefresh();
 }
 let DOCI = null;
@@ -2570,8 +2646,8 @@ function relHtml(t, p, al) {
   const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1).filter(i => i <= p);
   if (ps.length > 1) { const cs = ps.map(i => calc(t, i, al)); CHW = 640; h += `<h2>Evolução</h2>` + chLine(ps.map(i => perLabel(i)), [{name:'Final', color:'var(--v1)', vals:cs.map(c => c.FIN)}, {name:'Matérias', color:'var(--v2)', vals:cs.map(c => c.AF)}, {name:'Apt. física', color:'var(--v3)', vals:cs.map(c => c.APF)}, {name:'Atitudes', color:'var(--v7)', vals:cs.map(c => c.AV)}], {h:170, label:'Evolução por período'}); CHW = null; }
   { const ac = autoCompare(t, p, al); if (ac) h += `<h2>Autoavaliação</h2>` + ac; }
-  { const ds = Object.keys(r.lv).map(m => ({m, d:desafioDe(t, p, al, m)})).filter(x => x.d);
-    if (ds.length) h += `<h2>Próximos passos</h2><table class="rel-t"><tbody>${ds.map(x => `<tr><td class="l" style="width:28%"><b>${esc(x.m)}</b></td><td class="l">${esc(encurta(x.d.txt, 240))}</td></tr>`).join('')}</tbody></table>`;
+  { const ds = Object.keys(r.lv).map(m => ({m, d:desafioPlus(t, p, al, m)})).filter(x => x.d);
+    if (ds.length) h += `<h2>Próximos passos</h2><table class="rel-t"><tbody>${ds.map(x => `<tr><td class="l" style="width:24%"><b>${esc(x.m)}</b></td><td class="l">${desafioBloco(x.d, true)}</td></tr>`).join('')}</tbody></table>`;
     const pp = papeisDe(t, p, al.id); if (Object.keys(pp).length) h += `<h2>Papéis desempenhados nas aulas</h2><p class="rel-p">${esc(papeisTxt(pp))}.</p>`;
     const pf = pfitHtml(t, al, true); if (pf) h += `<h2>Aptidão física: plano individual</h2>` + pf;
     const M = medOf(al), ms = [...M.u, ...M.s, ...M.a]; if (ms.length || M.obs) h += `<h2>Medidas de suporte à aprendizagem</h2><p class="rel-p">${esc(ms.join('; '))}${M.obs ? (ms.length ? '. ' : '') + esc(M.obs) : ''}.</p>`; }
@@ -3000,6 +3076,7 @@ function conselhoHtml(t, p) {
   if (rows[0] && rows[0].ae) { const A = rows[0].ae; h += `<h2>Aprendizagens Essenciais · ${A.ano}.º ano</h2><table class="rel-t"><thead><tr><th class="l">Domínio</th><th>Não atinge</th><th>Proficiente</th><th>${esc(aeTop(A.A))}</th><th>Sem dados</th></tr></thead><tbody>${[['Atividades físicas', 'af'], ['Aptidão física', 'apf'], ['Conhecimentos', 'con']].map(([n, k]) => `<tr><td class="l">${n}</td>${[0, 1, 2, null].map(x => `<td>${rows.filter(r => r.ae && r.ae[k] === x).length}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
   h += `<h2>Alunos</h2><table class="rel-t cons"><thead><tr><th>N.º</th><th class="l">Nome</th><th>F/A/M</th><th>Final</th>${t.ciclo !== 'S' ? `<th>${nivelLbl(t)}</th>` : ''}<th>AE (AF/Apt/Con)</th><th class="l">Situações a sinalizar</th><th class="l">Medidas propostas</th></tr></thead><tbody>${rows.map(({al, r, ae, fl}) => `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td><td>${r.c.F}/${r.c.A}/${r.c.M}</td><td><b>${r.FIN ?? '—'}</b></td>${t.ciclo !== 'S' ? `<td>${esc(nivel(t, r.FIN) ?? '—')}</td>` : ''}<td>${ae ? [ae.af, ae.apf, ae.con].map(x => aeShort(ae, x)).join(' / ') : '—'}</td><td class="l small">${esc(fl.join('; '))}</td><td class="l small">${esc((v.med || {})[al.id] || '')}</td></tr>`).join('')}</tbody></table>
     <p class="rel-s">AE: P = Proficiente, ${rows[0] && rows[0].ae ? esc(aeTop(rows[0].ae.A)[0] + ' = ' + aeTop(rows[0].ae.A)) : 'E = Elevado'}, NA = não atinge, — = sem dados. F/A/M = faltas, atrasos e aulas sem material no período.</p>`;
+  h += conselhoExtra(t, p);
   return h + `<div class="rel-sig"><div><span>O(A) professor(a)${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Data</span></div></div></section>`;
 }
 function sheetConselho() {
@@ -3028,6 +3105,8 @@ function vDocs(t) {
     ['doc-rel-all', 'Relatórios individuais', `Um por aluno: classificação, o que domina e onde melhorar, Aprendizagens Essenciais, FITescola, atitudes, assiduidade, evolução, autoavaliação e observações (${als.length} alunos).`],
     ['doc-crit', 'Critérios de avaliação', 'Para entregar a alunos e encarregados de educação: domínios, ponderações, Aprendizagens Essenciais do ano, níveis, atitudes e conversão em níveis 1–5.'],
     ['cons-open', 'Conselho de turma', 'Síntese da turma com situações sinalizadas automaticamente e as medidas propostas para cada aluno.'],
+    ['doc-rel-alunos', 'Relatórios para os alunos', 'Uma página por aluno: o que já consegue e o próximo passo em cada matéria, com o exercício para treinar, em linguagem simples.'],
+    ['doc-pass', 'Passaportes de uma matéria', 'O caminho todo da matéria em linguagem do aluno, com as competências que já consegue assinaladas e o nível em que está.'],
     ['doc-des', 'Cartões de desafio', 'Um cartão por aluno com o próximo desafio em cada matéria, escrito para o aluno: a competência que lhe falta.'],
     ['doc-plan', 'Planificação anual', 'Unidades didáticas por período e verificação das matérias mínimas das Aprendizagens Essenciais.'],
     ['modo-aluno', 'Modo aluno', 'Autoavaliação e coavaliação por competência e questionários de conhecimentos: passa o telemóvel ou o tablet aos alunos, sem mostrar notas.'],
@@ -3149,7 +3228,7 @@ function vAlunoPage(t, al, split) {
       <div class="muted small">N.º ${esc(al.num ?? '—')} · ${esc(t.nome)}${age != null ? ' · ' + age + ' anos' : ''}${regAt(al, p) !== 'Normal' ? ' · ' + esc(regAt(al, p)) : ''}</div>
       <div class="ap-tags">${dp && dp.tipo !== 'Apenas registo' ? `<span class="tag reg">${esc(dp.tipo)}${dp.fim ? ' até ' + esc(fmtDate(dp.fim, {day:'numeric', month:'short'})) : ''}</span>` : ''}${r.c.F ? `<span class="tag F">${r.c.F} ${r.c.F === 1 ? 'falta' : 'faltas'}</span>` : ''}${(v.auto || {})[al.id] ? '<span class="tag P">Autoavaliação feita</span>' : ''}</div></div>
       <div class="ap-fin ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : ''}"><b>${r.FIN ?? '—'}</b><span>${nv != null ? esc(nivelLbl(t) + ' ' + nv) : 'Final'}</span><span>${esc(r.EST)}</span></div></div>
-    <div class="btn-row ap-acts"><button class="btn" data-a="ap-edit">Editar dados</button><button class="btn" data-a="auto-open" data-id="${esc(al.id)}">Autoavaliação</button><button class="btn primary" data-a="rel-one" data-id="${esc(al.id)}">Relatório</button></div>
+    <div class="btn-row ap-acts"><button class="btn" data-a="ap-edit">Editar dados</button><button class="btn" data-a="auto-open" data-id="${esc(al.id)}">Autoavaliação</button><button class="btn primary" data-a="rel-esc" data-id="${esc(al.id)}">Relatório</button></div>
     <div class="seg block ap-tabs" role="tablist">${ATABS.map(([k, n]) => `<button role="tab" data-a="ap-tab" data-k="${k}" class="${tab === k ? 'on' : ''}" aria-selected="${tab === k}">${n}</button>`).join('')}</div>`;
   if (tab === 'resumo') {
     h += fig('Retrato · ' + perLabel(p, true), 'Domínios face à média da turma e competências dominadas', retrato(t, p, al));
@@ -3835,7 +3914,7 @@ document.addEventListener('change', e => {
 // Um pacote JSON com o que o grupo combina: regras de cálculo, tabelas FITescola, indicadores por matéria e ano,
 // planificações por ano, matérias da avaliação inicial, espaços e exercícios. Não leva alunos nem notas.
 const PKG_TIPO = 'caderno-ef/criterios';
-const PKG_PARTES = [['regras', 'Regras de cálculo e tabelas FITescola'], ['ind', 'Indicadores de desempenho por matéria'], ['planos', 'Planificações por ano'], ['ai', 'Matérias da avaliação inicial'], ['esp', 'Espaços e matérias possíveis'], ['exs', 'Exercícios do banco']];
+const PKG_PARTES = [['regras', 'Regras de cálculo e tabelas FITescola'], ['ind', 'Indicadores de desempenho por matéria'], ['planos', 'Planificações por ano'], ['ai', 'Matérias da avaliação inicial'], ['esp', 'Espaços e matérias possíveis'], ['exs', 'Exercícios do banco'], ['cal', 'Linguagem do aluno das competências']];
 function pkgBuild() {
   const ind = {}, planos = {}, ai = {};
   Object.values(S.turmas).forEach(t => {
@@ -3847,7 +3926,7 @@ function pkgBuild() {
     if (t.ai && t.ai.mats && t.ai.mats.length && !ai[ano]) ai[ano] = t.ai.mats.slice();
   });
   return {tipo:PKG_TIPO, v:1, data:today(), escola:CFG.escola || '', autor:CFG.prof || '', ano:CFG.ano || '',
-    regras:{niv:CFG.niv || null, aeCon:CFG.aeCon || null, fit:CFG.fit}, ind, planos, ai, esp:CFG.esp || null, exs:CFG.exs || []};
+    regras:{niv:CFG.niv || null, aeCon:CFG.aeCon || null, fit:CFG.fit}, ind, planos, ai, esp:CFG.esp || null, exs:CFG.exs || [], cal:CFG.cal || {}};
 }
 function pkgResumo(k, P) {
   if (k === 'regras') return P.regras ? 'níveis, conhecimentos e FITescola' : null;
@@ -3855,6 +3934,7 @@ function pkgResumo(k, P) {
   if (k === 'planos') { const a = Object.keys(P.planos || {}); return a.length ? a.map(x => x + '.º ano').join(', ') : null; }
   if (k === 'ai') { const a = Object.keys(P.ai || {}); return a.length ? a.map(x => x + '.º ano').join(', ') : null; }
   if (k === 'esp') return P.esp ? P.esp.lista.join(', ') : null;
+  if (k === 'cal') { const n = Object.keys(P.cal || {}).length; return n ? n + ' frases' : null; }
   if (k === 'exs') return (P.exs || []).length ? P.exs.length + ' exercícios' : null;
 }
 function vPartilha() {
@@ -3876,6 +3956,7 @@ function pkgApply(P, sel) {
   const n = {t:0};
   if (sel.regras && P.regras) { if (P.regras.niv) CFG.niv = P.regras.niv; if (P.regras.aeCon) CFG.aeCon = P.regras.aeCon; if (P.regras.fit) CFG.fit = Object.assign(clone(FITREF), P.regras.fit); }
   if (sel.esp && P.esp) { const E = espCfg(); P.esp.lista.forEach(x => { if (!E.lista.includes(x)) E.lista.push(x); E.mats[x] = [...new Set([...(E.mats[x] || []), ...((P.esp.mats || {})[x] || [])])]; }); }
+  if (sel.cal && P.cal) CFG.cal = Object.assign({}, P.cal, CFG.cal || {});
   if (sel.exs && P.exs) { const ex = CFG.exs = CFG.exs || []; P.exs.forEach(x => { if (!ex.some(e => e.id === x.id || (e.m === x.m && e.nome === x.nome))) ex.push(Object.assign({}, x)); }); }
   Object.values(S.turmas).forEach(t => {
     const ano = String(anoOf(t)); let ch = false;
@@ -3953,6 +4034,7 @@ A['cons-todo'] = () => { closeSheet(); UI.tab = 'avaliar'; UI.avMode = 'grelha';
 // Em cada aula regista-se, com um toque, se o aluno conseguiu (1) ou ainda não (0) uma competência observada.
 // Guarda-se no período da data: v.ev[aluno][matéria][competência] = [[data, 1|0], ...].
 // Uma competência conta como dominada quando a última observação é positiva e já houve pelo menos duas positivas.
+const isMan = (v, aid, m) => !!(((v.man || {})[aid] || {})[m]);
 const evMap = (v, aid, m) => (((v.ev || {})[aid] || {})[m]) || {};
 function evState(arr) {
   if (!arr || !arr.length) return null; const ok = arr.filter(x => x[1]).length, last = arr[arr.length - 1][1];
@@ -3967,6 +4049,7 @@ function evAdd(t, d, aid, m, cid, ok) {
   const v = avalOf(t.id, periodOf(d)); v.ev = v.ev || {}; const a = v.ev[aid] = v.ev[aid] || {}, b = a[m] = a[m] || {}, l = b[cid] = b[cid] || [];
   const i = l.findIndex(x => x[0] === d); if (i >= 0) { if (l[i][1] === ok) l.splice(i, 1); else l[i][1] = ok; } else { l.push([d, ok]); l.sort((x, y) => x[0].localeCompare(y[0])); }
   if (!l.length) delete b[cid]; touchAval(v);
+  evApply(t, periodOf(d), m, [aid]); // as evidências contam logo, sem passo extra
 }
 // Passa as competências dominadas pelas evidências para as assinaladas e recalcula o nível.
 function evApply(t, p, m, aids) {
@@ -3975,7 +4058,7 @@ function evApply(t, p, m, aids) {
     const ev = evMap(v, aid, m), dom = Object.keys(ev).filter(c => evState(ev[c]) === 'dom'); if (!dom.length) return;
     const tk = (v.comp[aid] = v.comp[aid] || {})[m] = (v.comp[aid] || {})[m] || {}; let ch = false;
     dom.forEach(c => { if (!tk[c]) { tk[c] = true; ch = true; } });
-    if (ch) { v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); n++; }
+    if (ch) { if (!isMan(v, aid, m)) { v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); } n++; }
   });
   if (n) touchAval(v); return n;
 }
@@ -3992,7 +4075,7 @@ function obsRender(open) {
   if (!O.k) O.k = nivelTurma(t, O.m); let xs = cs.filter(c => c.k === O.k); if (!xs.length) { O.k = 'I'; xs = cs.filter(c => c.k === 'I'); }
   if (!xs.some(c => c.id === O.cid)) O.cid = xs[0] && xs[0].id; const c = xs.find(x => x.id === O.cid);
   const als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0);
-  const body = `<div class="form obs"><p class="hint" style="margin:0">Escolha a competência que está a observar e toque em <b>✓</b> (conseguiu) ou <b>✗</b> (ainda não). Duas observações positivas, sendo a última positiva, contam como competência dominada.</p>
+  const body = `<div class="form obs"><p class="hint" style="margin:0">Escolha a competência que está a observar e toque em <b>✓</b> (conseguiu) ou <b>✗</b> (ainda não). Duas observações positivas, sendo a última positiva, contam como competência dominada: passa logo para as assinaladas e o nível é recalculado.</p>
     <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>
     ${cs.length ? `<div class="seg block">${['I', 'E', 'A'].filter(k => cs.some(x => x.k === k)).map(k => `<button data-a="obs-k" data-k="${k}" class="${O.k === k ? 'on' : ''}">${LVN[k]}</button>`).join('')}</div>
     <div class="field"><label for="obs-c">Competência</label><select id="obs-c" data-in="obs-c">${xs.map(x => `<option value="${x.id}"${x.id === O.cid ? ' selected' : ''}>${esc((x.of ? x.id + ' · ' : '') + x.txt.slice(0, 90) + (x.txt.length > 90 ? '…' : ''))}</option>`).join('')}</select></div>
@@ -4000,7 +4083,7 @@ function obsRender(open) {
     <div class="obs-l">${als.map(al => { const arr = (evMap(v, al.id, O.m))[O.cid], hoje = (arr || []).find(x => x[0] === O.d), st = evState(arr), tk = (tksOf(v, al.id, O.m) || {})[O.cid];
       return `<div class="obs-r"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}<span class="small muted">${tk ? 'assinalada' : st ? EVN[st] : ''} ${evDots(arr)}</span></span>
         <button class="ob ok${hoje && hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="1" aria-label="${esc(al.nome)} conseguiu">✓</button><button class="ob no${hoje && !hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="0" aria-label="${esc(al.nome)} ainda não">✗</button></div>`; }).join('')}</div>` : '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>'}</div>`;
-  const foot = `<button class="btn" data-a="sh-close">Fechar</button><button class="btn primary" data-a="obs-apply">Atualizar competências assinaladas</button>`;
+  const foot = `<button class="btn primary" data-a="obs-done">Feito</button>`;
   if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), body, foot); else { const b = $('#sheet .sh-b'), y = b ? b.scrollTop : 0; updSheet(body, foot); if (b) b.scrollTop = y; }
 }
 
@@ -4044,6 +4127,7 @@ Object.assign(A, {
   'obs-m': el => { UI.obs.m = el.dataset.m; UI.obs.k = null; UI.obs.cid = null; obsRender(); },
   'obs-k': el => { UI.obs.k = el.dataset.k; UI.obs.cid = null; obsRender(); },
   'obs-set': el => { const O = UI.obs; evAdd(turma(), O.d, el.dataset.aid, O.m, O.cid, +el.dataset.v); obsRender(); },
+  'obs-done': () => { closeSheet(); render(); },
   'obs-apply': () => { const t = turma(), O = UI.obs, n = evApply(t, periodOf(O.d), O.m, alunosOf(t).map(a => a.id)); toast(n ? `Competências atualizadas em ${n} ${n === 1 ? 'aluno' : 'alunos'}; os níveis foram recalculados.` : 'Ainda não há competências dominadas pelas evidências (são precisas duas observações positivas).'); closeSheet(); render(); },
   'g-obs': () => sheetObs(today(), FOCUS && S.aulas[FOCUS] ? S.aulas[FOCUS].materias : null),
   'des-edit': el => sheetDes(el.dataset.aid, el.dataset.m),
@@ -4059,6 +4143,7 @@ function evList(t, v, al, m) {
   const ev = evMap(v, al.id, m), cs = compsOf(t.ciclo, m).filter(c => ev[c.id]); if (!cs.length) return '';
   return `<details class="evl"><summary>Evidências registadas nas aulas (${cs.length} ${cs.length === 1 ? 'competência' : 'competências'})</summary>${cs.map(c => { const st = evState(ev[c.id]); return `<div class="evr"><span>${cidOf(c)}${esc(encurta(c.txt, 110))}</span>${evDots(ev[c.id], 10)}<span class="pill ${st === 'dom' ? 'ok' : st === 'nao' ? 'bad' : 'inc'}">${EVN[st]}</span></div>`; }).join('')}</details>`;
 }
+A['man-clear'] = () => { const {c, col, al} = gHere(); if (!col || !al) return; gSnap(c, col); const v = c.v, tk = tksOf(v, al.id, col.m); if (tk) { v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } if (v.man && v.man[al.id]) delete v.man[al.id][col.m]; touchAval(v); gRefresh(); toast('Nível de acordo com as competências.'); };
 /* ---------- diferenciação pedagógica: estações por grupo de nível no plano de aula ---------- */
 // Os grupos saem dos níveis atuais da matéria (ou, sem eles, da avaliação inicial) e mudam quando os níveis mudam.
 const DG = {NI:'I', PI:'I', I:'I', PE:'E', E:'E', PA:'A', A:'A'}, DGN = {I:'Grupo Introdução', E:'Grupo Elementar', A:'Grupo Avançado'};
@@ -4132,7 +4217,7 @@ const qbAno = ano => QB.filter(q => ano >= q.a[0] && ano <= q.a[1]);
 // Baralha as opções de forma estável por aluno e pergunta (a primeira opção do banco é a certa).
 function qOrd(q, aid) { let h = 0; for (const ch of q.id + aid) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const ix = q.o.map((_, i) => i); for (let i = ix.length - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [ix[i], ix[j]] = [ix[j], ix[i]]; } return ix; }
 let KI = null;
-const KIN = {auto:'Autoavaliação', coav:'Coavaliação', quiz:'Questionário'};
+const KIN = {auto:'Autoavaliação', coav:'Coavaliação', quiz:'Questionário', pass:'Passaporte'};
 const geralC = c => /^(Adequa|Coopera|Aceita|Conhece|Identifica|Respeita|Cumpre|Compreende|Interpreta|Analisa|Aprecia|Trata|Preserva|Participa)/i.test(c.txt);
 function sheetModo() {
   const t = turma(), ms = matsOf(t, UI.p).length ? matsOf(t, UI.p) : (MATS[t.ciclo] || GR).slice(0, 8);
@@ -4144,6 +4229,7 @@ function sheetModo() {
   const v = avalOf(t.id, UI.p), quiz = v.quiz || {};
   let b = `<div class="form"><div class="seg block">${Object.entries(KIN).map(([k, n]) => `<button data-a="ki-act" data-k="${k}" class="${KI.act === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (KI.act !== 'quiz') b += `<div class="chips">${ms.map(m => `<button class="chip ${m === KI.m ? 'on' : ''}" data-a="ki-m" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>`;
+  if (KI.act === 'pass') b += `<p class="hint">Cada aluno toca no seu nome e vê o seu passaporte da matéria: todas as competências em linguagem simples, as que já consegue e o nível em que está. Só consulta, não altera nada.</p>`;
   if (KI.act === 'auto') b += `<p class="hint">Cada aluno vê as competências do nível em que está a trabalhar e do seguinte, escritas para si, e responde "Já consigo" ou "Ainda não". Na ficha do aluno aparece a comparação com o que o professor assinalou.</p>`;
   if (KI.act === 'coav') b += `<p class="hint">Cada aluno escolhe o colega que observou e assinala as competências em foco. Escolha até 6 (as do nível da turma vêm sugeridas):</p><div class="ki-f">${cs.filter(c => !geralC(c)).map(c => `<button class="chip ${KI.focus.includes(c.id) ? 'on' : ''}" data-a="ki-foc" data-id="${c.id}" title="${esc(c.txt)}">${c.of ? c.id + ' · ' : ''}${esc(encurta(c.txt, 60))}</button>`).join('')}</div>`;
   if (KI.act === 'quiz') { const pool = qbAno(anoOf(t) || 7);
@@ -4159,6 +4245,9 @@ function kiRender() {
   let h = `<header class="ki-h"><div><span class="eyebrow">Modo aluno · ${esc(KIN[KI.act])}</span><b>${esc(KI.act === 'quiz' ? 'Conhecimentos' : KI.m)}</b></div><button class="btn" data-a="ki-exit">Sair (professor)</button></header><div class="ki-b">`;
   if (!KI.aid) {
     h += `<h1 class="ki-t">Toca no teu nome</h1><div class="ki-n">${als.map(al => `<button data-a="ki-al" data-id="${esc(al.id)}" class="${feito(al.id) ? 'done' : ''}">${avatar(al)}<span>${esc(nome2(al.nome))}</span>${feito(al.id) ? '<i>✓</i>' : ''}</button>`).join('')}</div>`;
+  } else if (KI.act === 'pass') {
+    const al = als.find(x => x.id === KI.aid);
+    h += passHtml(t, UI.p, al, KI.m, true) + `<button class="btn primary big block" data-a="ki-next">Fechar e passar ao colega</button>`;
   } else if (KI.fim) {
     h += `<div class="ki-fim"><div class="ki-ok">✓</div><h1 class="ki-t">${esc(KI.fim)}</h1><button class="btn primary big" data-a="ki-next">Passa ao colega</button></div>`;
   } else {
@@ -4167,14 +4256,14 @@ function kiRender() {
       const tk = tksOf(v, al.id, KI.m) || {}, cs = compsOf(t.ciclo, KI.m), low = ['I', 'E', 'A'].find(k => cs.some(c => c.k === k && !tk[c.id])) || 'A', nxt = {I:'E', E:'A', A:null}[low];
       const xs = cs.filter(c => c.k === low || c.k === nxt);
       h += `<h1 class="ki-t">${esc(al.nome.split(' ')[0])}, o que já consegues fazer em ${esc(KI.m)}?</h1><p class="ki-s">Responde com sinceridade: serve para conversares com o professor.</p>`;
-      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><span class="ki-lv">${LVN[c.k]}</span><p>${esc(paraAluno(c.txt))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Já consigo</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
+      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><span class="ki-lv">${LVN[c.k]}</span><p>${esc(cAluno(t.ciclo, KI.m, c))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Já consigo</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
       h += `<button class="btn primary big block" data-a="ki-save"${Object.keys(KI.r).length < xs.length ? ' disabled' : ''}>Entregar</button>`;
     } else if (KI.act === 'coav' && !KI.alvo) {
       h += `<h1 class="ki-t">${esc(al.nome.split(' ')[0])}, que colega observaste?</h1><div class="ki-n">${als.filter(x => x.id !== al.id).map(x => `<button data-a="ki-alvo" data-id="${esc(x.id)}">${avatar(x)}<span>${esc(nome2(x.nome))}</span></button>`).join('')}</div>`;
     } else if (KI.act === 'coav') {
       const alvo = als.find(x => x.id === KI.alvo), xs = compsOf(t.ciclo, KI.m).filter(c => KI.focus.includes(c.id));
       h += `<h1 class="ki-t">O que fez ${esc(alvo.nome.split(' ')[0])}?</h1><p class="ki-s">Observaste com atenção? Assinala o que o teu colega conseguiu fazer.</p>`;
-      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><p>${esc(c.txt)}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Conseguiu</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
+      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><p>${esc(cAluno(t.ciclo, KI.m, c))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Conseguiu</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
       h += `<button class="btn primary big block" data-a="ki-save"${Object.keys(KI.r).length < xs.length ? ' disabled' : ''}>Entregar</button>`;
     } else {
       const qs = KI.qs.map(id => QB.find(q => q.id === id)).filter(Boolean);
@@ -4363,6 +4452,289 @@ Object.assign(A, {
   'ud-bal': el => { const t = turma(), m = el.dataset.m; openSheet('Balanço da unidade · ' + m, balancoHtml(t, UI.p, m)); }
 });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in === 'rf' && UI.draft) { const R = UI.draft.refl = UI.draft.refl || {}; R[el.dataset.k] = el.value; } });
+/* ---------- modo aula: antes, durante e depois ---------- */
+// Um ecrã por fase da aula, com tudo gravado no momento (sem botão Guardar):
+// Antes: plano, espaço, grupos, inclusão e o que ficou da aula anterior.
+// Durante: presenças com um toque, observar competências, papéis e ferramentas.
+// Depois: sumário escrito a partir do plano e reflexão rápida.
+const MSTEP = [['antes', 'Antes'], ['durante', 'Durante'], ['depois', 'Depois']];
+const PSCY = ['P', 'F', 'A', 'M', 'D'];
+const PSL1 = {P:'presente', F:'falta', A:'atraso', M:'sem material', D:'dispensado'}, PSLN = {P:'presentes', F:'faltas', A:'atrasos', M:'sem material', D:'dispensados'};
+function maulaAbrir(t, d) {
+  let a = aulasOf(t.id).filter(x => x.data === d).pop();
+  if (!a) { const pres = {}; (t.alunos || []).forEach(al => { const x = dispOn(al, d); pres[al.id] = x && x.tipo !== 'Apenas registo' ? 'D' : 'P'; });
+    const u = udAtual(t, periodOf(d)); a = {id:uid(), turmaId:t.id, data:d, c:Date.now(), materias:u ? [u] : [], sumario:'', presencas:pres}; S.aulas[a.id] = a; Store.save('aulas', a); }
+  UI.maula = a.id; UI.mstep = UI.mstep && UI.maulaPrev === a.id ? UI.mstep : 'antes'; UI.maulaPrev = a.id;
+  UI.tab = 'turma'; UI.tsub = 'aula'; UI.p = periodOf(d); FOCUS = null; SEL = null; render(); window.scrollTo(0, 0);
+}
+const maSave = a => { S.aulas[a.id] = a; Store.save('aulas', a); };
+function sumDoPlano(a) {
+  const P = a.plano; if (!P) return '';
+  const by = {}; (P.pf || []).filter(x => x.nome).forEach(x => (by[x.m || 'Aula'] = by[x.m || 'Aula'] || []).push(x.nome.charAt(0).toLowerCase() + x.nome.slice(1)));
+  if (P.dif && P.dif.m) Object.values(P.dif.g || {}).map(exById).filter(Boolean).forEach(x => (by[x.m] = by[x.m] || []).push(x.nome.charAt(0).toLowerCase() + x.nome.slice(1)));
+  return Object.entries(by).map(([m, xs]) => `${m}: ${[...new Set(xs)].join('; ')}.`).join(' ');
+}
+function vModoAula(t) {
+  const a = S.aulas[UI.maula]; if (!a || a.turmaId !== t.id) { UI.tsub = 'aulas'; return vTurma(t); }
+  a.materias = a.materias || []; a.presencas = a.presencas || {};
+  const all = aulasOf(t.id), n = all.findIndex(x => x.id === a.id) + 1, es = espOf(t, a.data), ud = udInfo(t, a), hora = ((t.horario || []).find(h => +h.d === new Date(a.data + 'T12:00:00').getDay()) || {}).h;
+  const st = UI.mstep || 'antes';
+  let h = `<div class="stack maula"><div class="ma-h"><button class="link" data-a="ma-sair">‹ Aulas</button><div><span class="eyebrow">Lição ${n} · ${esc(fmtDate(a.data, {weekday:'long', day:'numeric', month:'long'}))}${hora ? ' · ' + esc(hora) : ''}</span>
+    <h1>${a.materias.length ? a.materias.map(m => subIcon(m, anoOf(t)) + esc(m)).join(' · ') : 'Aula sem matéria'}</h1><span class="small muted">${[es && 'Espaço: ' + es, ...ud].filter(Boolean).map(esc).join(' · ')}</span></div></div>
+    <div class="seg block ma-st" role="tablist">${MSTEP.map(([k, nm], i) => `<button role="tab" data-a="ma-st" data-k="${k}" class="${st === k ? 'on' : ''}" aria-selected="${st === k}"><b>${i + 1}</b> ${nm}</button>`).join('')}</div>`;
+  if (st === 'antes') {
+    const P = a.plano;
+    h += reflAnterior(t, a) + apoioHtml(t, a);
+    if (!a.materias.length) h += `<div class="card"><b>Matérias da aula</b>${matChips(t, m => `<button class="chip" data-a="ma-mat" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`)}</div>`;
+    if (P && ((P.pf || []).length || P.aq.txt || P.dif)) {
+      h += `<div class="card ma-plano"><div class="sec-h" style="margin:0"><b>Plano da aula</b><span class="small muted num-t">${(+P.aq.min || 0) + (+P.rc.min || 0) + (P.pf || []).reduce((s, x) => s + (+x.min || 0), 0)} min</span></div>
+        ${P.aq.txt ? `<div class="ma-p"><span>Aquecimento · ${P.aq.min} min</span><p>${esc(P.aq.txt)}</p></div>` : ''}
+        ${(P.pf || []).map(x => `<div class="ma-p"><span>${esc(x.m || '')}${x.lv ? ' · ' + x.lv : ''} · ${x.min} min</span><p><b>${esc(x.nome)}</b>${x.crit ? `<br><span class="small muted">Critérios: ${esc(x.crit)}</span>` : ''}</p></div>`).join('')}
+        ${P.dif && P.dif.m ? (() => { const {g} = difGrupos(t, a, P.dif.m); return `<div class="dif">${['I', 'E', 'A'].filter(k => g[k].length).map(k => { const ex = exById((P.dif.g || {})[k]); return `<div class="dif-g ${AIG[k]}"><b>${DGN[k]} (${g[k].length})</b><div class="dif-n">${g[k].map(al => `<span>${esc(nome2(al.nome))}</span>`).join('')}</div>${ex ? `<p class="small" style="margin:0"><b>${esc(ex.nome)}</b> · ${esc(ex.crit || '')}</p>` : '<p class="small muted" style="margin:0">Tarefa por escolher.</p>'}</div>`; }).join('')}</div>`; })() : ''}
+        ${P.rc.txt ? `<div class="ma-p"><span>Retorno à calma · ${P.rc.min} min</span><p>${esc(P.rc.txt)}</p></div>` : ''}</div>`;
+    } else h += `<div class="card empty"><h3>Ainda sem plano</h3><p>Prepare o aquecimento, os exercícios (ou estações por nível) e o retorno à calma.</p></div>`;
+    h += `<div class="btn-row"><button class="btn" data-a="ma-edit">${P ? 'Editar o plano e a aula' : 'Preparar o plano'}</button><button class="btn primary" data-a="ma-st" data-k="durante">Começar a aula ›</button></div>`;
+  } else if (st === 'durante') {
+    const als = alunosOf(t), c = {}; PSCY.forEach(k => c[k] = 0); als.forEach(al => c[a.presencas[al.id] || 'P']++);
+    h += `<div class="btn-row ma-ac"><button class="btn primary" data-a="ma-obs">Observar competências</button><button class="btn" data-a="tools">Cronómetro, equipas e sorteio</button></div>
+      <div class="sec-h"><h2>Presenças</h2><span class="small muted">${PSCY.filter(k => c[k]).map(k => `${c[k]} ${(c[k] === 1 ? PSL1 : PSLN)[k]}`).join(' · ')} · <button class="link" data-a="ma-allp">Todos presentes</button></span></div>
+      <p class="hint" style="margin:-4px 0 0">Toque no aluno para mudar: presente → falta → atraso → sem material → dispensado.</p>
+      <div class="ma-ps">${als.map(al => { const s = a.presencas[al.id] || 'P'; return `<button class="ma-pr ps-${s}" data-a="ma-ps" data-aid="${esc(al.id)}">${avatar(al, 'sm')}<span>${esc(nome2(al.nome))}</span><b>${s === 'P' ? '' : s}</b></button>`; }).join('')}</div>
+      ${papeisAulaHtml(a)}
+      <div class="btn-row"><button class="btn primary" data-a="ma-st" data-k="depois">Terminar a aula ›</button></div>`;
+  } else {
+    if (!a.sumario) { const s = sumDoPlano(a); if (s) { a.sumario = s; maSave(a); } }
+    const R = a.refl || {};
+    h += `<div class="card form"><div class="field"><label for="ma-sum">Sumário</label><textarea id="ma-sum" data-in="ma-sum" rows="3" placeholder="Ex.: Voleibol: passe e manchete em 2x2.">${esc(a.sumario || '')}</textarea>
+      <div class="sug">${[...a.materias.flatMap(m => SUMB[m] || []).slice(0, 4), ...SUMG.slice(0, 3)].map(x => `<button data-a="ma-sug" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+      <span class="hint">${a.plano ? 'Escrito a partir do plano: pode ajustar.' : ''}</span></div></div>
+      <div class="card form"><b>Reflexão (30 segundos)</b>
+      <div class="field"><label for="ma-ok">O que resultou?</label><textarea id="ma-ok" data-in="ma-rf" data-k="ok" rows="2">${esc(R.ok || '')}</textarea></div>
+      <div class="field"><span class="lbl">Tempo em atividade motora</span><div class="seg block">${[30, 50, 70, 90].map(x => `<button data-a="ma-act" data-v="${x}" class="${R.act === x ? 'on' : ''}">${x < 90 ? '≈' + x : '≥90'}%</button>`).join('')}</div></div>
+      <div class="field"><label for="ma-mud">O que mudo na próxima aula?</label><textarea id="ma-mud" data-in="ma-rf" data-k="mud" rows="2" placeholder="Aparece no início da próxima aula desta matéria.">${esc(R.mud || '')}</textarea></div></div>
+      <div class="btn-row"><button class="btn" data-a="ma-aval">Avaliar nesta aula (níveis e +/−)</button><button class="btn primary" data-a="ma-sair">Concluir</button></div>`;
+  }
+  return h + '</div>';
+}
+Object.assign(A, {
+  'hoje-go': el => { UI.turma = el.dataset.id; maulaAbrir(turma(), today()); },
+  'ma-abrir': el => { const a = S.aulas[el.dataset.id]; if (!a) return; UI.turma = a.turmaId; maulaAbrir(turma(), a.data); },
+  'ma-st': el => { UI.mstep = el.dataset.k; render(); window.scrollTo(0, 0); },
+  'ma-sair': () => { UI.tsub = 'aulas'; UI.maula = null; render(); window.scrollTo(0, 0); },
+  'ma-mat': el => { const a = S.aulas[UI.maula]; a.materias.push(el.dataset.m); maSave(a); render(); },
+  'ma-ps': el => { const a = S.aulas[UI.maula], k = el.dataset.aid, s = a.presencas[k] || 'P'; a.presencas[k] = PSCY[(PSCY.indexOf(s) + 1) % PSCY.length]; maSave(a); render(); },
+  'ma-allp': () => { const a = S.aulas[UI.maula]; alunosOf(turma()).forEach(al => { if (a.presencas[al.id] !== 'D') a.presencas[al.id] = 'P'; }); maSave(a); render(); },
+  'ma-obs': () => { const a = S.aulas[UI.maula]; sheetObs(a.data, a.materias); },
+  'ma-edit': () => { const a = S.aulas[UI.maula]; sheetAula(clone(a)); },
+  'ma-aval': () => { FOCUS = UI.maula; SEL = null; UI.tab = 'avaliar'; UI.avMode = 'grelha'; render(); window.scrollTo(0, 0); },
+  'ma-sug': el => { const a = S.aulas[UI.maula], ta = $('#ma-sum'); a.sumario = (ta.value.trim() ? ta.value.trim() + ' ' : '') + el.dataset.t; ta.value = a.sumario; maSave(a); },
+  'ma-act': el => { const a = S.aulas[UI.maula], R = a.refl = a.refl || {}, x = +el.dataset.v; R.act = R.act === x ? null : x; maSave(a); el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v === R.act)); }
+});
+// Papéis no modo aula: a mesma caixa da folha, mas grava logo.
+const _ppAdd = A['pp-add'], _ppRm = A['pp-rm'];
+A['pp-add'] = el => { if (UI.tsub === 'aula' && $('#sheet').hidden) { const a = S.aulas[UI.maula]; a.papeis = a.papeis || []; a.papeis.push([$('#pp-a').value, $('#pp-p').value]); maSave(a); render(); } else _ppAdd(el); };
+A['pp-rm'] = el => { if (UI.tsub === 'aula' && $('#sheet').hidden) { const a = S.aulas[UI.maula]; a.papeis.splice(+el.dataset.i, 1); maSave(a); render(); } else _ppRm(el); };
+// Depois de guardar na folha, volta ao modo aula se foi de lá que se abriu.
+const _aulaSave = A['aula-save'];
+A['aula-save'] = quiet => { const back = UI.tsub === 'aula'; const d = _aulaSave(quiet === true); if (back && d) { UI.maula = d.id; UI.tsub = 'aula'; render(); } return d; };
+document.addEventListener('input', e => {
+  const el = e.target, k = el.dataset && el.dataset.in; if (!k || !UI.maula) return; const a = S.aulas[UI.maula]; if (!a) return;
+  if (k === 'ma-sum') { a.sumario = el.value; maSave(a); }
+  else if (k === 'ma-rf') { const R = a.refl = a.refl || {}; R[el.dataset.k] = el.value; maSave(a); }
+});
+/* ---------- linguagem do aluno, desafio com treino, passaporte e relatório de uma página ---------- */
+// Cada competência oficial ganha uma frase curta para o aluno (até ~15 palavras). A frase automática corta o texto
+// oficial na primeira ideia; o professor pode reescrevê-la (CFG.cal, partilhada com o grupo).
+const calKey = (ciclo, m, c) => ciclo + '|' + m + '|' + c.id;
+const CTXI = /^(em|na|no|nas|nos|após|durante|quando|numa?|perante|a partir|sem|depois)\b/i;
+const FIMX = /\s+(ou|e|de|da|do|das|dos|a|o|os|as|com|em|para|por|ao|aos|na|no|nas|nos|num|numa|que|se|um|uma|lhe|à|às|pela|pelo)$/i;
+function autoShort(s) {
+  s = String(s || '').replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+  let parts = splitTop(s.replace(/[.;,:]\s*$/, ''), ', ').flatMap(x => x.split(/;\s*|:\s+/)).map(x => x.trim()).filter(Boolean);
+  while (parts.length > 1 && CTXI.test(parts[0])) parts.shift();          // o contexto não é o que o aluno faz
+  parts[0] = parts[0].replace(/^e\s+/i, '');
+  const wc = x => x.split(' ').length; let out = '';
+  for (const p of parts) { if (out && wc(out) >= 7) break; out = out ? out + ', ' + p : p; }
+  if (wc(out) > 16) { out = out.split(' ').slice(0, 16).join(' '); const c = out.lastIndexOf(', '); if (c > 0 && wc(out.slice(0, c)) >= 6) out = out.slice(0, c); }
+  out = out.replace(/\s+-\s*$/, ''); while (FIMX.test(out)) out = out.replace(FIMX, '');
+  out = paraAluno(out).trim().replace(/\s*,\s*\.\s*/g, '. ').replace(/[,;:\-]$/, ''); return out.charAt(0).toUpperCase() + out.slice(1) + '.';
+}
+function cAluno(ciclo, m, c) { const own = ((CFG && CFG.cal) || {})[calKey(ciclo, m, c)]; return own || autoShort(c.txt); }
+// Exercício do banco que melhor treina uma competência: mesmo nível e mais palavras em comum.
+const palavras = s => new Set(String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').split(/[^a-z0-9]+/).filter(w => w.length >= 5));
+function exPara(m, c) {
+  const xs = exAll().filter(x => x.m === m); if (!xs.length) return null; const cw = palavras(c.txt + ' ' + (c.ctx || ''));
+  return xs.map(x => { let n = x.lv === c.k ? 2 : 0; palavras(x.nome + ' ' + x.desc + ' ' + x.crit).forEach(w => { if (cw.has(w)) n++; }); return {x, n}; }).sort((a, b) => b.n - a.n)[0].x;
+}
+// Desafio completo: o que tens de conseguir, como treinar e como sabes que já consegues.
+function desafioPlus(t, p, al, m) {
+  const d = desafioDe(t, p, al, m); if (!d) return null;
+  if (d.own || !d.c) return {alvo:d.txt, own:true};
+  const ex = exPara(m, d.c);
+  return {alvo:cAluno(t.ciclo, m, d.c), c:d.c, ev:d.ev, ex, crit:ex && ex.crit ? ex.crit : null};
+}
+function desafioBloco(d, compact) {
+  return `<p class="dp-a">${esc(d.alvo)}</p>${d.ex ? `<p class="dp-l"><b>Como treinar:</b> ${esc(d.ex.nome)}${compact ? '' : (d.ex.desc ? ` — ${esc(encurta(d.ex.desc, 140))}` : '')}</p>` : ''}${d.crit ? `<p class="dp-l"><b>Já consegues quando:</b> ${esc(d.crit)}</p>` : ''}`;
+}
+// Substitui o bloco do próximo desafio na ficha do aluno.
+desafioHtml = function (t, p, al, m, edit) {
+  const d = desafioPlus(t, p, al, m); if (!d) return '';
+  return `<div class="desf"><span class="desf-k">Próximo desafio</span>${desafioBloco(d)}${d.c ? `<details class="dp-of"><summary>Competência oficial ${esc(d.c.id)}</summary><p class="small">${d.c.ctx ? esc(d.c.ctx) + ': ' : ''}${esc(d.c.txt)}</p></details>` : ''}${d.ev ? `<span class="small muted">Evidências: ${evDots(d.ev)}</span>` : ''}${edit ? `<button class="link" data-a="des-edit" data-aid="${esc(al.id)}" data-m="${esc(m)}">${d.own ? 'Editar o desafio' : 'Escrever outro desafio'}</button>` : ''}</div>`;
+};
+cartoesHtml = function (t, p) {
+  const ms = matsOf(t, p);
+  return `<section class="rel">${docHead('Cartões de desafio · ' + t.nome, perLabel(p, true))}<div class="cards-des">${alunosOf(t).map(al => { const ls = ms.map(m => ({m, l:(lvOf(avalOf(t.id, p), al.id, m) || {}).l, d:desafioPlus(t, p, al, m)})).filter(x => x.d);
+    return `<div class="cdes"><b>${esc(al.nome)}</b>${ls.length ? ls.map(x => `<div class="cdes-m"><span>${esc(x.m)}${x.l ? ' · ' + esc(LVN[x.l]) : ''}</span>${desafioBloco(x.d, true)}</div>`).join('') : '<p class="small">Sem desafios: faltam níveis ou competências.</p>'}</div>`; }).join('')}</div></section>`;
+};
+
+/* passaporte: o caminho todo da matéria, em linguagem do aluno, com o que já consegue assinalado */
+// Domina: assinalada, ou dominada pelas evidências; sem nada assinalado, conta o nível atribuído (níveis completos).
+function domina(v, aid, m, c) {
+  const tk = tksOf(v, aid, m) || {}, ev = evMap(v, aid, m);
+  if (tk[c.id] || evState(ev[c.id]) === 'dom') return true;
+  if (Object.values(tk).some(Boolean) || Object.keys(ev).length) return false;
+  const l = (lvOf(v, aid, m) || {}).l; return !!l && ({NI:[], PI:[], I:['I'], PE:['I'], E:['I', 'E'], PA:['I', 'E'], A:['I', 'E', 'A']}[l] || []).includes(c.k);
+}
+function passHtml(t, p, al, m, ecra) {
+  const v = avalOf(t.id, p), cs = compsOf(t.ciclo, m); if (!cs.length) return '';
+  const lv = ['I', 'E', 'A'].filter(k => cs.some(c => c.k === k)), aqui = lv.find(k => cs.some(c => c.k === k && !domina(v, al.id, m, c))) || null;
+  const tot = cs.length, ok = cs.filter(c => domina(v, al.id, m, c)).length;
+  return `<div class="pass${ecra ? ' ecra' : ''}"><div class="pass-h"><div><span class="pass-k">Passaporte · ${esc(m)}</span><b>${esc(al.nome)}</b></div><span class="pass-n"><b>${ok}</b>/${tot}</span></div>
+    <div class="pass-bar"><i style="width:${tot ? ok / tot * 100 : 0}%"></i></div>
+    ${lv.map(k => { const xs = cs.filter(c => c.k === k), n = xs.filter(c => domina(v, al.id, m, c)).length;
+      return `<div class="pass-l${k === aqui ? ' aqui' : ''}"><div class="pass-lh"><b>${LVN[k]}</b><span>${n}/${xs.length}</span>${k === aqui ? '<em>Estás aqui</em>' : n === xs.length ? '<em class="ok">Conseguido</em>' : ''}</div>
+        <ul>${xs.map(c => { const d = domina(v, al.id, m, c); return `<li class="${d ? 'ok' : ''}"><span class="bx">${d ? '✓' : ''}</span>${esc(cAluno(t.ciclo, m, c))}</li>`; }).join('')}</ul></div>`; }).join('')}</div>`;
+}
+const passDoc = (t, p, als, m) => `<section class="rel">${docHead('Passaportes · ' + m, t.nome + ' · ' + perLabel(p, true))}<div class="pass-g">${als.map(al => passHtml(t, p, al, m)).join('')}</div></section>`;
+
+/* relatório de uma página para o aluno */
+function relAlunoHtml(t, p, al) {
+  const r = calc(t, p, al), v = avalOf(t.id, p), ms = [...new Set([...Object.keys(r.lv), ...matsOf(t, p)])].filter(m => compsOf(t.ciclo, m).length || r.lv[m]);
+  const ph = S.fotos[al.id] ? `<img src="${esc(S.fotos[al.id].d)}" alt="">` : `<span class="rph">${esc((al.nome || '?')[0])}</span>`;
+  let h = `<section class="rel relal">${docHead('O meu percurso em Educação Física', perLabel(p, true))}<div class="rel-id">${ph}<div><h1>${esc(al.nome)}</h1><div class="rel-s">Turma ${esc(t.nome)}</div></div></div>`;
+  h += ms.map(m => { const l = r.lv[m], cs = compsOf(t.ciclo, m), feitos = cs.filter(c => domina(v, al.id, m, c)), d = desafioPlus(t, p, al, m);
+    const ult = feitos.slice(-3).map(c => cAluno(t.ciclo, m, c));
+    return `<div class="ra-m"><div class="ra-h"><b>${esc(m)}</b><span class="ra-sc">${['I', 'E', 'A'].map(k => `<i class="${l && LVI(l) >= LVI(k) ? 'on' : ''}">${LVN[k]}</i>`).join('')}</span></div>
+      <div class="ra-c"><div><span class="ra-k ok">Já consegues</span>${ult.length ? `<ul>${ult.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<p>Ainda estamos a observar.</p>'}</div>
+      <div><span class="ra-k nx">O teu próximo passo</span>${d ? desafioBloco(d, true) : '<p>Mantém o que já consegues e ajuda os colegas.</p>'}</div></div></div>`; }).join('');
+  if (r.apfOn) { const fz = FIT.filter(f => r.zones[f.k] != null);
+    if (fz.length) h += `<h2>A tua aptidão física</h2><div class="ra-fit">${fz.map(f => `<span class="${r.zones[f.k] ? 'ok' : 'nx'}">${r.zones[f.k] ? '✓' : '↑'} ${esc(f.n)}</span>`).join('')}</div>${pfitOf(t, al) ? '<p class="rel-s">Tens um plano para melhorar: pede-o ao teu professor.</p>' : ''}`; }
+  const pp = papeisDe(t, p, al.id); if (Object.keys(pp).length) h += `<h2>Papéis que desempenhaste</h2><p class="rel-p">${esc(papeisTxt(pp))}.</p>`;
+  return h + `<p class="rel-s" style="margin-top:14px">Este resumo mostra o que já consegues e o que vem a seguir. Fala com o teu professor se tiveres dúvidas.</p></section>`;
+}
+
+/* conselho de turma: síntese extra */
+function conselhoExtra(t, p) {
+  const als = alunosOf(t), med = als.filter(temMed), pf = als.filter(al => pfitOf(t, al)), eq = equidade(t, p).filter(x => Math.abs(x.d) >= 3), cs = consist(t, p).filter(x => x.k === 'warn');
+  let h = '';
+  if (med.length) h += `<h2>Medidas de suporte em vigor</h2><table class="rel-t"><tbody>${med.map(al => { const M = medOf(al); return `<tr><td class="l" style="width:30%"><b>${esc(al.nome)}</b></td><td class="l">${esc([...M.u, ...M.s, ...M.a].join('; '))}${M.obs ? ' · ' + esc(M.obs) : ''}</td></tr>`; }).join('')}</tbody></table>`;
+  if (pf.length) h += `<h2>Planos individuais de aptidão física</h2><p class="rel-p">${esc(pf.map(al => nome2(al.nome)).join(', '))}.</p>`;
+  if (eq.length) h += `<h2>Equidade</h2><p class="rel-p">${eq.map(x => `${esc(x.m)}: raparigas ${lvNear(x.mf)}, rapazes ${lvNear(x.mm)}`).join(' · ')}.</p>`;
+  if (cs.length) h += `<h2>Situações a confirmar antes da pauta</h2><ul class="rel-p">${cs.map(x => `<li>${esc(x.txt)}</li>`).join('')}</ul>`;
+  return h;
+}
+
+/* editor da linguagem do aluno */
+function sheetCal(m) {
+  const t = turma(), cs = compsOf(t.ciclo, m); UI.draft = {m};
+  const body = `<div class="form"><p class="hint">Uma frase curta, concreta e observável, dirigida ao aluno. Deixe em branco para usar a frase automática. Estas frases aparecem nos desafios, nos passaportes, no modo aluno e no relatório do aluno, e entram no pacote do grupo.</p>
+    ${['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); return xs.length ? `<div class="field"><span class="lbl">${LVN[k]}</span>${xs.map(c => `<div class="cal-r"><span class="small muted">${cidOf(c)}${esc(encurta(c.txt, 140))}</span><input type="text" data-cal="${c.id}" value="${esc(((CFG.cal || {})[calKey(t.ciclo, m, c)]) || '')}" placeholder="${esc(autoShort(c.txt))}"></div>`).join('')}</div>` : ''; }).join('')}</div>`;
+  openSheet('Linguagem do aluno · ' + m, body, `<button class="btn primary" data-a="cal-save">Guardar</button>`);
+}
+function sheetPassEsc() {
+  const t = turma(), ms = matsOf(t, UI.p).filter(m => compsOf(t.ciclo, m).length);
+  openSheet('Passaportes', `<p class="hint">Um passaporte por aluno com todas as competências da matéria, em linguagem do aluno, e as que já consegue assinaladas.</p><div class="chips">${ms.map(m => `<button class="chip" data-a="pass-go" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('') || '<p class="hint">Sem matérias com competências neste período.</p>'}</div>`);
+}
+function sheetRelEsc(aid) {
+  const t = turma(), al = alunosOf(t).find(x => x.id === aid), ms = [...new Set([...Object.keys(calc(t, UI.p, al).lv), ...matsOf(t, UI.p)])].filter(m => compsOf(t.ciclo, m).length);
+  openSheet('Relatório · ' + nome2(al.nome), `<div class="docs">
+    <button class="card doc" data-a="rel-al" data-id="${esc(aid)}"><b>Para o aluno</b><span class="hint">Uma página: o que já consegue e o próximo passo em cada matéria, em linguagem simples.</span></button>
+    <button class="card doc" data-a="rel-one" data-id="${esc(aid)}"><b>Para o encarregado de educação</b><span class="hint">Relatório completo: classificação, domínios, Aprendizagens Essenciais, aptidão física, atitudes, assiduidade e próximos passos.</span></button></div>
+    ${ms.length ? `<p class="lbl" style="margin-top:12px">Passaporte de uma matéria</p><div class="chips">${ms.map(m => `<button class="chip" data-a="pass-one" data-id="${esc(aid)}" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>` : ''}`);
+}
+Object.assign(A, {
+  'cal-ed': el => sheetCal(el.dataset.m),
+  'cal-save': () => { const t = turma(), m = UI.draft.m; CFG.cal = CFG.cal || {};
+    document.querySelectorAll('#sheet [data-cal]').forEach(i => { const c = compsOf(t.ciclo, m).find(x => x.id === i.dataset.cal), k = calKey(t.ciclo, m, c), x = i.value.trim(); if (x) CFG.cal[k] = x; else delete CFG.cal[k]; });
+    Store.save('cfg', CFG); closeSheet(); render(); toast('Linguagem do aluno guardada.'); },
+  'doc-pass': () => sheetPassEsc(),
+  'pass-go': el => { const t = turma(); closeSheet(); printDoc('Passaportes · ' + el.dataset.m, passDoc(t, UI.p, alunosOf(t), el.dataset.m)); },
+  'pass-one': el => { const t = turma(), al = alunosOf(t).find(x => x.id === el.dataset.id); closeSheet(); printDoc('Passaporte · ' + el.dataset.m, passDoc(t, UI.p, [al], el.dataset.m)); },
+  'rel-esc': el => sheetRelEsc(el.dataset.id),
+  'rel-al': el => { const t = turma(), al = alunosOf(t).find(x => x.id === el.dataset.id); closeSheet(); printDoc('Relatório para o aluno', relAlunoHtml(t, UI.p, al)); },
+  'doc-rel-alunos': () => { const t = turma(); printDoc('Relatórios para os alunos', alunosOf(t).map(al => relAlunoHtml(t, UI.p, al)).join('')); }
+});
+/* ---------- sincronizar entre aparelhos ---------- */
+// Três caminhos, do mais simples ao mais manual:
+// 1) a versão na conta Claude, que já guarda tudo na conta e é igual em qualquer aparelho;
+// 2) enviar e receber um ficheiro de sincronização: junta registo a registo e fica a versão mais recente de cada um;
+// 3) no computador (Chrome ou Edge), ligar o caderno a um ficheiro numa pasta do Google Drive ou do OneDrive:
+//    grava-o sozinho a cada alteração e, ao abrir, junta o que lá estiver de mais recente.
+const SYNC = {h:null, ok:false, t:null, quando:null};
+const syncData = () => { Store.flush(); return {app:'Caderno EF', versao:1, sync:true, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; };
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+// Junta uma cópia: em cada turma, aula, avaliação, fotografia, documento e definições fica a versão mais recente.
+function syncMerge(d) {
+  migrate(d); let n = 0;
+  for (const k of ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist']) Object.values(d[k] || {}).forEach(o => { if (!o || !o.id) return; const cur = S[k][o.id];
+    if (!cur || (o._u || 0) > (cur._u || 0)) { S[k][o.id] = o; if (k === 'aval') SHADOW[o.id] = clone(o); Store.save(k, o, true); n++; } });
+  const g = d.cfg && d.cfg.geral; if (g && (g._u || 0) > (CFG._u || 0)) { S.cfg.geral = g; CFG = g; CFG.fit = Object.assign(clone(FITREF), CFG.fit || {}); while (CFG.per.length < 3) CFG.per.push({ini:'', fim:''}); Store.save('cfg', CFG, true); n++; }
+  if (!S.turmas[UI.turma]) UI.turma = Object.keys(S.turmas)[0] || null;
+  return n;
+}
+const syncAgora = () => { SYNC.quando = new Date().toISOString(); lsSet('ef:lastSync', SYNC.quando); lsSet('ef:lastBackup', today()); };
+async function syncReceber(file) {
+  let d; try { d = JSON.parse(await file.text()); } catch (e) { toast('Este ficheiro não é uma cópia do Caderno EF.', 'bad'); return; }
+  if (!d || d.app !== 'Caderno EF') { toast('Este ficheiro não é uma cópia do Caderno EF.', 'bad'); return; }
+  const n = syncMerge(d); syncAgora(); render(); toast(n ? `Sincronizado: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.` : 'Já estava tudo igual.');
+}
+/* ficheiro ligado (File System Access API) */
+const fsOk = () => typeof window.showSaveFilePicker === 'function' && Store.mode === 'idb';
+async function syncHandleGet() { try { return await idbReq(Store.tx().get('sync:handle')); } catch (e) { return null; } }
+async function syncHandleSet(h) { try { await idbReq(h ? Store.tx(true).put(h, 'sync:handle') : Store.tx(true).delete('sync:handle')); } catch (e) {} }
+async function syncPerm(ask) { if (!SYNC.h) return false; try { const o = {mode:'readwrite'}; let p = await SYNC.h.queryPermission(o); if (p !== 'granted' && ask) p = await SYNC.h.requestPermission(o); SYNC.ok = p === 'granted'; } catch (e) { SYNC.ok = false; } return SYNC.ok; }
+async function syncLer() {
+  try { const f = await SYNC.h.getFile(); if (!f.size) return 0; const d = JSON.parse(await f.text()); return d && d.app === 'Caderno EF' ? syncMerge(d) : 0; } catch (e) { return 0; }
+}
+async function syncEscrever() {
+  if (!SYNC.h || !SYNC.ok) return; try { const w = await SYNC.h.createWritable(); await w.write(JSON.stringify(syncData())); await w.close(); syncAgora(); } catch (e) { SYNC.ok = false; toast('Não foi possível gravar o ficheiro de sincronização. Volte a ligá-lo em Definições › Sincronizar.', 'bad'); }
+}
+async function syncLigado(ask) {
+  if (!await syncPerm(ask)) { render(); return; }
+  const n = await syncLer(); await syncEscrever(); render(); if (n) toast(`Sincronizado com o ficheiro: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.`);
+}
+// Depois de cada alteração, grava o ficheiro ligado (no máximo de 8 em 8 segundos).
+const _save = Store.save.bind(Store);
+Store.save = function (k, obj, keep) { _save(k, obj, keep); if (SYNC.h && SYNC.ok) { clearTimeout(SYNC.t); SYNC.t = setTimeout(syncEscrever, 8000); } };
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && SYNC.h && SYNC.ok) { clearTimeout(SYNC.t); syncEscrever(); } else if (document.visibilityState === 'visible' && SYNC.h && SYNC.ok) syncLigado(false); });
+(function esperar() { if (!CFG || !S || !S.cfg) { setTimeout(esperar, 300); return; }
+  SYNC.quando = lsGet('ef:lastSync');
+  if (fsOk()) syncHandleGet().then(h => { if (h) { SYNC.h = h; syncLigado(false); } });
+})();
+
+function vSync() {
+  const cloud = Store.mode === 'cloud', q = SYNC.quando ? fmtDate(SYNC.quando.slice(0, 10), {day:'numeric', month:'long'}) + ' às ' + SYNC.quando.slice(11, 16) : 'nunca';
+  let h = `<div class="sec-h"><h2>Sincronizar</h2></div>
+    <div class="card sync-st ${cloud ? 'ok' : 'warn'}"><b>${cloud ? 'Este caderno sincroniza sozinho' : 'Este caderno só existe neste aparelho'}</b><p class="small" style="margin:4px 0 0">${cloud ? 'Está guardado na sua conta Claude: é o mesmo no telemóvel e no computador, sempre que o abrir com a sua conta.' : 'O que registar aqui não aparece noutro aparelho até sincronizar. Escolha uma das formas abaixo.'}</p></div>`;
+  if (!cloud) h += `<div class="card form"><b>1. Usar a versão sincronizada (recomendado)</b><p class="small" style="margin:0">A versão do Caderno EF na sua conta Claude guarda tudo na conta e abre igual no telemóvel (app Claude ou claude.ai) e no computador. Para levar o que já tem:</p>
+      <ol class="small sync-ol"><li>Toque em <b>Enviar para o outro aparelho</b> (abaixo) e guarde o ficheiro.</li><li>Abra o Caderno EF na sua conta Claude${CFG.syncUrl ? '' : ' (guarde aqui o endereço para o abrir com um toque)'}.</li><li>Lá, em Definições › Sincronizar, toque em <b>Receber de outro aparelho</b> e escolha o ficheiro.</li></ol>
+      <div class="sync-url"><input type="url" id="sync-url" data-in="sync-url" placeholder="Endereço da versão na conta Claude" value="${esc(CFG.syncUrl || '')}" aria-label="Endereço da versão sincronizada">${CFG.syncUrl ? `<a class="btn" href="${esc(CFG.syncUrl)}" target="_blank" rel="noopener">Abrir</a>` : ''}</div></div>`;
+  h += `<div class="card form"><b>${cloud ? '' : '2. '}Enviar e receber entre aparelhos</b><p class="small" style="margin:0">Envia um ficheiro com tudo (pelo Drive, email ou WhatsApp). Ao receber, junta registo a registo e fica a versão mais recente de cada turma, aula e avaliação: nada se perde dos dois lados. Os registos apagados num aparelho têm de ser apagados também no outro.</p>
+    <div class="btn-row"><button class="btn primary" data-a="sync-env">Enviar para o outro aparelho</button><button class="btn" data-a="sync-rec">Receber de outro aparelho</button></div>
+    <p class="hint" style="margin:0">Última sincronização neste aparelho: ${esc(q)}.</p></div>`;
+  if (fsOk()) h += `<div class="card form"><b>3. Ficheiro ligado (computador)</b><p class="small" style="margin:0">Escolha um ficheiro numa pasta do Google Drive ou do OneDrive deste computador: o caderno grava-o sozinho a cada alteração e, ao abrir, junta o que lá estiver de mais recente. No telemóvel, receba esse mesmo ficheiro com <b>Receber de outro aparelho</b>.</p>
+    ${SYNC.h ? `<p class="small" style="margin:0"><b>Ligado a:</b> ${esc(SYNC.h.name)} · ${SYNC.ok ? '<span class="ok-t">a sincronizar</span>' : '<span class="bad-t">precisa de autorização</span>'}</p><div class="btn-row">${SYNC.ok ? '<button class="btn" data-a="sync-fs-go">Sincronizar agora</button>' : '<button class="btn primary" data-a="sync-fs-auth">Autorizar e sincronizar</button>'}<button class="btn ghost" data-a="sync-fs-off">Desligar</button></div>` : '<button class="btn" data-a="sync-fs">Ligar a um ficheiro</button>'}</div>`;
+  return h;
+}
+Object.assign(A, {
+  'sync-env': () => { saveFile('caderno-ef-sincronizar-' + today() + '.json', new Blob([JSON.stringify(syncData())], {type:'application/json'})); syncAgora(); render(); },
+  'sync-rec': () => { const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json'; i.onchange = () => { if (i.files[0]) syncReceber(i.files[0]); }; i.click(); },
+  'sync-fs': async () => { try { const h = await window.showSaveFilePicker({suggestedName:'caderno-ef-sincronizar.json', types:[{description:'Caderno EF', accept:{'application/json':['.json']}}]}); SYNC.h = h; await syncHandleSet(h); await syncLigado(true); toast('Ficheiro ligado: o caderno passa a gravá-lo sozinho.'); } catch (e) { if (e && e.name !== 'AbortError') toast('Não foi possível ligar o ficheiro.', 'bad'); } },
+  'sync-fs-auth': () => syncLigado(true),
+  'sync-fs-go': () => syncLigado(false),
+  'sync-fs-off': async () => { SYNC.h = null; SYNC.ok = false; await syncHandleSet(null); render(); toast('Ficheiro desligado.'); }
+});
+document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'sync-url') { const v = el.value.trim(); CFG.syncUrl = /^https:\/\//.test(v) ? v : ''; Store.save('cfg', CFG); render(); } });
 </script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }</script>
 </body>

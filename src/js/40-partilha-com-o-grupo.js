@@ -2,7 +2,7 @@
 // Um pacote JSON com o que o grupo combina: regras de cálculo, tabelas FITescola, indicadores por matéria e ano,
 // planificações por ano, matérias da avaliação inicial, espaços e exercícios. Não leva alunos nem notas.
 const PKG_TIPO = 'caderno-ef/criterios';
-const PKG_PARTES = [['regras', 'Regras de cálculo e tabelas FITescola'], ['ind', 'Indicadores de desempenho por matéria'], ['planos', 'Planificações por ano'], ['ai', 'Matérias da avaliação inicial'], ['esp', 'Espaços e matérias possíveis'], ['exs', 'Exercícios do banco']];
+const PKG_PARTES = [['regras', 'Regras de cálculo e tabelas FITescola'], ['ind', 'Indicadores de desempenho por matéria'], ['planos', 'Planificações por ano'], ['ai', 'Matérias da avaliação inicial'], ['esp', 'Espaços e matérias possíveis'], ['exs', 'Exercícios do banco'], ['cal', 'Linguagem do aluno das competências']];
 function pkgBuild() {
   const ind = {}, planos = {}, ai = {};
   Object.values(S.turmas).forEach(t => {
@@ -14,7 +14,7 @@ function pkgBuild() {
     if (t.ai && t.ai.mats && t.ai.mats.length && !ai[ano]) ai[ano] = t.ai.mats.slice();
   });
   return {tipo:PKG_TIPO, v:1, data:today(), escola:CFG.escola || '', autor:CFG.prof || '', ano:CFG.ano || '',
-    regras:{niv:CFG.niv || null, aeCon:CFG.aeCon || null, fit:CFG.fit}, ind, planos, ai, esp:CFG.esp || null, exs:CFG.exs || []};
+    regras:{niv:CFG.niv || null, aeCon:CFG.aeCon || null, fit:CFG.fit}, ind, planos, ai, esp:CFG.esp || null, exs:CFG.exs || [], cal:CFG.cal || {}};
 }
 function pkgResumo(k, P) {
   if (k === 'regras') return P.regras ? 'níveis, conhecimentos e FITescola' : null;
@@ -22,6 +22,7 @@ function pkgResumo(k, P) {
   if (k === 'planos') { const a = Object.keys(P.planos || {}); return a.length ? a.map(x => x + '.º ano').join(', ') : null; }
   if (k === 'ai') { const a = Object.keys(P.ai || {}); return a.length ? a.map(x => x + '.º ano').join(', ') : null; }
   if (k === 'esp') return P.esp ? P.esp.lista.join(', ') : null;
+  if (k === 'cal') { const n = Object.keys(P.cal || {}).length; return n ? n + ' frases' : null; }
   if (k === 'exs') return (P.exs || []).length ? P.exs.length + ' exercícios' : null;
 }
 function vPartilha() {
@@ -43,6 +44,7 @@ function pkgApply(P, sel) {
   const n = {t:0};
   if (sel.regras && P.regras) { if (P.regras.niv) CFG.niv = P.regras.niv; if (P.regras.aeCon) CFG.aeCon = P.regras.aeCon; if (P.regras.fit) CFG.fit = Object.assign(clone(FITREF), P.regras.fit); }
   if (sel.esp && P.esp) { const E = espCfg(); P.esp.lista.forEach(x => { if (!E.lista.includes(x)) E.lista.push(x); E.mats[x] = [...new Set([...(E.mats[x] || []), ...((P.esp.mats || {})[x] || [])])]; }); }
+  if (sel.cal && P.cal) CFG.cal = Object.assign({}, P.cal, CFG.cal || {});
   if (sel.exs && P.exs) { const ex = CFG.exs = CFG.exs || []; P.exs.forEach(x => { if (!ex.some(e => e.id === x.id || (e.m === x.m && e.nome === x.nome))) ex.push(Object.assign({}, x)); }); }
   Object.values(S.turmas).forEach(t => {
     const ano = String(anoOf(t)); let ch = false;

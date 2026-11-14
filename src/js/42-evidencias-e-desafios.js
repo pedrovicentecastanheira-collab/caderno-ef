@@ -2,6 +2,7 @@
 // Em cada aula regista-se, com um toque, se o aluno conseguiu (1) ou ainda não (0) uma competência observada.
 // Guarda-se no período da data: v.ev[aluno][matéria][competência] = [[data, 1|0], ...].
 // Uma competência conta como dominada quando a última observação é positiva e já houve pelo menos duas positivas.
+const isMan = (v, aid, m) => !!(((v.man || {})[aid] || {})[m]);
 const evMap = (v, aid, m) => (((v.ev || {})[aid] || {})[m]) || {};
 function evState(arr) {
   if (!arr || !arr.length) return null; const ok = arr.filter(x => x[1]).length, last = arr[arr.length - 1][1];
@@ -16,6 +17,7 @@ function evAdd(t, d, aid, m, cid, ok) {
   const v = avalOf(t.id, periodOf(d)); v.ev = v.ev || {}; const a = v.ev[aid] = v.ev[aid] || {}, b = a[m] = a[m] || {}, l = b[cid] = b[cid] || [];
   const i = l.findIndex(x => x[0] === d); if (i >= 0) { if (l[i][1] === ok) l.splice(i, 1); else l[i][1] = ok; } else { l.push([d, ok]); l.sort((x, y) => x[0].localeCompare(y[0])); }
   if (!l.length) delete b[cid]; touchAval(v);
+  evApply(t, periodOf(d), m, [aid]); // as evidências contam logo, sem passo extra
 }
 // Passa as competências dominadas pelas evidências para as assinaladas e recalcula o nível.
 function evApply(t, p, m, aids) {
@@ -24,7 +26,7 @@ function evApply(t, p, m, aids) {
     const ev = evMap(v, aid, m), dom = Object.keys(ev).filter(c => evState(ev[c]) === 'dom'); if (!dom.length) return;
     const tk = (v.comp[aid] = v.comp[aid] || {})[m] = (v.comp[aid] || {})[m] || {}; let ch = false;
     dom.forEach(c => { if (!tk[c]) { tk[c] = true; ch = true; } });
-    if (ch) { v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); n++; }
+    if (ch) { if (!isMan(v, aid, m)) { v.af = v.af || {}; v.af[aid] = v.af[aid] || {}; v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); } n++; }
   });
   if (n) touchAval(v); return n;
 }
@@ -41,7 +43,7 @@ function obsRender(open) {
   if (!O.k) O.k = nivelTurma(t, O.m); let xs = cs.filter(c => c.k === O.k); if (!xs.length) { O.k = 'I'; xs = cs.filter(c => c.k === 'I'); }
   if (!xs.some(c => c.id === O.cid)) O.cid = xs[0] && xs[0].id; const c = xs.find(x => x.id === O.cid);
   const als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0);
-  const body = `<div class="form obs"><p class="hint" style="margin:0">Escolha a competência que está a observar e toque em <b>✓</b> (conseguiu) ou <b>✗</b> (ainda não). Duas observações positivas, sendo a última positiva, contam como competência dominada.</p>
+  const body = `<div class="form obs"><p class="hint" style="margin:0">Escolha a competência que está a observar e toque em <b>✓</b> (conseguiu) ou <b>✗</b> (ainda não). Duas observações positivas, sendo a última positiva, contam como competência dominada: passa logo para as assinaladas e o nível é recalculado.</p>
     <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>
     ${cs.length ? `<div class="seg block">${['I', 'E', 'A'].filter(k => cs.some(x => x.k === k)).map(k => `<button data-a="obs-k" data-k="${k}" class="${O.k === k ? 'on' : ''}">${LVN[k]}</button>`).join('')}</div>
     <div class="field"><label for="obs-c">Competência</label><select id="obs-c" data-in="obs-c">${xs.map(x => `<option value="${x.id}"${x.id === O.cid ? ' selected' : ''}>${esc((x.of ? x.id + ' · ' : '') + x.txt.slice(0, 90) + (x.txt.length > 90 ? '…' : ''))}</option>`).join('')}</select></div>
@@ -49,7 +51,7 @@ function obsRender(open) {
     <div class="obs-l">${als.map(al => { const arr = (evMap(v, al.id, O.m))[O.cid], hoje = (arr || []).find(x => x[0] === O.d), st = evState(arr), tk = (tksOf(v, al.id, O.m) || {})[O.cid];
       return `<div class="obs-r"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}<span class="small muted">${tk ? 'assinalada' : st ? EVN[st] : ''} ${evDots(arr)}</span></span>
         <button class="ob ok${hoje && hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="1" aria-label="${esc(al.nome)} conseguiu">✓</button><button class="ob no${hoje && !hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="0" aria-label="${esc(al.nome)} ainda não">✗</button></div>`; }).join('')}</div>` : '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>'}</div>`;
-  const foot = `<button class="btn" data-a="sh-close">Fechar</button><button class="btn primary" data-a="obs-apply">Atualizar competências assinaladas</button>`;
+  const foot = `<button class="btn primary" data-a="obs-done">Feito</button>`;
   if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), body, foot); else { const b = $('#sheet .sh-b'), y = b ? b.scrollTop : 0; updSheet(body, foot); if (b) b.scrollTop = y; }
 }
 
@@ -93,6 +95,7 @@ Object.assign(A, {
   'obs-m': el => { UI.obs.m = el.dataset.m; UI.obs.k = null; UI.obs.cid = null; obsRender(); },
   'obs-k': el => { UI.obs.k = el.dataset.k; UI.obs.cid = null; obsRender(); },
   'obs-set': el => { const O = UI.obs; evAdd(turma(), O.d, el.dataset.aid, O.m, O.cid, +el.dataset.v); obsRender(); },
+  'obs-done': () => { closeSheet(); render(); },
   'obs-apply': () => { const t = turma(), O = UI.obs, n = evApply(t, periodOf(O.d), O.m, alunosOf(t).map(a => a.id)); toast(n ? `Competências atualizadas em ${n} ${n === 1 ? 'aluno' : 'alunos'}; os níveis foram recalculados.` : 'Ainda não há competências dominadas pelas evidências (são precisas duas observações positivas).'); closeSheet(); render(); },
   'g-obs': () => sheetObs(today(), FOCUS && S.aulas[FOCUS] ? S.aulas[FOCUS].materias : null),
   'des-edit': el => sheetDes(el.dataset.aid, el.dataset.m),
@@ -108,3 +111,4 @@ function evList(t, v, al, m) {
   const ev = evMap(v, al.id, m), cs = compsOf(t.ciclo, m).filter(c => ev[c.id]); if (!cs.length) return '';
   return `<details class="evl"><summary>Evidências registadas nas aulas (${cs.length} ${cs.length === 1 ? 'competência' : 'competências'})</summary>${cs.map(c => { const st = evState(ev[c.id]); return `<div class="evr"><span>${cidOf(c)}${esc(encurta(c.txt, 110))}</span>${evDots(ev[c.id], 10)}<span class="pill ${st === 'dom' ? 'ok' : st === 'nao' ? 'bad' : 'inc'}">${EVN[st]}</span></div>`; }).join('')}</details>`;
 }
+A['man-clear'] = () => { const {c, col, al} = gHere(); if (!col || !al) return; gSnap(c, col); const v = c.v, tk = tksOf(v, al.id, col.m); if (tk) { v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } if (v.man && v.man[al.id]) delete v.man[al.id][col.m]; touchAval(v); gRefresh(); toast('Nível de acordo com as competências.'); };

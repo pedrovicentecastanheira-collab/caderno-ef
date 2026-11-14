@@ -10,7 +10,7 @@ function vAlunoPage(t, al, split) {
       <div class="muted small">N.º ${esc(al.num ?? '—')} · ${esc(t.nome)}${age != null ? ' · ' + age + ' anos' : ''}${regAt(al, p) !== 'Normal' ? ' · ' + esc(regAt(al, p)) : ''}</div>
       <div class="ap-tags">${dp && dp.tipo !== 'Apenas registo' ? `<span class="tag reg">${esc(dp.tipo)}${dp.fim ? ' até ' + esc(fmtDate(dp.fim, {day:'numeric', month:'short'})) : ''}</span>` : ''}${r.c.F ? `<span class="tag F">${r.c.F} ${r.c.F === 1 ? 'falta' : 'faltas'}</span>` : ''}${(v.auto || {})[al.id] ? '<span class="tag P">Autoavaliação feita</span>' : ''}</div></div>
       <div class="ap-fin ${r.EST === 'Apto' ? 'ok' : r.EST === 'Não apto' ? 'bad' : ''}"><b>${r.FIN ?? '—'}</b><span>${nv != null ? esc(nivelLbl(t) + ' ' + nv) : 'Final'}</span><span>${esc(r.EST)}</span></div></div>
-    <div class="btn-row ap-acts"><button class="btn" data-a="ap-edit">Editar dados</button><button class="btn" data-a="auto-open" data-id="${esc(al.id)}">Autoavaliação</button><button class="btn primary" data-a="rel-one" data-id="${esc(al.id)}">Relatório</button></div>
+    <div class="btn-row ap-acts"><button class="btn" data-a="ap-edit">Editar dados</button><button class="btn" data-a="auto-open" data-id="${esc(al.id)}">Autoavaliação</button><button class="btn primary" data-a="rel-esc" data-id="${esc(al.id)}">Relatório</button></div>
     <div class="seg block ap-tabs" role="tablist">${ATABS.map(([k, n]) => `<button role="tab" data-a="ap-tab" data-k="${k}" class="${tab === k ? 'on' : ''}" aria-selected="${tab === k}">${n}</button>`).join('')}</div>`;
   if (tab === 'resumo') {
     h += fig('Retrato · ' + perLabel(p, true), 'Domínios face à média da turma e competências dominadas', retrato(t, p, al));

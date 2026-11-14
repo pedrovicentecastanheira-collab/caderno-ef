@@ -28,7 +28,7 @@ function sheetAula(a) {
     <div class="legend">${PS.map(k => `<span><b>${k}</b> ${PSN[k]}</span>`).join('')}</div>
     <div class="list">${alunosOf(t).map(al => { const s = a.presencas[al.id] || 'P'; return `<div class="pr"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="ps" role="group" aria-label="Presença de ${esc(al.nome)}">${PS.map(k => `<button class="${k} ${s === k ? 'on' : ''}" data-a="d-pres" data-aid="${esc(al.id)}" data-s="${k}" title="${PSN[k]}" aria-pressed="${s === k}">${k}</button>`).join('')}</span></div>`; }).join('') || '<div class="empty">Sem alunos na turma.</div>'}</div></div>
   </div>`;
-  const foot = (isNew ? '' : `<button class="btn danger" data-a="aula-del">Eliminar</button>`) + `<button class="btn primary" data-a="aula-save">Guardar aula</button>`;
+  const foot = (isNew ? '' : `<button class="btn danger" data-a="aula-del">Eliminar</button>`) + (isNew || UI.tsub === 'aula' ? '' : `<button class="btn" data-a="ma-abrir" data-id="${esc(a.id)}">Modo aula</button>`) + `<button class="btn primary" data-a="aula-save">Guardar aula</button>`;
   openSheet(isNew ? 'Nova aula' : 'Lição ' + n, body, foot);
 }
 

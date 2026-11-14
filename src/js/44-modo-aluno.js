@@ -41,7 +41,7 @@ const qbAno = ano => QB.filter(q => ano >= q.a[0] && ano <= q.a[1]);
 // Baralha as opções de forma estável por aluno e pergunta (a primeira opção do banco é a certa).
 function qOrd(q, aid) { let h = 0; for (const ch of q.id + aid) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const ix = q.o.map((_, i) => i); for (let i = ix.length - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [ix[i], ix[j]] = [ix[j], ix[i]]; } return ix; }
 let KI = null;
-const KIN = {auto:'Autoavaliação', coav:'Coavaliação', quiz:'Questionário'};
+const KIN = {auto:'Autoavaliação', coav:'Coavaliação', quiz:'Questionário', pass:'Passaporte'};
 const geralC = c => /^(Adequa|Coopera|Aceita|Conhece|Identifica|Respeita|Cumpre|Compreende|Interpreta|Analisa|Aprecia|Trata|Preserva|Participa)/i.test(c.txt);
 function sheetModo() {
   const t = turma(), ms = matsOf(t, UI.p).length ? matsOf(t, UI.p) : (MATS[t.ciclo] || GR).slice(0, 8);
@@ -53,6 +53,7 @@ function sheetModo() {
   const v = avalOf(t.id, UI.p), quiz = v.quiz || {};
   let b = `<div class="form"><div class="seg block">${Object.entries(KIN).map(([k, n]) => `<button data-a="ki-act" data-k="${k}" class="${KI.act === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (KI.act !== 'quiz') b += `<div class="chips">${ms.map(m => `<button class="chip ${m === KI.m ? 'on' : ''}" data-a="ki-m" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>`;
+  if (KI.act === 'pass') b += `<p class="hint">Cada aluno toca no seu nome e vê o seu passaporte da matéria: todas as competências em linguagem simples, as que já consegue e o nível em que está. Só consulta, não altera nada.</p>`;
   if (KI.act === 'auto') b += `<p class="hint">Cada aluno vê as competências do nível em que está a trabalhar e do seguinte, escritas para si, e responde "Já consigo" ou "Ainda não". Na ficha do aluno aparece a comparação com o que o professor assinalou.</p>`;
   if (KI.act === 'coav') b += `<p class="hint">Cada aluno escolhe o colega que observou e assinala as competências em foco. Escolha até 6 (as do nível da turma vêm sugeridas):</p><div class="ki-f">${cs.filter(c => !geralC(c)).map(c => `<button class="chip ${KI.focus.includes(c.id) ? 'on' : ''}" data-a="ki-foc" data-id="${c.id}" title="${esc(c.txt)}">${c.of ? c.id + ' · ' : ''}${esc(encurta(c.txt, 60))}</button>`).join('')}</div>`;
   if (KI.act === 'quiz') { const pool = qbAno(anoOf(t) || 7);
@@ -68,6 +69,9 @@ function kiRender() {
   let h = `<header class="ki-h"><div><span class="eyebrow">Modo aluno · ${esc(KIN[KI.act])}</span><b>${esc(KI.act === 'quiz' ? 'Conhecimentos' : KI.m)}</b></div><button class="btn" data-a="ki-exit">Sair (professor)</button></header><div class="ki-b">`;
   if (!KI.aid) {
     h += `<h1 class="ki-t">Toca no teu nome</h1><div class="ki-n">${als.map(al => `<button data-a="ki-al" data-id="${esc(al.id)}" class="${feito(al.id) ? 'done' : ''}">${avatar(al)}<span>${esc(nome2(al.nome))}</span>${feito(al.id) ? '<i>✓</i>' : ''}</button>`).join('')}</div>`;
+  } else if (KI.act === 'pass') {
+    const al = als.find(x => x.id === KI.aid);
+    h += passHtml(t, UI.p, al, KI.m, true) + `<button class="btn primary big block" data-a="ki-next">Fechar e passar ao colega</button>`;
   } else if (KI.fim) {
     h += `<div class="ki-fim"><div class="ki-ok">✓</div><h1 class="ki-t">${esc(KI.fim)}</h1><button class="btn primary big" data-a="ki-next">Passa ao colega</button></div>`;
   } else {
@@ -76,14 +80,14 @@ function kiRender() {
       const tk = tksOf(v, al.id, KI.m) || {}, cs = compsOf(t.ciclo, KI.m), low = ['I', 'E', 'A'].find(k => cs.some(c => c.k === k && !tk[c.id])) || 'A', nxt = {I:'E', E:'A', A:null}[low];
       const xs = cs.filter(c => c.k === low || c.k === nxt);
       h += `<h1 class="ki-t">${esc(al.nome.split(' ')[0])}, o que já consegues fazer em ${esc(KI.m)}?</h1><p class="ki-s">Responde com sinceridade: serve para conversares com o professor.</p>`;
-      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><span class="ki-lv">${LVN[c.k]}</span><p>${esc(paraAluno(c.txt))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Já consigo</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
+      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><span class="ki-lv">${LVN[c.k]}</span><p>${esc(cAluno(t.ciclo, KI.m, c))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Já consigo</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
       h += `<button class="btn primary big block" data-a="ki-save"${Object.keys(KI.r).length < xs.length ? ' disabled' : ''}>Entregar</button>`;
     } else if (KI.act === 'coav' && !KI.alvo) {
       h += `<h1 class="ki-t">${esc(al.nome.split(' ')[0])}, que colega observaste?</h1><div class="ki-n">${als.filter(x => x.id !== al.id).map(x => `<button data-a="ki-alvo" data-id="${esc(x.id)}">${avatar(x)}<span>${esc(nome2(x.nome))}</span></button>`).join('')}</div>`;
     } else if (KI.act === 'coav') {
       const alvo = als.find(x => x.id === KI.alvo), xs = compsOf(t.ciclo, KI.m).filter(c => KI.focus.includes(c.id));
       h += `<h1 class="ki-t">O que fez ${esc(alvo.nome.split(' ')[0])}?</h1><p class="ki-s">Observaste com atenção? Assinala o que o teu colega conseguiu fazer.</p>`;
-      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><p>${esc(c.txt)}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Conseguiu</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
+      h += xs.map(c => { const r = KI.r[c.id]; return `<div class="ki-c"><p>${esc(cAluno(t.ciclo, KI.m, c))}</p><div class="ki-bt"><button class="${r === 1 ? 'on ok' : ''}" data-a="ki-r" data-id="${c.id}" data-v="1">Conseguiu</button><button class="${r === 0 ? 'on no' : ''}" data-a="ki-r" data-id="${c.id}" data-v="0">Ainda não</button></div></div>`; }).join('');
       h += `<button class="btn primary big block" data-a="ki-save"${Object.keys(KI.r).length < xs.length ? ' disabled' : ''}>Entregar</button>`;
     } else {
       const qs = KI.qs.map(id => QB.find(q => q.id === id)).filter(Boolean);

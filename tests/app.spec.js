@@ -16,6 +16,7 @@ test.afterEach(() => expect(errs, 'erros de JavaScript na página').toEqual([]))
 const isMobile = testInfo => testInfo.project.name === 'telemovel';
 async function demo(page) {
   await page.goto('/');
+  await page.waitForFunction(() => typeof CFG !== 'undefined' && CFG !== null); // espera que a app acabe de arrancar
   await page.evaluate(() => makeDemo());
   await expect(page.locator('#top .turma-sel select')).toBeVisible();
 }
@@ -80,7 +81,7 @@ test('competências assinaladas definem o nível', async ({page}) => {
   // Competências oficiais dos Anexos de 2026, com a numeração do anexo (E1, E4.2, ...): metade do Elementar dá PE.
   await expect(page.locator('#ged input[data-in="comp"][data-id="E4.2"]')).toHaveCount(1);
   const nE = await page.locator('#ged input[data-in="comp"][data-id^="E"]').count();
-  for (let i = 0; i < Math.ceil(nE / 2); i++) await page.locator('#ged input[data-in="comp"][data-id^="E"]').nth(i).click();
+  for (let i = 0; i < Math.ceil(nE / 2); i++) { const cb = page.locator('#ged input[data-in="comp"][data-id^="E"]').nth(i); await cb.click(); await expect(cb).toBeChecked(); }
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('PE');
   await expect(page.locator('#ged .domd summary')).toContainText('Para melhorar');
 });
@@ -155,7 +156,7 @@ test('relatório individual em PDF', async ({page, browserName}, ti) => {
   test.skip(isMobile(ti), 'o PDF gera-se no computador');
   await demo(page);
   await page.evaluate(() => { UI.tab = 'turma'; UI.tsub = 'alunos'; UI.aluno = alunosOf(turma())[0].id; render(); });
-  await page.click('.apage [data-a="rel-one"]');
+  await page.click('.apage [data-a="rel-esc"]'); await page.click('#sheet [data-a="rel-one"]');
   await expect(page.locator('#print .rel h1')).toBeVisible();
   await page.emulateMedia({media: 'print'});
   const pdf = await page.pdf({format: 'A4', printBackground: true});
@@ -259,8 +260,9 @@ test('avaliação formativa: evidências, próximo desafio, estações por níve
   await page.click('[data-a="obs-open"]');
   await page.locator('[data-a="obs-set"][data-v="1"]').first().click();
   // segunda evidência positiva noutra data: a competência passa a dominada e é assinalada
-  const n = await page.evaluate(() => { const t = turma(), O = UI.obs; evAdd(t, '2026-10-13', t.alunos[0].id, O.m, O.cid, 1); closeSheet(); return evApply(t, 1, O.m, [t.alunos[0].id]); });
-  expect(n).toBe(1);
+  // regra única: a segunda evidência positiva assinala logo a competência, sem passo extra
+  const ok = await page.evaluate(() => { const t = turma(), O = UI.obs; evAdd(t, '2026-10-13', t.alunos[0].id, O.m, O.cid, 1); closeSheet(); return !!tksOf(avalOf(t.id, 1), t.alunos[0].id, O.m)[O.cid]; });
+  expect(ok).toBe(true);
   expect(await page.evaluate(() => { const t = turma(), d = desafioDe(t, 1, t.alunos[0], 'Voleibol'); return !!(d && d.txt); })).toBe(true);
   await page.evaluate(() => { UI.aluno = turma().alunos[0].id; UI.tsub = 'alunos'; UI.atab = 'comp'; render(); });
   await expect(page.locator('.desf').first()).toContainText('Próximo desafio');
@@ -311,4 +313,63 @@ test('aptidão individual, inclusão, papéis, reflexão, balanço da unidade, r
   await expect(page.locator('#print')).toContainText('Papéis desempenhados');
   await expect(page.locator('#print')).toContainText('Medidas de suporte');
   expect(await page.evaluate(() => Array.isArray(equidade(turma(), 1)))).toBe(true);
+});
+
+test('modo aula: antes, durante e depois, com presenças e sumário gravados no momento', async ({page}) => {
+  await demo(page);
+  await page.evaluate(() => { const t = turma(); t.plano = {1:[{m:'Voleibol', n:8}]}; A['hoje-go']({dataset:{id:t.id}}); });
+  await expect(page.locator('.ma-st [data-k="antes"]')).toHaveClass(/on/);
+  await page.click('[data-a="ma-edit"]'); await page.click('#pa-det summary'); await page.click('[data-a="pa-pick"]'); await page.locator('[data-a="pa-add"]').first().click(); await page.click('[data-a="aula-save"]');
+  await expect(page.locator('.ma-plano')).toBeVisible();
+  await page.click('.ma-st [data-k="durante"]');
+  await page.locator('[data-a="ma-ps"]').nth(1).click();
+  await expect(page.locator('[data-a="ma-ps"]').nth(1)).toHaveClass(/ps-F/);
+  await page.click('.ma-st [data-k="depois"]');
+  await expect(page.locator('#ma-sum')).toHaveValue(/^Voleibol: /);
+  await page.fill('#ma-mud', 'Grupos de 3.');
+  const a = await page.evaluate(() => { Store.flush(); const a = S.aulas[UI.maula]; return [Object.values(a.presencas).filter(x => x === 'F').length, a.refl.mud]; });
+  expect(a).toEqual([1, 'Grupos de 3.']);
+});
+
+test('nível escolhido à mão contra as competências fica marcado como exceção', async ({page}) => {
+  await demo(page); await go(page, 'avaliar');
+  await page.evaluate(() => { UI.glay = 'tabela'; UI.gedOpen = true; UI.domOpen = true; render(); });
+  await page.locator('td.c[data-k="m:Voleibol"]').nth(0).click();
+  await page.evaluate(() => { UI.gedOpen = true; UI.domOpen = true; gEditor(); });
+  await page.click('#ged [data-a="comp-all"][data-k="I"]');
+  await page.click('#ged [data-a="g-set"][data-v="A"]');
+  await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveClass(/man/);
+  const aid = await page.locator('td.c[data-k="m:Voleibol"]').nth(0).evaluate(td => td.closest('tr').dataset.aid || null);
+  await page.evaluate(id => { SEL = {aid:id || alunosOf(turma()).find(al => (REG[regAt(al, UI.p)] || REG.Normal).af > 0).id, k:'m:Voleibol'}; UI.gedOpen = true; UI.domOpen = true; gEditor(); }, aid);
+  await page.click('#ged [data-a="man-clear"]');
+  await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('I');
+});
+
+test('linguagem do aluno, desafio com treino, passaporte e relatório de uma página', async ({page}) => {
+  await demo(page);
+  const r = await page.evaluate(() => { const t = turma(), c = compsOf('3', 'Voleibol').find(x => x.id === 'E4.1'), d = desafioPlus(t, 1, t.alunos[1], 'Voleibol');
+    return [cAluno('3', 'Voleibol', c), !!(d && d.alvo), !!(d && d.ex)]; });
+  expect(r).toEqual(['Serve por baixo ou por cima.', true, true]);
+  await page.evaluate(() => { CFG.cal = {'3|Voleibol|E4.1': 'Sirvo para longe do adversário.'}; });
+  expect(await page.evaluate(() => cAluno('3', 'Voleibol', compsOf('3', 'Voleibol').find(x => x.id === 'E4.1')))).toBe('Sirvo para longe do adversário.');
+  await page.evaluate(() => A['doc-pass']()); await page.locator('[data-a="pass-go"]').first().click();
+  await expect(page.locator('#print .pass').first()).toContainText('Estás aqui');
+  await page.click('[data-a="print-close"]');
+  await page.evaluate(() => A['doc-rel-alunos']());
+  await expect(page.locator('#print .relal').first()).toContainText('O teu próximo passo');
+  await page.click('[data-a="print-close"]');
+  await page.evaluate(() => A['cons-open']());
+});
+
+test('sincronizar: receber junta a versão mais recente de cada registo', async ({page}) => {
+  await demo(page);
+  const res = await page.evaluate(() => {
+    const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0], b = Object.values(d.aulas)[1];
+    a.sumario = 'Mudado no outro aparelho.'; a._u = Date.now() + 1000;   // mais recente: entra
+    b.sumario = 'Versão antiga.'; b._u = 1;                               // mais antiga: não entra
+    const n = syncMerge(d); return [n, S.aulas[a.id].sumario, S.aulas[b.id].sumario !== 'Versão antiga.'];
+  });
+  expect(res).toEqual([1, 'Mudado no outro aparelho.', true]);
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
+  await expect(page.locator('.sync-st')).toBeVisible();
 });
