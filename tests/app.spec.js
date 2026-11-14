@@ -252,3 +252,63 @@ test('espaços, lembretes, partilha com o grupo e consistência das notas', asyn
   await page.click('[data-a="xlsx"]');
   await expect(page.locator('#sheet .sh-h h2')).toHaveText('Antes de exportar a pauta');
 });
+
+test('avaliação formativa: evidências, próximo desafio, estações por nível e cartões', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.evaluate(() => { A['aula-new'](null, null, '2026-10-20'); UI.draft.materias = ['Voleibol']; });
+  await page.click('[data-a="obs-open"]');
+  await page.locator('[data-a="obs-set"][data-v="1"]').first().click();
+  // segunda evidência positiva noutra data: a competência passa a dominada e é assinalada
+  const n = await page.evaluate(() => { const t = turma(), O = UI.obs; evAdd(t, '2026-10-13', t.alunos[0].id, O.m, O.cid, 1); closeSheet(); return evApply(t, 1, O.m, [t.alunos[0].id]); });
+  expect(n).toBe(1);
+  expect(await page.evaluate(() => { const t = turma(), d = desafioDe(t, 1, t.alunos[0], 'Voleibol'); return !!(d && d.txt); })).toBe(true);
+  await page.evaluate(() => { UI.aluno = turma().alunos[0].id; UI.tsub = 'alunos'; UI.atab = 'comp'; render(); });
+  await expect(page.locator('.desf').first()).toContainText('Próximo desafio');
+  await expect(page.locator('details.evl').first()).toContainText('Evidências');
+  await page.evaluate(() => { UI.aluno = null; UI.tsub = 'aulas'; render(); A['aula-new'](null, null, '2026-10-22'); UI.draft.materias = ['Voleibol']; });
+  await page.click('#pa-det summary'); await page.click('[data-a="dif-on"]');
+  await expect(page.locator('.dif-g').first()).toBeVisible();
+  await page.evaluate(() => { closeSheet(); A['doc-des'](); });
+  await expect(page.locator('#print .cdes').first()).toBeVisible();
+});
+
+test('modo aluno: autoavaliação, coavaliação e questionário que lança Conhecimentos', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="modo-aluno"]'); await page.click('[data-a="ki-go"]');
+  await page.locator('[data-a="ki-al"]').first().click();
+  const n = await page.locator('[data-a="ki-r"][data-v="1"]').count();
+  for (let i = 0; i < n; i++) await page.locator('[data-a="ki-r"][data-v="1"]').nth(i).click();
+  await page.click('[data-a="ki-save"]'); await expect(page.locator('.ki-fim')).toBeVisible();
+  await page.click('[data-a="ki-exit"]'); await page.click('[data-a="ki-exit"]');
+  await page.click('[data-a="modo-aluno"]'); await page.click('[data-a="ki-act"][data-k="quiz"]'); await page.click('[data-a="ki-go"]');
+  await page.locator('[data-a="ki-al"]').nth(1).click();
+  // responde sempre a opção certa (a primeira do banco)
+  await page.evaluate(() => { KI.qs.forEach(id => { KI.r[id] = 0; }); kiRender(); });
+  await page.click('[data-a="ki-save"]'); await expect(page.locator('.ki-fim h1')).toContainText('Acertaste 8 de 8');
+  await page.click('[data-a="ki-exit"]'); await page.click('[data-a="ki-exit"]');
+  await page.click('[data-a="modo-aluno"]'); await page.click('[data-a="ki-con"]');
+  expect(await page.evaluate(() => { const t = turma(); return [avalOf(t.id, UI.p).con[t.alunos[1].id], Object.keys(avalOf(t.id, UI.p).autoc).length]; })).toEqual([20, 1]);
+});
+
+test('aptidão individual, inclusão, papéis, reflexão, balanço da unidade, relatório e equidade', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.click('[data-a="tsub"][data-k="planear"]'); await page.click('[data-a="plv"][data-k="apt"]');
+  await page.click('[data-a="pfit-all"]');
+  expect(await page.evaluate(() => alunosOf(turma()).filter(al => pfitOf(turma(), al)).length)).toBeGreaterThan(0);
+  await page.evaluate(() => { const t = turma(); t.alunos[0].med = {u:['Diferenciação pedagógica'], s:[], a:[], obs:'Evitar impacto.'}; t.plano = {1:[{m:'Voleibol', n:4}]}; UI.tsub = 'aulas'; render(); A['aula-new'](null, null, '2026-10-21'); UI.draft.materias = ['Voleibol']; });
+  await page.click('#pp-det summary'); await page.selectOption('#pp-p', 'Árbitro'); await page.click('[data-a="pp-add"]');
+  await page.locator('details.aplano').last().locator('summary').click();
+  await page.fill('#rf-mud', 'Mais jogo reduzido.');
+  await page.click('[data-a="aula-save"]');
+  await page.evaluate(() => { A['aula-new'](null, null, '2026-10-23'); UI.draft.materias = ['Voleibol']; });
+  await page.click('#pa-det summary');
+  await expect(page.locator('#pa-box')).toContainText('Mais jogo reduzido.');
+  await expect(page.locator('#pa-box .inc')).toContainText('Evitar impacto.');
+  await page.evaluate(() => closeSheet());
+  await page.locator('[data-a="ud-bal"]').first().click();
+  await expect(page.locator('#sheet .sh-h h2')).toContainText('Balanço da unidade');
+  await page.evaluate(() => { closeSheet(); const t = turma(); printRel(t, 1, [t.alunos[0]]); });
+  await expect(page.locator('#print')).toContainText('Papéis desempenhados');
+  await expect(page.locator('#print')).toContainText('Medidas de suporte');
+  expect(await page.evaluate(() => Array.isArray(equidade(turma(), 1)))).toBe(true);
+});

@@ -33,8 +33,9 @@ function nivelTurma(t, m) {
 
 function vPlanear(t) {
   const sub = UI.plv || 'ai';
-  let h = `<div class="seg block" role="group" aria-label="Planear">${[['ai', 'Avaliação inicial'], ['ex', 'Exercícios'], ['esp', 'Espaços']].map(([k, n]) => `<button data-a="plv" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  let h = `<div class="seg block" role="group" aria-label="Planear">${[['ai', 'Avaliação inicial'], ['ex', 'Exercícios'], ['apt', 'Aptidão'], ['esp', 'Espaços']].map(([k, n]) => `<button data-a="plv" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (sub === 'ex') return h + vExercicios(t);
+  if (sub === 'apt') return h + vAptidao(t);
   if (sub === 'esp') return h + (typeof vEspacos === 'function' ? vEspacos(t) : '');
   return h + vAvInicial(t);
 }
@@ -135,10 +136,11 @@ function paHtml(a) {
     ${P.pf.map((x, i) => `<div class="pa-ex"><span class="pill ${AIG[x.lv] || ''} lvp">${esc(x.lv || '·')}</span><span class="pa-exn"><input type="text" data-in="pa-ex" data-i="${i}" data-k="nome" value="${esc(x.nome)}" aria-label="Exercício"><span class="small muted">${esc(x.m || '')}${x.crit ? ' · ' + esc(x.crit) : ''}</span></span><input type="number" min="0" max="90" inputmode="numeric" data-in="pa-ex" data-i="${i}" data-k="min" value="${x.min}" aria-label="Minutos"><span class="small">min</span><button class="icon-btn" data-a="pa-up" data-i="${i}" aria-label="Subir">↑</button><button class="icon-btn" data-a="pa-rm" data-i="${i}" aria-label="Retirar">×</button></div>`).join('')}
     <div class="btn-row"><button class="btn sm" data-a="pa-pick">${UI.paPick ? 'Fechar o banco' : '+ Do banco de exercícios'}</button><button class="btn sm ghost" data-a="pa-free">+ Exercício livre</button></div>
     ${UI.paPick ? paPicker(t, a) : ''}</div>
+    ${difHtml(t, a)}
     <div class="pa-p"><div class="pa-ph"><b>Retorno à calma</b><input type="number" min="0" max="30" inputmode="numeric" data-in="pa" data-k="rcm" value="${P.rc.min}" aria-label="Minutos de retorno à calma"> min</div>
     <textarea data-in="pa" data-k="rc" rows="2" placeholder="Ex.: alongamentos e balanço da aula.">${esc(P.rc.txt)}</textarea><div class="sug">${EXRC.map(x => `<button data-a="pa-sug" data-k="rc" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
     <div class="btn-row"><button class="btn sm" data-a="pa-sum">Escrever o sumário a partir do plano</button>${paPrev(t, a) ? '<button class="btn sm ghost" data-a="pa-copy">Copiar o plano da aula anterior</button>' : ''}</div>`;
-  return h;
+  return reflAnterior(t, a) + apoioHtml(t, a) + h;
 }
 function paPrev(t, a) { return aulasOf(t.id).filter(x => x.id !== a.id && x.plano && x.plano.pf && x.plano.pf.length && x.data <= a.data && (!a.materias.length || (x.materias || []).some(m => a.materias.includes(m)))).pop(); }
 function paPicker(t, a) {

@@ -75,7 +75,7 @@ function vAulas(t) {
   const all = aulasOf(t.id); const num = {}; all.forEach((a, i) => num[a.id] = i + 1);
   const list = all.filter(a => periodOf(a.data) === UI.p).reverse();
   const nAl = (t.alunos || []).length;
-  let h = `<div class="stack">${vHoje()}<div class="btn-row"><button class="btn primary" data-a="aula-new">+ Registar aula</button><button class="btn" data-a="tools">Ferramentas</button></div>`;
+  let h = `<div class="stack">${vHoje()}<div class="btn-row"><button class="btn primary" data-a="aula-new">+ Registar aula</button><button class="btn" data-a="tools">Ferramentas</button><button class="btn" data-a="modo-aluno">Modo aluno</button></div>`;
   h += `<div class="seg block" role="group" aria-label="Vista">${[['lista', 'Lista de aulas'], ['cal', 'Calendário do ano']].map(([k, n]) => `<button data-a="aview" data-k="${k}" class="${(UI.aview || 'lista') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (UI.aview === 'cal') return h + vCalendario(t) + '</div>';
   const al = nAl ? alertsOf(t, UI.p) : [];
