@@ -1,7 +1,7 @@
 {
  "name": "Caderno EF",
  "short_name": "Caderno EF",
- "description": "Caderno de Educação Física: aulas, presenças, avaliação PNEF e pauta.",
+ "description": "Caderno de Educação Física: aulas, presenças, avaliação pelas Aprendizagens Essenciais e pauta.",
  "lang": "pt-PT",
  "start_url": "./",
  "scope": "./",

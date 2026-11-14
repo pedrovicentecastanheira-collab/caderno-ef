@@ -76,7 +76,7 @@ const A = {
     Store.save('turmas', t); closeSheet(); render(); toast(added + ' alunos adicionados.');
   },
   'mat-sel': el => { UI.mat = el.dataset.m; render(); },
-  'mat-add': () => sheetMatAdd(),
+  'mat-add': () => sheetMatsPer(),
   'mat-add-go': el => { const t = turma(); const v = avalOf(t.id, UI.p); v.materias = [...new Set([...(v.materias || []), el.dataset.m])]; touchAval(v); UI.mat = el.dataset.m; closeSheet(); render(); },
   'lv': el => {
     const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid, l = el.dataset.l;

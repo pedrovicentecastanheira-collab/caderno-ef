@@ -38,7 +38,7 @@ function vTurmaSeg(sub) {
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {ano:() => vCalEsc(), sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DEXTRA = {fit:() => vFitTrans(), ano:() => vCalEsc(), sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
