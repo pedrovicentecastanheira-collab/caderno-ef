@@ -47,6 +47,21 @@ function autoZone(f, al, age, val) {
   if (r.za != null && v <= r.za) return 2; return v <= r.zs ? 1 : 0;
 }
 function hasAuto(f, al, age) { return f.bool || !!fitRef(f.k, al.sexo, age); }
+// Testes com dois lados (ombros, senta e alcança): guarda-se k_d e k_e; o valor do teste (k) é o do lado mais fraco.
+const LADOS = {d:'direito', e:'esquerdo'};
+function fitPior(f, a, b) { const xs = [a, b].filter(x => x != null && x !== ''); if (!xs.length) return null; if (f.bool) return xs.includes('N') ? 'N' : 'S'; return f.dir > 0 ? Math.min(...xs.map(Number)) : Math.max(...xs.map(Number)); }
+function fitLado(o, f, s) { const x = o[f.k + '_' + s]; return x !== undefined ? x : (o[f.k + '_d'] === undefined && o[f.k + '_e'] === undefined ? o[f.k] : undefined); }
+function fitSetLado(o, f, s, val) {
+  if (o[f.k + '_d'] === undefined && o[f.k + '_e'] === undefined && o[f.k] != null && o[f.k] !== '') { o[f.k + '_d'] = o[f.k]; o[f.k + '_e'] = o[f.k]; }
+  if (val == null || val === '') delete o[f.k + '_' + s]; else o[f.k + '_' + s] = val;
+  const p = fitPior(f, o[f.k + '_d'], o[f.k + '_e']); if (p == null) delete o[f.k]; else o[f.k] = p;
+}
+// Texto do resultado: nos testes com dois lados, "D 24 · E 20 cm".
+function fitTxt(f, o) {
+  const one = x => f.bool ? (x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '—') : x == null || x === '' ? '—' : String(x).replace('.', ',');
+  if (f.bi) { const d = fitLado(o, f, 'd'), e = fitLado(o, f, 'e'); if ((d == null || d === '') && (e == null || e === '')) return '—'; return `D ${one(d)} · E ${one(e)}${f.bool ? '' : ' ' + f.u}`; }
+  const x = o[f.k]; return f.bool || x == null || x === '' ? one(x) : one(x) + ' ' + f.u;
+}
 function zoneOf(f, al, age, v) {
   const r = (v.fit || {})[al.id] || {};
   const a = hasAuto(f, al, age) ? autoZone(f, al, age, r[f.k]) : null;

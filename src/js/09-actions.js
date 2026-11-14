@@ -88,7 +88,7 @@ const A = {
     const sEl = document.getElementById('lvs-' + aid); if (sEl) { const sm = on ? lvSummary(t.ciclo, UI.mat, l, tksOf(v, aid, UI.mat)) : ''; sEl.innerHTML = sm; sEl.hidden = !sm; }
   },
   'fit-sel': el => { UI.fit = el.dataset.k; render(); },
-  'fit-bool': el => { const v = fitSet(el.dataset.aid, 'ombros', ((avalOf(turma().id, UI.p).fit || {})[el.dataset.aid] || {}).ombros === el.dataset.v ? '' : el.dataset.v); render(); },
+  'fit-bool': el => { const f = FIT.find(x => x.k === (UI.fit || 'ombros')) || FIT.find(x => x.k === 'ombros'), o = (avalOf(turma().id, UI.p).fit || {})[el.dataset.aid] || {}, s = el.dataset.side, cur = s ? fitLado(o, f, s) : o[f.k]; fitSet(el.dataset.aid, s ? f.k + '_' + s : f.k, cur === el.dataset.v ? '' : el.dataset.v); render(); },
   'fit-z': el => { const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; const k = UI.fit + '_z'; const z = +el.dataset.z; v.fit[aid][k] = v.fit[aid][k] === z ? null : z; touchAval(v); render(); },
   'escala': el => { const t = turma(); t.escala = el.dataset.s; Store.save('turmas', t); render(); },
   'avq': el => {
@@ -309,7 +309,7 @@ let DOCI = null;
 // Guarda no rascunho o que já foi escrito na ficha, antes de a redesenhar.
 function alunoDraft() { const d = UI.draft; d.nome = $('#a-nome').value; d.num = parseNum($('#a-num').value); d.nasc = $('#a-nasc').value; d.regime = $('#a-reg').value; d.obs = $('#a-obs').value; d.proc = $('#a-proc').value; return d; }
 function relObs(aid) { const ro = $('#a-relobs'); if (!ro || !UI.draft || UI.draft.id !== aid) return; const v = avalOf(turma().id, UI.p), x = ro.value.trim(); v.obs = v.obs || {}; if (x) v.obs[aid] = x; else delete v.obs[aid]; touchAval(v); }
-function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; v.fit[aid][k] = val; touchAval(v); return v; }
+function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; const m = /^(.+)_([de])$/.exec(k), fb = m && FIT.find(x => x.k === m[1] && x.bi); if (fb) fitSetLado(v.fit[aid], fb, m[2], val); else v.fit[aid][k] = val; touchAval(v); return v; }
 function updAV(aid) { const t = turma(); const al = (t.alunos || []).find(x => x.id === aid); const el = document.getElementById('avn-' + aid); if (al && el) el.textContent = f1(calc(t, UI.p, al).AV); }
 
 document.addEventListener('click', e => {
@@ -348,7 +348,7 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   const el = e.target; const k = el.dataset && el.dataset.in; if (!k) return;
   if (k === 'fit') {
-    const aid = el.dataset.aid; const val = parseNum(el.value); fitSet(aid, UI.fit, val);
+    const aid = el.dataset.aid; const val = parseNum(el.value); fitSet(aid, UI.fit + (el.dataset.side ? '_' + el.dataset.side : ''), val);
     const t = turma(), al = t.alunos.find(x => x.id === aid), f = FIT.find(x => x.k === UI.fit);
     const z = zoneOf(f, al, ageAt(al.nasc, refDate(UI.p)), avalOf(t.id, UI.p)); const ze = document.getElementById('z-' + aid);
     if (ze) { ze.className = 'zone ' + (z != null ? 'z' + z : ''); ze.textContent = z != null ? ZN[z] : 'Sem zona'; }

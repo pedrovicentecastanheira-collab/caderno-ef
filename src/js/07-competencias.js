@@ -116,7 +116,7 @@ function gCols(t, v) {
     cols.push({k:'t:AF', g:'mat', type:'calc', label:'AF', title:'Nota das matérias'});
   }
   if (fa) { cols.push({k:'reg', g:'av', type:'reg', label:'+/−', title:'Registos desta aula'}); return cols; }
-  if (!H.fit) { FIT.forEach(f => cols.push({k:'f:' + f.k, g:'fit', type:f.bool ? 'bool' : 'num', f, label:FITL[f.k], unit:f.u, title:f.n})); cols.push({k:'t:APF', g:'fit', type:'calc', label:'Apt.', title:'Nota da aptidão física'}); }
+  if (!H.fit) { FIT.forEach(f => { if (f.bi) Object.entries(LADOS).forEach(([s, n]) => cols.push({k:'f:' + f.k + '_' + s, g:'fit', type:f.bool ? 'bool' : 'num', f, side:s, label:FITL[f.k] + ' ' + s.toUpperCase(), unit:f.u, title:f.n + ' (' + n + ')'})); else cols.push({k:'f:' + f.k, g:'fit', type:f.bool ? 'bool' : 'num', f, label:FITL[f.k], unit:f.u, title:f.n}); }); cols.push({k:'t:APF', g:'fit', type:'calc', label:'Apt.', title:'Nota da aptidão física'}); }
   if (!H.con) cols.push({k:'con', g:'con', type:'num', label:'Conhec.', unit:t.escala === '1-5' ? '1-5' : '0-20', title:'Conhecimentos'});
   if (!H.av) {
     Object.keys(AVW).forEach(k => cols.push({k:'a:' + k, g:'av', type:'q4', ak:k, label:AVL[k], title:AVN[k]}));
@@ -134,7 +134,7 @@ function gGet(c, col, al) {
   const v = c.v, id = al.id, k = col.k, blank = x => x === '' || x === undefined ? null : x;
   if (k.startsWith('m:')) return ((v.af || {})[id] || {})[col.m] || null;
   if (k.startsWith('i:')) return ((v.iv || {})[id] || {})[col.ind.id] || null;
-  if (k.startsWith('f:')) return blank(((v.fit || {})[id] || {})[col.f.k]);
+  if (k.startsWith('f:')) { const o = (v.fit || {})[id] || {}; return blank(col.side ? fitLado(o, col.f, col.side) : o[col.f.k]); }
   if (k === 'con') return blank((v.con || {})[id]);
   if (k.startsWith('a:')) return blank(((v.av || {})[id] || {})[col.ak]);
   if (k === 'reg') { const r = FOCUS ? ((S.aulas[FOCUS] || {}).reg || {})[id] : regOf(c.t, c.p, id); return r && (r.p || r.n) ? r : null; }
@@ -151,7 +151,7 @@ function gShow(c, col, al) {
   if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l] + (isMan(c.v, al.id, col.m) ? ' man' : ''), auto:d.auto} : {txt:'', cls:''}; }
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
-    const z = zoneOf(col.f, al, ageAt(al.nasc, refDate(c.p)), c.v), zc = z != null ? 'z' + z : '';
+    const age = ageAt(al.nasc, refDate(c.p)), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
     if (col.f.bool) return {txt:x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '', cls:zc};
     return x != null ? {txt:String(x).replace('.', ','), cls:zc} : z != null ? {txt:['Fora', 'ZS', 'ZA'][z], cls:zc, auto:true} : {txt:'', cls:''};
   }
@@ -186,7 +186,7 @@ function gSet(c, col, al, val) {
     const tk = tksOf(v, id, col.m), lt = tk && Object.values(tk).some(Boolean) ? lvFromTicks(c.t.ciclo, col.m, tk) : null;
     if (val != null && lt && val !== lt) at(at(v, 'man'), id)[col.m] = 1; else if (v.man && v.man[id]) delete v.man[id][col.m]; }
   else if (k.startsWith('i:')) { const o = at(at(v, 'iv'), id); if (val == null) delete o[col.ind.id]; else o[col.ind.id] = val; }
-  else if (k.startsWith('f:')) at(at(v, 'fit'), id)[col.f.k] = val;
+  else if (k.startsWith('f:')) { const o = at(at(v, 'fit'), id); if (col.side) fitSetLado(o, col.f, col.side, val); else o[col.f.k] = val; }
   else if (k === 'con') { const max = c.t.escala === '1-5' ? 5 : 20; at(v, 'con')[id] = val == null ? null : Math.max(0, Math.min(max, val)); }
   else if (k.startsWith('a:')) at(at(v, 'av'), id)[col.ak] = val;
   touchAval(v);

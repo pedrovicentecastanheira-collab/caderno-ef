@@ -137,14 +137,15 @@ function vAvaliar(t) {
   if (UI.avTab === 'fit') {
     const f = FIT.find(x => x.k === UI.fit) || FIT[0];
     h += `<div class="chips">${FIT.map(x => `<button class="chip ${x.k === f.k ? 'on' : ''}" data-a="fit-sel" data-k="${x.k}">${esc(x.n)}</button>`).join('')}</div>`;
-    h += `<p class="hint">${f.bool ? 'Toca nos dois lados (direito e esquerdo)? Sim = Zona Saudável.' : `Resultado em ${esc(f.u)}. A zona calcula-se pela idade no fim do período (ou hoje) e pelo sexo, com as tabelas em Mais → Tabelas FITescola. Sem referência, escolha a zona à mão.`} Pontos: ${f.pts.map((p, i) => ZN[i] + ' ' + p).join(' · ')}.</p>`;
+    h += `<p class="hint">${f.bi ? 'Registe o lado direito (D) e o esquerdo (E): a zona é a do lado mais fraco. ' : ''}${f.bool ? 'Sim = toca as mãos atrás das costas.' : `Resultado em ${esc(f.u)}. A zona calcula-se pela idade no fim do período (ou hoje) e pelo sexo, com as tabelas em Mais → Tabelas FITescola. Sem referência, escolha a zona à mão.`} Pontos: ${f.pts.map((p, i) => ZN[i] + ' ' + p).join(' · ')}.</p>`;
     h += '<div class="list">';
     als.forEach(al => {
       const off = (REG[regAt(al)] || REG.Normal).apf === 0; const age = ageAt(al.nasc, refDate(UI.p));
       const r = (v.fit || {})[al.id] || {}; const z = zoneOf(f, al, age, v); const auto = hasAuto(f, al, age);
       const ref = f.bool ? null : fitRef(f.k, al.sexo, age);
       let ctl;
-      if (f.bool) ctl = `<div class="zman">${[['S','Sim'],['N','Não']].map(([k, n]) => `<button data-a="fit-bool" data-aid="${esc(al.id)}" data-v="${k}" class="${r.ombros === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+      if (f.bi) ctl = Object.keys(LADOS).map(s => { const x = fitLado(r, f, s); return `<div class="fit-lado"><b>${s.toUpperCase()}</b>${f.bool ? `<div class="zman">${[['S','Sim'],['N','Não']].map(([k, n]) => `<button data-a="fit-bool" data-aid="${esc(al.id)}" data-side="${s}" data-v="${k}" class="${x === k ? 'on' : ''}">${n}</button>`).join('')}</div>` : `<input type="text" inputmode="decimal" data-in="fit" data-side="${s}" data-aid="${esc(al.id)}" value="${esc(x ?? '')}" placeholder="${esc(f.u)}" aria-label="${esc(f.n)} ${LADOS[s]} de ${esc(al.nome)}">`}</div>`; }).join('');
+      else if (f.bool) ctl = `<div class="zman">${[['S','Sim'],['N','Não']].map(([k, n]) => `<button data-a="fit-bool" data-aid="${esc(al.id)}" data-v="${k}" class="${r[f.k] === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
       else ctl = `<input type="text" inputmode="decimal" id="fit-${esc(al.id)}" data-in="fit" data-aid="${esc(al.id)}" value="${esc(r[f.k] ?? '')}" placeholder="${esc(f.u)}" aria-label="${esc(f.n)} de ${esc(al.nome)}">`;
       const man = (!auto || (r[f.k] == null || r[f.k] === '')) && !f.bool ? `<div class="zman" aria-label="Zona manual">${f.pts.map((_, i) => `<button data-a="fit-z" data-aid="${esc(al.id)}" data-z="${i}" class="${r[f.k + '_z'] != null && +r[f.k + '_z'] === i && !(auto && r[f.k] != null && r[f.k] !== '') ? 'on' : ''}">${['Fora','ZS','ZA'][i]}</button>`).join('')}</div>` : '';
       const why = f.bool ? '' : !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento' : !ref ? 'Sem referência para ' + (age ?? '?') + ' anos' : `ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}${ref.za != null ? ' · ZA ' + (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.za).replace('.', ',') : ''}`;
