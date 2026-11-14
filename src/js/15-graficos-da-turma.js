@@ -54,6 +54,7 @@ function vGraficos(t) {
     const d = aul.map(({a, n}) => { const ps = Object.values(a.presencas || {}), tot = ps.length, pr = ps.filter(s => s !== 'F').length; return {label:'L' + n, v:tot ? Math.round(pr / tot * 100) : 0, tip:`Lição ${n} (${fmtDate(a.data)}): ${pr}/${tot} presentes`}; });
     h += fig('Assiduidade por aula', 'Percentagem de alunos presentes', chColumns(d, {max:100, unit:'%', label:'Assiduidade por aula'}) + tableView(['Lição', '% presentes'], d.map(x => [x.label, x.v + ' %'])));
   }
+  h += equiHtml(t, p);
   return h;
 }
 

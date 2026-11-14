@@ -88,10 +88,10 @@ function lvFromTicks(ciclo, m, ticks) {
   const fI = f('I'), fE = f('E'), fA = f('A');
   return fI < 1 ? (fI >= .5 ? 'PI' : 'NI') : fE < 1 ? (fE >= .5 ? 'PE' : 'I') : fA < 1 ? (fA >= .5 ? 'PA' : 'E') : 'A';
 }
-function compCheck(ciclo, m, ticks) {
+function compCheck(ciclo, m, ticks, ev) {
   const cs = compsOf(ciclo, m); ticks = ticks || {};
   return ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return ''; const all = xs.every(c => ticks[c.id]); let last = null;
-    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(c.txt)}</span></label>`; }).join(''); }).join('');
+    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(c.txt)}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`; }).join(''); }).join('');
 }
 function regOf(t, p, aid) {
   let pos = 0, neg = 0;
@@ -221,7 +221,7 @@ function gToolbar(doms) {
   const lay = UI.avMode === 'dominio' ? 'dominio' : gLayout(), nf = (UI.todo ? 1 : 0) + (UI.sort ? 1 : 0);
   return `<div class="gtool">${doms ? `<div class="gt-dom" role="group" aria-label="Domínios visíveis">${Object.keys(GN).map(g => `<button class="${UI.hide[g] ? '' : 'on'}" data-a="g-grp" data-g="${g}" aria-pressed="${!UI.hide[g]}" title="${esc(GN[g])}">${GDL[g]}</button>`).join('')}</div>` : ''}
     <div class="seg gt-lay" role="group" aria-label="Disposição">${[['tabela', 'Tabela'], ['coluna', 'Uma coluna'], ['cartoes', 'Cartões'], ['dominio', 'Aluno a aluno']].map(([k, n]) => `<button data-a="g-lay" data-k="${k}" class="${lay === k ? 'on' : ''}" title="${n}" aria-label="${n}">${GICO[k]}<span>${n}</span></button>`).join('')}</div>
-    <span class="sp"></span>${UNDO ? `<button class="icon-btn" data-a="g-undo" title="Desfazer${UNDOS.length > 1 ? ' (' + UNDOS.length + ')' : ''}" aria-label="Desfazer">${GICO.undo}</button>` : ''}
+    <span class="sp"></span><button class="btn gt-f" data-a="g-obs" title="Registar evidências por competência"><span>Observar</span></button>${UNDO ? `<button class="icon-btn" data-a="g-undo" title="Desfazer${UNDOS.length > 1 ? ' (' + UNDOS.length + ')' : ''}" aria-label="Desfazer">${GICO.undo}</button>` : ''}
     <button class="btn gt-f${nf ? ' on' : ''}" data-a="g-filtros">${GICO.filtro}<span>Filtros${nf ? ' · ' + nf : ''}</span></button></div>`;
 }
 function sheetFiltros() {
@@ -281,7 +281,7 @@ function gEditor() {
   }
   if (col.type === 'lvl' && col.m && !col.ind && compsOf(c.t.ciclo, col.m).length) {
     const l = (lvOf(c.v, al.id, col.m) || {}).l, tk = tksOf(c.v, al.id, col.m), sm = lvSummary(c.t.ciclo, col.m, l, tk), ex = tk && Object.values(tk).some(Boolean);
-    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk)}</div></details>`;
+    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk, evMap(c.v, al.id, col.m))}</div></details>`;
   } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem competências descritas para esta matéria neste ciclo.'}</p>`;
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;

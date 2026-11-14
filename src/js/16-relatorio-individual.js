@@ -19,6 +19,11 @@ function relHtml(t, p, al) {
   const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1).filter(i => i <= p);
   if (ps.length > 1) { const cs = ps.map(i => calc(t, i, al)); CHW = 640; h += `<h2>Evolução</h2>` + chLine(ps.map(i => perLabel(i)), [{name:'Final', color:'var(--v1)', vals:cs.map(c => c.FIN)}, {name:'Matérias', color:'var(--v2)', vals:cs.map(c => c.AF)}, {name:'Apt. física', color:'var(--v3)', vals:cs.map(c => c.APF)}, {name:'Atitudes', color:'var(--v7)', vals:cs.map(c => c.AV)}], {h:170, label:'Evolução por período'}); CHW = null; }
   { const ac = autoCompare(t, p, al); if (ac) h += `<h2>Autoavaliação</h2>` + ac; }
+  { const ds = Object.keys(r.lv).map(m => ({m, d:desafioDe(t, p, al, m)})).filter(x => x.d);
+    if (ds.length) h += `<h2>Próximos passos</h2><table class="rel-t"><tbody>${ds.map(x => `<tr><td class="l" style="width:28%"><b>${esc(x.m)}</b></td><td class="l">${esc(encurta(x.d.txt, 240))}</td></tr>`).join('')}</tbody></table>`;
+    const pp = papeisDe(t, p, al.id); if (Object.keys(pp).length) h += `<h2>Papéis desempenhados nas aulas</h2><p class="rel-p">${esc(papeisTxt(pp))}.</p>`;
+    const pf = pfitHtml(t, al, true); if (pf) h += `<h2>Aptidão física: plano individual</h2>` + pf;
+    const M = medOf(al), ms = [...M.u, ...M.s, ...M.a]; if (ms.length || M.obs) h += `<h2>Medidas de suporte à aprendizagem</h2><p class="rel-p">${esc(ms.join('; '))}${M.obs ? (ms.length ? '. ' : '') + esc(M.obs) : ''}.</p>`; }
   h += `<h2>Observações</h2><div class="rel-obs">${(v.obs || {})[al.id] ? esc(v.obs[al.id]).replace(/\n/g, '<br>') : '&nbsp;'}</div>
     <div class="rel-sig"><div><span>O professor${CFG.prof ? ': ' + esc(CFG.prof) : ''}</span></div><div><span>Tomei conhecimento (Encarregado de Educação)</span></div></div></section>`;
   return h;
