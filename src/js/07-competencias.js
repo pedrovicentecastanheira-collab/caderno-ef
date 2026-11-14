@@ -363,9 +363,10 @@ function vPauta(t) {
   const als = alunosOf(t); const ms = matsOf(t, UI.p);
   const rows = als.map(al => ({al, r: calc(t, UI.p, al)}));
   const nA = rows.filter(x => x.r.EST === 'Apto').length, nN = rows.filter(x => x.r.EST === 'Não apto').length, nI = rows.length - nA - nN;
-  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Documentos']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Documentos'],['fecho','Fecho']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (UI.pview === 'graf') return `<div class="stack">${seg}${vGraficos(t)}</div>`;
   if (UI.pview === 'rel') return `<div class="stack">${seg}${vDocs(t)}</div>`;
+  if (UI.pview === 'fecho') return `<div class="stack">${seg}${vFecho(t)}</div>`;
   let h = `<div class="stack">${seg}<div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
   h += `<div class="tiles"><div class="tile"><b>${rows.length}</b><span>Alunos</span></div><div class="tile ok"><b>${nA}</b><span>Aptos</span></div><div class="tile bad"><b>${nN}</b><span>Não aptos</span></div><div class="tile"><b>${nI}</b><span>Incompletos</span></div></div>`;
   if (!rows.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>A pauta aparece quando a turma tiver alunos.</p></div></div>`;

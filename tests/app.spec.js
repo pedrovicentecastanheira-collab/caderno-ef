@@ -395,3 +395,34 @@ test('FITescola: ombros e senta e alcança com lado direito e esquerdo; conta o 
   await expect(page.locator('th', {hasText: 'Senta e alc. D'})).toHaveCount(1);
   await expect(page.locator('th', {hasText: 'Ombros E'})).toHaveCount(1);
 });
+
+test('calendário escolar editável, aulas reais no plano, quem falta observar, sumários e fecho do período', async ({page}) => {
+  await demo(page);
+  const r = await page.evaluate(() => {
+    const t = turma(); t.horario = [{d:2, h:'10:15'}, {d:4, h:'08:30'}]; t.plano = {1:[{m:'Voleibol', n:30}]};
+    const antes = slotsReais(t, 1).length; CFG.semAulas.push(['2026-10-20', '2026-10-20', 'Feriado municipal']); const depois = slotsReais(t, 1).length;
+    return [CFG.semAulas.some(x => x[2] === 'Interrupção do Natal'), antes - depois, planoReal(t, 1).us[0].cabem < 30];
+  });
+  expect(r).toEqual([true, 1, true]);
+  // editar um dia sem aulas nas Definições
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="ano"]');
+  const nome = page.locator('[data-in="cal-e"][data-j="2"]').first();
+  await nome.fill('Feriado da República'); await nome.blur();
+  await expect.poll(() => page.evaluate(() => CFG.semAulas.some(x => x[2] === 'Feriado da República'))).toBe(true);
+  // plano mostra as aulas reais e o aviso
+  await go(page, 'turma');
+  await expect(page.locator('.pl-real')).toContainText('aulas reais');
+  await expect(page.locator('.pl-av')).toContainText('só cabem');
+  // sumários prontos a colar
+  await page.click('[data-a="sum-open"]');
+  await expect(page.locator('#sum-txt')).toHaveValue(/^Lição n\.º 1 \(16\/09\/2026\): /);
+  await page.evaluate(() => closeSheet());
+  // quem falta observar
+  const falta = await page.evaluate(() => { const t = turma(); evAdd(t, '2026-09-16', t.alunos[0].id, 'Voleibol', 'I3', 1); return semObs(t, 1, 'Voleibol').length; });
+  expect(falta).toBeGreaterThan(0);
+  // fecho do período
+  await go(page, 'relatorios'); await page.click('[data-a="pview"][data-k="fecho"]');
+  await expect(page.locator('.list.fecho .li')).toHaveCount(7);
+  await page.locator('[data-a="fe-go"][data-k="con"]').click();
+  await expect.poll(() => page.evaluate(() => [UI.tab, UI.hide.con])).toEqual(['avaliar', false]);
+});
