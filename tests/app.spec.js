@@ -483,3 +483,35 @@ test('automatizar: aulas em falta, vários alunos, plano noutras turmas, níveis
   await page.click('[data-a="obs-auto-all"]');
   expect(await page.evaluate(() => { const t = turma(), o = avalOf(t.id, 1).obs || {}; return Object.values(o).filter(x => x && x.length > 20).length; })).toBeGreaterThan(5);
 });
+
+test('OneDrive: ligar (início de sessão simulado), guardar sozinho, recuperar e cópias diárias', async ({page}) => {
+  const enviados = {}; let tokenPedidos = 0;
+  await page.route(/login\.microsoftonline\.com\/consumers\/oauth2\/v2\.0\/authorize/, r => {
+    const u = new URL(r.request().url()); return r.fulfill({status: 302, headers: {location: u.searchParams.get('redirect_uri') + '?code=CODIGO&state=' + u.searchParams.get('state')}});
+  });
+  await page.route(/login\.microsoftonline\.com\/consumers\/oauth2\/v2\.0\/token/, r => { tokenPedidos++; const b = new URLSearchParams(r.request().postData());
+    expect(b.get('code_verifier') || b.get('refresh_token')).toBeTruthy();
+    return r.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify({access_token: 'AT' + tokenPedidos, refresh_token: 'RT', expires_in: 3600})}); });
+  await page.route(/graph\.microsoft\.com\/v1\.0\/me\/?$/, r => r.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify({displayName: 'Professor Teste'})}));
+  await page.route(/graph\.microsoft\.com\/v1\.0\/me\/drive\/special\/approot:\/([^:]+):\/content/, r => {
+    const nome = decodeURIComponent(/approot:\/([^:]+):/.exec(r.request().url())[1]);
+    if (r.request().method() === 'PUT') { enviados[nome] = r.request().postDataBuffer().length; return r.fulfill({status: 201, contentType: 'application/json', body: '{}'}); }
+    return r.fulfill({status: 200, contentType: 'application/json', body: enviados.copia});
+  });
+  await demo(page);
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
+  await page.fill('#od-cid', '11111111-2222-3333-4444-555555555555');
+  await page.click('[data-a="od-entrar"]');
+  await page.waitForURL(u => !u.search.includes('code='));
+  await expect.poll(() => Object.keys(enviados).length, {timeout: 15000}).toBeGreaterThanOrEqual(2);
+  expect(Object.keys(enviados)).toContain('caderno-ef.json');
+  await page.click('[data-a="dsec"][data-k="sync"]');
+  await expect(page.locator('.sync-url, .card')).toContainText(['Ligado']);
+  // recuperar: o OneDrive devolve uma cópia com uma aula alterada mais recente
+  enviados.copia = await page.evaluate(() => { const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0]; a.sumario = 'Vindo do OneDrive'; a._u = Date.now() + 5000; return JSON.stringify(d); });
+  await page.click('[data-a="od-rec"]'); await page.click('[data-a="od-rec"]');
+  await expect.poll(() => page.evaluate(() => Object.values(S.aulas).some(a => a.sumario === 'Vindo do OneDrive'))).toBe(true);
+  // cópias diárias no aparelho
+  await page.evaluate(() => snapFazer());
+  await page.click('[data-a="snap-ver"]'); await expect(page.locator('[data-a="snap-rest"]')).toHaveCount(1);
+});
