@@ -8,7 +8,7 @@ function saveUI() { try { const {draft, ...rest} = UI; localStorage.setItem('ef:
 
 function defaultCfg() {
   return {id:'geral', ano:'2026/2027', nper:3,
-    per:[{ini:'2026-09-14', fim:'2026-12-18'}, {ini:'2027-01-05', fim:'2027-03-26'}, {ini:'2027-04-12', fim:'2027-06-18'}],
+    per:clone(CAL2627.per), semAulas:CAL2627.sem.map(x => x.slice()), fimAno:clone(CAL2627.fimAno), cal2627:true, // calendário oficial 2026/27, editável
     fit: clone(FITREF)};
 }
 function perLabel(p, long) { const s = CFG.nper === 2 ? 'semestre' : 'período'; return long ? p + '.º ' + s : p + '.º ' + (CFG.nper === 2 ? 'S' : 'P'); }

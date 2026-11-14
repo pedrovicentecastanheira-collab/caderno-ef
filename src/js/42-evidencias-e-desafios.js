@@ -57,6 +57,7 @@ function obsRender(open) {
     if (!als.some(al => al.id === O.aid)) O.aid = als[0] && als[0].id; const i = als.findIndex(al => al.id === O.aid), al = als[i];
     if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
       b += `<div class="obs-nav"><button class="icon-btn" data-a="obs-al" data-d="-1" aria-label="Aluno anterior"${i <= 0 ? ' disabled' : ''}>‹</button>${avatar(al, 'sm')}<select data-in="obs-al" aria-label="Aluno">${als.map(x => `<option value="${esc(x.id)}"${x.id === al.id ? ' selected' : ''}>${esc(x.num ?? '')} · ${esc(x.nome)}</option>`).join('')}</select>${l ? `<span class="lvpill ${GLV[l]}">${l}</span>` : ''}<button class="icon-btn" data-a="obs-al" data-d="1" aria-label="Aluno seguinte"${i >= als.length - 1 ? ' disabled' : ''}>›</button></div>
+        ${(() => { const so = semObs(t, p, O.m).filter(x => x.al.id !== al.id).slice(0, 4); return so.length ? `<div class="obs-falta"><span class="small muted">Há mais tempo sem observação:</span>${so.map(x => `<button class="chip" data-a="obs-ir" data-id="${esc(x.al.id)}">${esc(nome2(x.al.nome))} · ${x.n} aulas</button>`).join('')}</div>` : ''; })()}
         <p class="hint" style="margin:0">Marque as competências que ${esc(al.nome.split(' ')[0])} já domina. O nível é calculado logo (PI, PE e PA: metade do nível).</p>
         <div class="cl obs-cl">${checkList(t.ciclo, O.m, tksOf(v, al.id, O.m), evMap(v, al.id, O.m), 'obs-tk', 'obs-all')}</div>`; }
   } else {
@@ -76,6 +77,7 @@ function obsRender(open) {
   if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), b, foot); else { const el = $('#sheet .sh-b'), y = el ? el.scrollTop : 0; updSheet(b, foot); if (el) el.scrollTop = y; }
 }
 Object.assign(A, {
+  'obs-ir': el => { UI.obs.aid = el.dataset.id; obsRender(); $('#sheet .sh-b').scrollTop = 0; },
   'obs-modo': el => { UI.obs.modo = el.dataset.k; obsRender(); },
   'obs-al': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), i = als.findIndex(al => al.id === O.aid) + +el.dataset.d; if (als[i]) { O.aid = als[i].id; obsRender(); $('#sheet .sh-b').scrollTop = 0; } },
   'obs-all': el => { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },

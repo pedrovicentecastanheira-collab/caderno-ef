@@ -797,6 +797,22 @@ table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
 .fit-lado>b{font-family:var(--f-display);font-size:13px;color:var(--muted);width:14px}
 .fit-lado input{width:84px}
 .fit-in{flex-wrap:wrap}
+.pl-real{border-top:1px dashed var(--line);margin-top:8px}
+.pl-av{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.pl-av span{font-size:12.5px;color:var(--bad);font-weight:600}
+.cal-l{display:flex;flex-direction:column;gap:6px}
+.cal-r{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center}
+.cal-r input{min-width:0;padding:7px 8px}
+.cal-r.novo{border-top:1px dashed var(--line);padding-top:8px}
+.cal-anos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.cal-anos label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.cal-anos input{flex:1;min-width:0}
+@media (max-width:560px){.cal-r{grid-template-columns:1fr 1fr auto}.cal-r>input[type=text]{grid-column:1/-1}}
+.obs-falta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fe-i{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:13px}
+.fe-i.ok{background:var(--ok-soft);color:var(--ok)} .fe-i.nx{background:var(--bad-soft);color:var(--bad)} .fe-i.opc{background:var(--surface-2);color:var(--muted)}
+.list.fecho .li{gap:10px;align-items:center}
+.list.fecho .who{flex:1}
 </style>
 </head>
 <body>
@@ -1012,7 +1028,7 @@ function saveUI() { try { const {draft, ...rest} = UI; localStorage.setItem('ef:
 
 function defaultCfg() {
   return {id:'geral', ano:'2026/2027', nper:3,
-    per:[{ini:'2026-09-14', fim:'2026-12-18'}, {ini:'2027-01-05', fim:'2027-03-26'}, {ini:'2027-04-12', fim:'2027-06-18'}],
+    per:clone(CAL2627.per), semAulas:CAL2627.sem.map(x => x.slice()), fimAno:clone(CAL2627.fimAno), cal2627:true, // calendário oficial 2026/27, editável
     fit: clone(FITREF)};
 }
 function perLabel(p, long) { const s = CFG.nper === 2 ? 'semestre' : 'período'; return long ? p + '.º ' + s : p + '.º ' + (CFG.nper === 2 ? 'S' : 'P'); }
@@ -1152,13 +1168,13 @@ function vTurmaSeg(sub) {
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DEXTRA = {ano:() => vCalEsc(), sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
   const sec = DSECS.find(x => x[0] === UI.dsec) || DSECS[0];
   let h = `<div class="stack"><h1 class="ptitle">Definições</h1><div class="chips">${DSECS.map(([k, n]) => `<button class="chip ${sec[0] === k ? 'on' : ''}" data-a="dsec" data-k="${k}">${n}</button>`).join('')}</div>`;
-  h += DEXTRA[sec[0]] ? DEXTRA[sec[0]]() : sec[2].map(n => parts[n] || '').join('');
+  h += sec[2].map(n => parts[n] || '').join('') + (DEXTRA[sec[0]] ? DEXTRA[sec[0]]() : '');
   return h + '</div>';
 }
 
@@ -1197,7 +1213,7 @@ function vAulas(t) {
   if (al.length) h += `<div class="card alerts"><span class="eyebrow">Atenção</span>${al.slice(0, UI.allAlerts ? 99 : 3).map(x => `<button class="alrt ${x.k}" data-a="alert-go" data-k="${x.a}"><span class="ai" aria-hidden="true">${x.k === 'bad' ? '!' : x.k === 'warn' ? '•' : 'i'}</span><span>${esc(x.txt)}</span></button>`).join('')}${al.length > 3 && !UI.allAlerts ? `<button class="link" style="align-self:flex-start" data-a="alerts-all">Ver mais ${al.length - 3}</button>` : ''}</div>`;
   h += vPlano(t);
   if (Store.local && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
-  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'}</span></div>`;
+  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'} · <button class="link" data-a="sum-open">Copiar sumários</button></span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
   if (!list.length) h += `<div class="card empty">${ART}<h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
   list.forEach(a => {
@@ -1710,9 +1726,10 @@ function vPauta(t) {
   const als = alunosOf(t); const ms = matsOf(t, UI.p);
   const rows = als.map(al => ({al, r: calc(t, UI.p, al)}));
   const nA = rows.filter(x => x.r.EST === 'Apto').length, nN = rows.filter(x => x.r.EST === 'Não apto').length, nI = rows.length - nA - nN;
-  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Documentos']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
+  const seg = `<div class="seg block" role="group" aria-label="Vista">${[['pauta','Pauta'],['graf','Gráficos'],['rel','Documentos'],['fecho','Fecho']].map(([k, n]) => `<button data-a="pview" data-k="${k}" class="${(UI.pview || 'pauta') === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
   if (UI.pview === 'graf') return `<div class="stack">${seg}${vGraficos(t)}</div>`;
   if (UI.pview === 'rel') return `<div class="stack">${seg}${vDocs(t)}</div>`;
+  if (UI.pview === 'fecho') return `<div class="stack">${seg}${vFecho(t)}</div>`;
   let h = `<div class="stack">${seg}<div class="sec-h"><h2>Pauta · ${perLabel(UI.p, true)}</h2><span class="muted small">${ms.length} ${ms.length === 1 ? 'matéria' : 'matérias'}</span></div>`;
   h += `<div class="tiles"><div class="tile"><b>${rows.length}</b><span>Alunos</span></div><div class="tile ok"><b>${nA}</b><span>Aptos</span></div><div class="tile bad"><b>${nN}</b><span>Não aptos</span></div><div class="tile"><b>${nI}</b><span>Incompletos</span></div></div>`;
   if (!rows.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>A pauta aparece quando a turma tiver alunos.</p></div></div>`;
@@ -2056,7 +2073,7 @@ const A = {
   'cd-reset': () => { const T = TOOL; clearInterval(T.iv); wake(false); T.run = false; T.n = 0; $('#cd-n').textContent = '0'; $('#cd-b').style.width = '0'; $('#cd-go').textContent = 'Iniciar'; },
   'eq-go': () => { eqMake(); $('#eq-out').innerHTML = eqHtml(); },
   'eq-copy': async () => { const t = turma(), E = UI.eq, nm = id => ((t.alunos || []).find(a => a.id === id) || {}).nome; const txt = E.res.map((ids, i) => 'Equipa ' + (i + 1) + ': ' + ids.map(nm).join(', ')).join('\n'); try { await navigator.clipboard.writeText(txt); toast('Equipas copiadas.'); } catch (e) { toast('Não foi possível copiar.', 'bad'); } },
-  'alert-go': el => { const k = el.dataset.k; if (k === 'graf') { UI.tab = 'relatorios'; UI.pview = 'graf'; render(); window.scrollTo(0, 0); return; } if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
+  'alert-go': el => { const k = el.dataset.k; if (k.startsWith('obs:')) { A['obs-falta']({dataset:{m:k.slice(4)}}); return; } if (k === 'fecho') { UI.tab = 'relatorios'; UI.pview = 'fecho'; render(); window.scrollTo(0, 0); return; } if (k === 'graf') { UI.tab = 'relatorios'; UI.pview = 'graf'; render(); window.scrollTo(0, 0); return; } if (k === 'ai') { UI.tab = 'turma'; UI.tsub = 'planear'; UI.plv = 'ai'; render(); window.scrollTo(0, 0); return; } if (k === 'alunos') UI.tab = 'alunos'; else if (k === 'pauta') { UI.tab = 'pauta'; UI.pview = 'pauta'; } else { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; if (k === 'todo') UI.todo = true; if (k === 'fit') UI.hide = {mat:true, fit:false, con:true, av:true}; } render(); window.scrollTo(0, 0); },
   'alerts-all': () => { UI.allAlerts = true; render(); },
   'plano-edit': () => sheetPlano(),
   'pl-add': () => { const t = turma(), ms = MATS[t.ciclo] || GR, used = UI.draft.map(u => u.m); UI.draft.push({m:ms.find(m => !used.includes(m)) || ms[0], n:8}); planoRender(); },
@@ -2819,10 +2836,11 @@ function alertsOf(t, p) {
   const fal = rows.filter(x => x.r.c.F >= 3);
   if (fal.length) out.push({k:'bad', txt:`${fal.length} ${fal.length === 1 ? 'aluno tem' : 'alunos têm'} 3 ou mais faltas: ${fal.map(x => x.al.nome.split(' ')[0] + ' (' + x.r.c.F + ')').join(', ')}.`, a:'alunos'});
   const fim = CFG.per[p - 1].fim, dias = fim ? Math.round((new Date(fim + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 864e5) : 99, inc = rows.filter(x => x.r.EST === 'Incompleto').length;
-  if (dias >= 0 && dias <= 21 && inc) out.push({k:'warn', txt:`Faltam ${dias} dias para o fim do ${perLabel(p, true)} e ${inc} ${inc === 1 ? 'aluno tem' : 'alunos têm'} a avaliação incompleta.`, a:'todo'});
+  if (dias >= 0 && dias <= 21 && inc) out.push({k:'warn', txt:`Faltam ${dias} dias para o fim do ${perLabel(p, true)} e ${inc} ${inc === 1 ? 'aluno tem' : 'alunos têm'} a avaliação incompleta.`, a:'fecho'});
   matsOf(t, p).forEach(m => { const n = als.filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0 && !lvOf(v, al.id, m)).length; const dadas = aulasOf(t.id).filter(a => periodOf(a.data) === p && (a.materias || []).includes(m)).length; if (n && dadas >= 4) out.push({k:'warn', txt:`${m}: ${dadas} aulas dadas e ${n} ${n === 1 ? 'aluno ainda sem nível' : 'alunos ainda sem nível'}.`, a:'todo'}); });
   if (p === 1 && t.ciclo !== '1' && als.length) { const pr = aiProg(t), d = diasAte(aiPrazo()); if (d >= -7 && d <= 45 && (!pr.tot || pr.done < pr.tot)) out.push({k:d <= 10 ? 'bad' : 'warn', txt:pr.tot ? `Avaliação inicial: ${pr.done} de ${pr.tot} registos; ${d >= 0 ? 'faltam ' + d + ' dias para ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) : 'o prazo de ' + fmtDate(aiPrazo(), {day:'numeric', month:'long'}) + ' passou'}.` : `Avaliação inicial por fazer (até ${fmtDate(aiPrazo(), {day:'numeric', month:'long'})}): escolha as matérias e registe os níveis.`, a:'ai'}); }
   equidade(t, p).filter(x => Math.abs(x.d) >= 3).forEach(x => out.push({k:'info', txt:`Equidade em ${x.m}: ${x.d < 0 ? 'as raparigas' : 'os rapazes'} estão em média ${lvNear(Math.min(x.mf, x.mm))}, ${x.d < 0 ? 'os rapazes' : 'as raparigas'} ${lvNear(Math.max(x.mf, x.mm))}.`, a:'graf'}));
+  matsOf(t, p).forEach(m => { const xs = semObs(t, p, m); if (xs.length) out.push({k:'info', txt:`${m}: ${xs.length} ${xs.length === 1 ? 'aluno sem observações' : 'alunos sem observações'} há 4 ou mais aulas (${xs.slice(0, 4).map(x => nome2(x.al.nome)).join(', ')}${xs.length > 4 ? '…' : ''}).`, a:'obs:' + m}); });
   const np = rows.filter(x => x.r.EST === 'Não apto'); if (np.length) out.push({k:'bad', txt:`Previsão de Não apto: ${np.map(x => x.al.nome.split(' ')[0]).join(', ')}.`, a:'pauta'});
   if (p > 1) { const dn = als.filter(al => { const a = calc(t, p - 1, al).zones.vaivem, b = calc(t, p, al).zones.vaivem; return a != null && b != null && b < a; }); if (dn.length) out.push({k:'warn', txt:`Vaivém: ${dn.length} ${dn.length === 1 ? 'aluno desceu' : 'alunos desceram'} de zona face ao período anterior (${dn.map(a => a.nome.split(' ')[0]).join(', ')}).`, a:'fit'}); }
   const sd = als.filter(al => !al.sexo || !al.nasc).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou data de nascimento: necessários para as zonas do FITescola.`, a:'alunos'});
@@ -2841,7 +2859,7 @@ function vPlano(t) {
   return `<div class="card"><div class="sec-h" style="margin:0 0 8px"><h2 style="font-size:18px">Plano do ${esc(perLabel(UI.p, true))}</h2><span><button class="link" data-a="doc-plan">Imprimir</button> · <button class="link" data-a="plano-edit">Editar</button></span></div>
     <div class="plan">${rows.map(({u, d}) => `<div class="pl-r"><span class="pl-n">${subIcon(u.m, anoOf(t))} ${esc(u.m)}</span><span class="pl-b" role="img" aria-label="${esc(u.m)}: ${d} de ${u.n} aulas"><i style="width:${Math.min(100, d / u.n * 100)}%"></i></span><span class="pl-v num-t">${d}/${u.n}</span></div>`).join('')}</div>
     ${rows.some(x => x.d >= Math.min(x.u.n, 3)) ? `<div class="pl-bals"><span class="small muted">Balanço da unidade:</span>${[...new Set(rows.filter(x => x.d >= Math.min(x.u.n, 3)).map(x => x.u.m))].map(m => `<button class="chip" data-a="ud-bal" data-m="${esc(m)}">${esc(m)}</button>`).join('')}</div>` : ''}
-    <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p></div>`;
+    <p class="hint" style="margin:8px 0 0">${tot} de ${prev} aulas previstas dadas${udAtual(t, UI.p) ? ' · em curso: <b>' + esc(udAtual(t, UI.p)) + '</b>' : ' · plano cumprido'}.</p>${planoRealHtml(t, UI.p)}</div>`;
 }
 function sheetPlano() {
   const t = turma(); UI.draft = clone(planOf(t, UI.p));
@@ -3864,7 +3882,7 @@ function vEspacos(t) {
     h += `<div class="sec-h"><h2>Semanas · ${perLabel(UI.p, true)}</h2><span class="small ${bad ? 'bad-t' : 'muted'}">${bad ? bad + (bad === 1 ? ' semana com a unidade fora do espaço' : ' semanas com a unidade fora do espaço') : 'Plano compatível com os espaços'}</span></div><div class="card esp-wk">`;
     h += sem.map(s => { const ms = (MATS[t.ciclo] || GR).filter(m => s.esp && espPode(s.esp, m)), okUd = !s.ud || espPode(s.esp, s.ud);
       return `<div class="esp-r${s.mon === mon0 ? ' cur' : ''}"><span class="esp-d num-t">${fmtDate(s.mon, {day:'numeric', month:'short'})}</span><button class="esp-p e${Math.max(0, E.lista.indexOf(s.esp)) % 6}${s.ov ? ' ov' : ''}" data-a="esp-wk" data-d="${s.mon}" title="Trocar o espaço desta semana">${esc(s.esp || 'Sem espaço')}</button>
-        <span class="esp-u">${s.ud ? `<span class="${okUd ? '' : 'bad-t'}">${okUd ? '' : '⚠ '}UD ${esc(s.ud)}</span>` : '<span class="muted">sem UD prevista</span>'}<span class="esp-ms small muted">${s.esp ? ms.length + ' matérias possíveis: ' + esc(ms.slice(0, 6).join(', ')) + (ms.length > 6 ? '…' : '') : 'Defina a rotação.'}</span></span></div>`; }).join('');
+        <span class="esp-u">${s.pausa ? `<span class="muted">${esc(s.pausa)}</span>` : s.ud ? `<span class="${okUd ? '' : 'bad-t'}">${okUd ? '' : '⚠ '}UD ${esc(s.ud)}</span>` : '<span class="muted">sem UD prevista</span>'}<span class="esp-ms small muted">${s.esp ? ms.length + ' matérias possíveis: ' + esc(ms.slice(0, 6).join(', ')) + (ms.length > 6 ? '…' : '') : 'Defina a rotação.'}</span></span></div>`; }).join('');
     h += `</div>`;
   } else h += `<p class="note warn">Indique as datas do ${perLabel(UI.p, true)} em Definições › Ano letivo para ver as semanas.</p>`;
   // ocupação de todas as turmas
@@ -4138,6 +4156,7 @@ function obsRender(open) {
     if (!als.some(al => al.id === O.aid)) O.aid = als[0] && als[0].id; const i = als.findIndex(al => al.id === O.aid), al = als[i];
     if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
       b += `<div class="obs-nav"><button class="icon-btn" data-a="obs-al" data-d="-1" aria-label="Aluno anterior"${i <= 0 ? ' disabled' : ''}>‹</button>${avatar(al, 'sm')}<select data-in="obs-al" aria-label="Aluno">${als.map(x => `<option value="${esc(x.id)}"${x.id === al.id ? ' selected' : ''}>${esc(x.num ?? '')} · ${esc(x.nome)}</option>`).join('')}</select>${l ? `<span class="lvpill ${GLV[l]}">${l}</span>` : ''}<button class="icon-btn" data-a="obs-al" data-d="1" aria-label="Aluno seguinte"${i >= als.length - 1 ? ' disabled' : ''}>›</button></div>
+        ${(() => { const so = semObs(t, p, O.m).filter(x => x.al.id !== al.id).slice(0, 4); return so.length ? `<div class="obs-falta"><span class="small muted">Há mais tempo sem observação:</span>${so.map(x => `<button class="chip" data-a="obs-ir" data-id="${esc(x.al.id)}">${esc(nome2(x.al.nome))} · ${x.n} aulas</button>`).join('')}</div>` : ''; })()}
         <p class="hint" style="margin:0">Marque as competências que ${esc(al.nome.split(' ')[0])} já domina. O nível é calculado logo (PI, PE e PA: metade do nível).</p>
         <div class="cl obs-cl">${checkList(t.ciclo, O.m, tksOf(v, al.id, O.m), evMap(v, al.id, O.m), 'obs-tk', 'obs-all')}</div>`; }
   } else {
@@ -4157,6 +4176,7 @@ function obsRender(open) {
   if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), b, foot); else { const el = $('#sheet .sh-b'), y = el ? el.scrollTop : 0; updSheet(b, foot); if (el) el.scrollTop = y; }
 }
 Object.assign(A, {
+  'obs-ir': el => { UI.obs.aid = el.dataset.id; obsRender(); $('#sheet .sh-b').scrollTop = 0; },
   'obs-modo': el => { UI.obs.modo = el.dataset.k; obsRender(); },
   'obs-al': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), i = als.findIndex(al => al.id === O.aid) + +el.dataset.d; if (als[i]) { O.aid = als[i].id; obsRender(); $('#sheet .sh-b').scrollTop = 0; } },
   'obs-all': el => { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
@@ -4816,6 +4836,128 @@ Object.assign(A, {
   'sync-fs-off': async () => { SYNC.h = null; SYNC.ok = false; await syncHandleSet(null); render(); toast('Ficheiro desligado.'); }
 });
 document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'sync-url') { const v = el.value.trim(); CFG.syncUrl = /^https:\/\//.test(v) ? v : ''; Store.save('cfg', CFG); render(); } });
+/* ---------- calendário escolar, aulas reais, quem falta observar, sumários e fecho do período ---------- */
+// Calendário escolar 2026/27 (continente; Despacho n.º 8368/2024 e alterações). As escolas fixam o início entre 11 e 15 de setembro;
+// o secundário científico-humanístico começa a 21 de setembro. Tudo fica editável em Definições › Ano letivo.
+const CAL2627 = {
+  per:[{ini:'2026-09-14', fim:'2026-12-15'}, {ini:'2027-01-04', fim:'2027-03-19'}, {ini:'2027-04-05', fim:'2027-06-11'}],
+  fimAno:{1:'2027-06-30', 2:'2027-06-30', 3:'2027-06-30', 4:'2027-06-30', 9:'2027-06-04', 11:'2027-06-04', 12:'2027-06-04'},
+  sem:[['2026-10-05', '2026-10-05', 'Implantação da República'], ['2026-12-01', '2026-12-01', 'Restauração da Independência'], ['2026-12-08', '2026-12-08', 'Imaculada Conceição'],
+    ['2026-12-16', '2027-01-01', 'Interrupção do Natal'], ['2027-02-08', '2027-02-10', 'Interrupção do Carnaval'], ['2027-03-22', '2027-04-02', 'Interrupção da Páscoa'],
+    ['2027-05-27', '2027-05-27', 'Corpo de Deus'], ['2027-06-10', '2027-06-10', 'Dia de Portugal']]
+};
+const semAulas = d => (CFG.semAulas || []).find(x => x[0] <= d && d <= x[1]);
+const fimPer = (t, p) => (p === CFG.nper && CFG.fimAno && CFG.fimAno[anoOf(t)]) || (CFG.per[p - 1] || {}).fim;
+// Tempos de aula reais do período: dias do horário da turma, sem feriados nem interrupções.
+function slotsReais(t, p) {
+  const P = CFG.per[p - 1] || {}, fim = fimPer(t, p), hs = (t.horario || []).filter(h => h.h); if (!P.ini || !fim || !hs.length) return [];
+  const out = []; for (let d = P.ini; d <= fim; d = somaDias(d, 1)) { if (semAulas(d)) continue; const w = new Date(d + 'T12:00:00').getDay(); hs.filter(h => +h.d === w).forEach(h => out.push({d, h:h.h})); }
+  return out;
+}
+// Unidades do plano sobre as aulas reais: datas, aulas que cabem e aulas em espaços sem a matéria.
+function planoReal(t, p) {
+  const sl = slotsReais(t, p), pl = planOf(t, p); let i = 0;
+  return {sl, us:pl.map(u => { const xs = sl.slice(i, i + u.n); i += u.n; return {u, ini:xs[0] && xs[0].d, fim:xs.length && xs[xs.length - 1].d, cabem:xs.length, fora:xs.filter(x => { const e = espOf(t, x.d); return e && !espPode(e, u.m); }).length, esp:[...new Set(xs.map(x => espOf(t, x.d)).filter(Boolean))]}; })};
+}
+function planoRealHtml(t, p) {
+  const pl = planOf(t, p); if (!pl.length) return '';
+  if (!(t.horario || []).some(h => h.h)) return `<p class="hint" style="margin:8px 0 0">Defina o horário da turma para a app contar as aulas reais (sem feriados nem interrupções).</p>`;
+  const {sl, us} = planoReal(t, p), prev = pl.reduce((s, u) => s + u.n, 0), dt = d => fmtDate(d, {day:'numeric', month:'numeric'});
+  const avisos = us.filter(x => x.cabem < x.u.n || x.fora).map(x => x.cabem < x.u.n ? `${x.u.m}: só cabem ${x.cabem} de ${x.u.n} aulas` : `${x.u.m}: ${x.fora} de ${x.cabem} aulas calham em espaço sem esta matéria`);
+  return `<div class="pl-real"><p class="small" style="margin:8px 0 4px"><b>${sl.length} aulas reais</b> no ${perLabel(p, true)} (horário, sem feriados nem interrupções) · plano: ${prev}${prev > sl.length ? ` <span class="bad-t">(+${prev - sl.length})</span>` : ''}</p>
+    <p class="small muted" style="margin:0">${us.filter(x => x.cabem).map(x => `${esc(x.u.m)} ${dt(x.ini)}–${dt(x.fim)}`).join(' · ')}</p>
+    ${avisos.length ? `<div class="pl-av">${avisos.map(a => `<span>⚠ ${esc(a)}</span>`).join('')}</div>` : ''}</div>`;
+}
+// A rotação dos espaços passa a usar as aulas reais para dizer que unidade calha em cada semana.
+const _semanasDe = semanasDe;
+semanasDe = function (t, p) {
+  const ws = _semanasDe(t, p); if (!(t.horario || []).some(h => h.h)) return ws;
+  const {us} = planoReal(t, p);
+  return ws.map(w => { const fimW = somaDias(w.mon, 6), u = us.find(x => x.ini && x.ini <= fimW && x.fim >= w.mon); const s = semAulas(w.mon) && semAulas(somaDias(w.mon, 4)); return Object.assign({}, w, {ud:u ? u.u.m : null, pausa:s ? s[2] : null}); });
+};
+function vCalEsc() {
+  const L = CFG.semAulas || [], F = CFG.fimAno || {}, anos = [...new Set(Object.values(S.turmas).map(anoOf).filter(Boolean))].sort((x, y) => x - y);
+  return `<div class="sec-h"><h2>Calendário escolar</h2></div><div class="card form">
+    <p class="small" style="margin:0">Dias sem aulas (feriados, interrupções, visitas de estudo, dias da escola): contam para as aulas reais de cada período, para o plano e para a rotação dos espaços. Tudo é editável: altere as datas e os nomes diretamente.</p>
+    <button class="btn${CFG.cal2627 ? '' : ' primary'}" data-a="cal-ofi">${CFG.cal2627 ? 'Repor as datas oficiais de 2026/27' : 'Preencher com o calendário oficial de 2026/27 (continente)'}</button>
+    ${L.length ? `<div class="cal-l">${L.map((x, i) => `<div class="cal-r"><input type="text" data-in="cal-e" data-i="${i}" data-j="2" value="${esc(x[2])}" aria-label="Nome"><input type="date" data-in="cal-e" data-i="${i}" data-j="0" value="${esc(x[0])}" aria-label="Início"><input type="date" data-in="cal-e" data-i="${i}" data-j="1" value="${esc(x[1])}" aria-label="Fim"><button class="icon-btn" data-a="cal-rm" data-i="${i}" aria-label="Apagar">×</button></div>`).join('')}</div>` : ''}
+    <div class="cal-r novo"><input type="text" id="cal-n" placeholder="Novo: ex. feriado municipal" aria-label="Nome"><input type="date" id="cal-i" aria-label="Início"><input type="date" id="cal-f" aria-label="Fim (opcional)"><button class="btn sm" data-a="cal-add">Juntar</button></div>
+    <div class="field"><span class="lbl">Fim do último período por ano de escolaridade</span><p class="hint" style="margin:0 0 6px">Deixe em branco para usar a data geral do período.</p>
+      <div class="cal-anos">${(anos.length ? anos : [5, 6, 7, 8, 9, 10, 11, 12]).map(a => `<label>${a}.º<input type="date" data-in="cal-fa" data-a="${a}" value="${esc(F[a] || '')}"></label>`).join('')}</div></div></div>`;
+}
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'cal-e') { const r = CFG.semAulas[+el.dataset.i]; if (!r) return; const j = +el.dataset.j; if (j < 2 && !el.value) return; r[j] = el.value.trim() || 'Sem aulas'; if (r[1] < r[0]) r[1] = r[0]; CFG.semAulas.sort((a, b) => a[0].localeCompare(b[0])); Store.save('cfg', CFG); render(); }
+  else if (k === 'cal-fa') { CFG.fimAno = CFG.fimAno || {}; if (el.value) CFG.fimAno[el.dataset.a] = el.value; else delete CFG.fimAno[el.dataset.a]; Store.save('cfg', CFG); } });
+/* quem falta observar: alunos sem evidências numa matéria há várias aulas em que estiveram presentes */
+function semObs(t, p, m, min) {
+  const v = avalOf(t.id, p), aulas = aulasOf(t.id).filter(a => periodOf(a.data) === p && (a.materias || []).includes(m) && a.data <= today());
+  const any = alunosOf(t).some(al => Object.keys(evMap(v, al.id, m)).length); if (!any) return [];
+  return alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0).map(al => {
+    const ev = evMap(v, al.id, m), last = Object.values(ev).flat().map(x => x[0]).sort().pop() || '';
+    const n = aulas.filter(a => a.data > last && ['P', 'A', 'M', undefined].includes((a.presencas || {})[al.id])).length;
+    return {al, n, last};
+  }).filter(x => x.n >= (min || 4)).sort((a, b) => b.n - a.n);
+}
+
+/* sumários prontos a colar no programa da escola */
+function sumTexto(t, alcance) {
+  const all = aulasOf(t.id), seg0 = segunda(today()), num = {}; all.forEach((a, i) => num[a.id] = i + 1);
+  const xs = all.filter(a => alcance === 'tudo' || (alcance === 'semana' ? a.data >= seg0 && a.data <= somaDias(seg0, 6) : periodOf(a.data) === UI.p));
+  return {xs, txt:xs.map(a => `Lição n.º ${num[a.id]} (${fmtDate(a.data, {day:'2-digit', month:'2-digit', year:'numeric'})}): ${(a.sumario || '').trim() || '[sem sumário]'}`).join('\n')};
+}
+function sheetSum() {
+  const t = turma(), al = UI.sumAl || 'periodo', {xs, txt} = sumTexto(t, al), falta = xs.filter(a => !(a.sumario || '').trim()).length;
+  const body = `<div class="form"><div class="seg block">${[['semana', 'Esta semana'], ['periodo', perLabel(UI.p, true)], ['tudo', 'O ano todo']].map(([k, n]) => `<button data-a="sum-al" data-k="${k}" class="${al === k ? 'on' : ''}">${esc(n)}</button>`).join('')}</div>
+    ${falta ? `<p class="note warn" style="margin:0">${falta} ${falta === 1 ? 'aula sem sumário' : 'aulas sem sumário'} (marcadas com [sem sumário]).</p>` : ''}
+    <textarea id="sum-txt" rows="12" readonly>${esc(txt)}</textarea><p class="hint" style="margin:0">${xs.length} ${xs.length === 1 ? 'lição' : 'lições'}, uma por linha, prontas a colar no programa da escola (Inovar, GIAE ou outro).</p></div>`;
+  const foot = `<button class="btn primary" data-a="sum-copy"${xs.length ? '' : ' disabled'}>Copiar</button>`;
+  if ($('#sheet').hidden) openSheet('Sumários · ' + t.nome, body, foot); else updSheet(body, foot);
+}
+
+/* fecho do período: o que falta, com atalho para cada coisa */
+function fechoItens(t, p) {
+  const als = alunosOf(t), rs = als.map(al => ({al, r:calc(t, p, al), R:REG[regAt(al, p)] || REG.Normal})), v = avalOf(t.id, p), ms = matsOf(t, p);
+  const nivF = rs.filter(x => x.R.af > 0).reduce((s, x) => s + ms.filter(m => !lvOf(v, x.al.id, m)).length, 0);
+  const aulas = aulasOf(t.id).filter(a => periodOf(a.data) === p), semSum = aulas.filter(a => !(a.sumario || '').trim()).length;
+  const cons = consist(t, p).filter(x => x.k === 'warn').length, obs = als.filter(al => !((v.obs || {})[al.id] || '').trim()).length;
+  return [
+    {k:'mat', n:nivF, t:'Níveis das matérias', d:nivF ? `${nivF} ${nivF === 1 ? 'nível em falta' : 'níveis em falta'} (${ms.length} matérias)` : 'Todos os alunos têm nível em todas as matérias.'},
+    {k:'fit', n:rs.filter(x => x.R.apf > 0 && x.r.APF == null).length, t:'Aptidão física (FITescola)', d:'alunos sem resultado'},
+    {k:'con', n:rs.filter(x => x.r.CON == null).length, t:'Conhecimentos', d:'alunos sem classificação'},
+    {k:'av', n:rs.filter(x => x.r.AV == null).length, t:'Atitudes', d:'alunos com atitudes por lançar'},
+    {k:'cons', n:cons, t:'Situações a confirmar', d:'avisos da verificação de consistência'},
+    {k:'sum', n:semSum, t:'Sumários', d:'aulas sem sumário'},
+    {k:'obs', n:obs, t:'Observações para o relatório', d:'alunos sem observação (opcional)', opc:true}
+  ];
+}
+function vFecho(t) {
+  const p = UI.p, fim = fimPer(t, p), dias = fim ? diasAte(fim) : null, its = fechoItens(t, p), obr = its.filter(x => !x.opc), ok = obr.filter(x => !x.n).length;
+  let h = `<div class="card fecho-h"><div class="sec-h" style="margin:0"><h2 style="font-size:18px">Fecho do ${esc(perLabel(p, true))}</h2>${dias != null ? `<span class="pill ${dias < 0 ? 'inc' : dias <= 7 ? 'bad' : 'ok'}">${dias < 0 ? 'Período terminado' : dias === 0 ? 'Termina hoje' : 'Faltam ' + dias + ' dias'}</span>` : ''}</div>
+    <div class="pl-b big" role="img" aria-label="${ok} de ${obr.length} pontos completos"><i style="width:${ok / obr.length * 100}%"></i></div><p class="small muted num-t" style="margin:6px 0 0">${ok} de ${obr.length} pontos completos</p></div>
+    <div class="list fecho">${its.map(x => `<div class="li"><span class="fe-i ${x.n ? (x.opc ? 'opc' : 'nx') : 'ok'}">${x.n ? (x.n > 99 ? '99+' : x.n) : '✓'}</span><span class="who col"><b>${esc(x.t)}</b><span class="small muted">${x.n ? (x.k === 'mat' ? esc(x.d) : x.n + ' ' + esc(x.d)) : 'Completo.'}</span></span>${x.n ? `<button class="btn sm" data-a="fe-go" data-k="${x.k}">Resolver</button>` : ''}</div>`).join('')}</div>
+    <div class="sec-h"><h2>Documentos do fecho</h2></div><div class="docs">
+    ${[['xlsx', 'Pauta, sumários e presenças (Excel)'], ['doc-rel-all', 'Relatórios para os encarregados de educação'], ['doc-rel-alunos', 'Relatórios para os alunos'], ['cons-open', 'Síntese para o conselho de turma']].map(([a, n]) => `<button class="card doc" data-a="${a}"><b>${n}</b></button>`).join('')}</div>`;
+  return h;
+}
+
+Object.assign(A, {
+  'cal-ofi': () => { CFG.per = clone(CAL2627.per); CFG.nper = 3; CFG.fimAno = clone(CAL2627.fimAno); const L = CFG.semAulas = CFG.semAulas || [];
+    CAL2627.sem.forEach(x => { if (!L.some(y => y[0] === x[0] && y[1] === x[1])) L.push(x.slice()); }); L.sort((a, b) => a[0].localeCompare(b[0])); CFG.cal2627 = true; CFG.ano = '2026/2027';
+    Store.save('cfg', CFG); render(); toast('Datas oficiais de 2026/27 preenchidas: pode alterá-las. Junte o feriado municipal.'); },
+  'cal-add': () => { const i = $('#cal-i').value, f = $('#cal-f').value || i, n = $('#cal-n').value.trim() || 'Sem aulas'; if (!i) { toast('Indique a data.', 'bad'); return; }
+    CFG.semAulas = CFG.semAulas || []; CFG.semAulas.push([i, f < i ? i : f, n]); CFG.semAulas.sort((a, b) => a[0].localeCompare(b[0])); Store.save('cfg', CFG); render(); },
+  'cal-rm': el => { CFG.semAulas.splice(+el.dataset.i, 1); Store.save('cfg', CFG); render(); },
+  'sum-open': () => sheetSum(),
+  'sum-al': el => { UI.sumAl = el.dataset.k; sheetSum(); },
+  'sum-copy': async () => { const ta = $('#sum-txt'); try { await navigator.clipboard.writeText(ta.value); toast('Sumários copiados: cole no programa da escola.'); } catch (e) { ta.removeAttribute('readonly'); ta.select(); try { document.execCommand('copy'); toast('Sumários copiados.'); } catch (e2) { toast('Selecione o texto e copie.', 'bad'); } ta.setAttribute('readonly', ''); } },
+  'obs-falta': el => { const t = turma(), m = el.dataset.m, xs = semObs(t, UI.p, m); sheetObs(today(), [m]); if (xs[0]) { UI.obs.aid = xs[0].al.id; UI.obs.modo = 'aluno'; obsRender(); } },
+  'fe-go': el => { const k = el.dataset.k, hide = {mat:{mat:false, fit:true, con:true, av:true}, fit:{mat:true, fit:false, con:true, av:true}, con:{mat:true, fit:true, con:false, av:true}, av:{mat:true, fit:true, con:true, av:false}}[k];
+    if (hide) { UI.tab = 'avaliar'; UI.avMode = 'grelha'; FOCUS = null; SEL = null; UI.hide = hide; UI.todo = true; }
+    else if (k === 'cons') { UI.tab = 'relatorios'; UI.pview = 'pauta'; }
+    else if (k === 'sum') { sheetSum(); return; }
+    else if (k === 'obs') { UI.tab = 'turma'; UI.tsub = 'alunos'; }
+    render(); window.scrollTo(0, 0); }
+});
 </script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }</script>
 </body>

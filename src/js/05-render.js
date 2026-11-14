@@ -38,13 +38,13 @@ function vTurmaSeg(sub) {
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
 const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DEXTRA = {ano:() => vCalEsc(), sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
   const sec = DSECS.find(x => x[0] === UI.dsec) || DSECS[0];
   let h = `<div class="stack"><h1 class="ptitle">Definições</h1><div class="chips">${DSECS.map(([k, n]) => `<button class="chip ${sec[0] === k ? 'on' : ''}" data-a="dsec" data-k="${k}">${n}</button>`).join('')}</div>`;
-  h += DEXTRA[sec[0]] ? DEXTRA[sec[0]]() : sec[2].map(n => parts[n] || '').join('');
+  h += sec[2].map(n => parts[n] || '').join('') + (DEXTRA[sec[0]] ? DEXTRA[sec[0]]() : '');
   return h + '</div>';
 }
 
@@ -83,7 +83,7 @@ function vAulas(t) {
   if (al.length) h += `<div class="card alerts"><span class="eyebrow">Atenção</span>${al.slice(0, UI.allAlerts ? 99 : 3).map(x => `<button class="alrt ${x.k}" data-a="alert-go" data-k="${x.a}"><span class="ai" aria-hidden="true">${x.k === 'bad' ? '!' : x.k === 'warn' ? '•' : 'i'}</span><span>${esc(x.txt)}</span></button>`).join('')}${al.length > 3 && !UI.allAlerts ? `<button class="link" style="align-self:flex-start" data-a="alerts-all">Ver mais ${al.length - 3}</button>` : ''}</div>`;
   h += vPlano(t);
   if (Store.local && all.length >= 3) { const lb = lastBackup(); const days = lb ? (new Date(today()) - new Date(lb)) / 864e5 : 999; if (days > 14) h += `<div class="note warn">${lb ? 'A última cópia de segurança tem mais de duas semanas.' : 'Ainda não fez nenhuma cópia de segurança.'} Os dados só existem neste telemóvel. <button class="link" data-a="backup">Fazer cópia agora</button></div>`; }
-  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'}</span></div>`;
+  h += `<div class="sec-h"><h2>Aulas · ${perLabel(UI.p, true)}</h2><span class="muted small num-t">${list.length} ${list.length === 1 ? 'aula' : 'aulas'} · <button class="link" data-a="sum-open">Copiar sumários</button></span></div>`;
   if (!nAl) h += `<div class="note warn">Esta turma ainda não tem alunos. Adicione-os no separador Alunos para registar presenças.</div>`;
   if (!list.length) h += `<div class="card empty">${ART}<h3>Sem aulas neste período</h3><p>Registe a primeira aula: data, matérias, sumário e presenças, tudo no mesmo ecrã.</p></div>`;
   list.forEach(a => {
