@@ -16,7 +16,13 @@ function periodOf(d) { for (let i = 0; i < CFG.nper; i++) { if (d <= CFG.per[i].
 function refDate(p) { const f = CFG.per[p - 1].fim, t = today(); return t < f ? t : f; }
 const turma = () => S.turmas[UI.turma] || null;
 const alunosOf = t => (t.alunos || []).slice().sort((a, b) => (a.num || 999) - (b.num || 999) || a.nome.localeCompare(b.nome, 'pt'));
-function aulasOf(tid) { return Object.values(S.aulas).filter(a => a.turmaId === tid).sort((a, b) => a.data.localeCompare(b.data) || (a.c || 0) - (b.c || 0)); }
+// Aulas de uma turma por data. Com memória: limpa-se quando muda o conjunto de aulas ou uma aula é gravada ou apagada.
+const AULAS_MEM = {src:null, n:-1, v:-1, m:{}}; let AULAS_V = 0;
+function aulasOf(tid) {
+  const M = AULAS_MEM, n = Object.keys(S.aulas).length;
+  if (M.src !== S.aulas || M.n !== n || M.v !== AULAS_V) { M.src = S.aulas; M.n = n; M.v = AULAS_V; M.m = {}; }
+  return (M.m[tid] = M.m[tid] || Object.values(S.aulas).filter(a => a.turmaId === tid).sort((a, b) => a.data.localeCompare(b.data) || (a.c || 0) - (b.c || 0))).slice();
+}
 function avalOf(tid, p) { const id = tid + '_' + p; return S.aval[id] || {id, turmaId:tid, p, materias:[], af:{}, fit:{}, con:{}, av:{}}; }
 function touchAval(v) { histRecord(v); S.aval[v.id] = v; Store.save('aval', v); }
 function matsOf(t, p) {

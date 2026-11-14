@@ -523,3 +523,21 @@ test('o nível sobe à medida que se assinalam as competências motoras e tátic
     return [...new Set(out)]; });
   expect(seq).toEqual(['NI', 'PI', 'I', 'PE', 'E', 'PA', 'A']);
 });
+
+test('robustez: mais de 1000 registos na conta, nomes com aspas, evidências limitadas', async ({page}) => {
+  await demo(page);
+  const n = await page.evaluate(async () => {
+    const docs = {aulas: Array.from({length: 2500}, (_, i) => ({id: 'a' + String(i).padStart(5, '0'), turmaId: 't', data: '2026-10-01'}))};
+    const mk = (k, flt) => ({where: (f, op, v) => mk(k, v), limit: n => ({get: async () => ({docs: (docs[k] || []).filter(d => flt == null || d.id > flt).sort((a, b) => a.id < b.id ? -1 : 1).slice(0, Math.min(n, 1000)).map(d => ({exists: true, id: d.id, data: () => d}))})})});
+    const old = {mode: Store.mode, col: Store.col}; Store.mode = 'cloud'; Store.col = k => mk(k, null);
+    try { return Object.keys((await Store.loadAll()).aulas).length; } finally { Store.mode = old.mode; Store.col = old.col; }
+  });
+  expect(n).toBe(2500);
+  const r = await page.evaluate(() => {
+    const m = 'Jogo d\'"Ouro" <b>&'; CFG.matsX = [{m, sub: 'OUT'}]; matsXAplicar(); const t = turma(), v = avalOf(t.id, 1); v.materias.push(m); touchAval(v);
+    ['inicio', 'avaliar', 'relatorios'].forEach(tab => { UI.tab = tab; render(); });
+    for (let i = 0; i < 10; i++) evAdd(t, somaDias('2026-09-16', i), t.alunos[0].id, 'Voleibol', 'I3', 1);
+    return [document.querySelectorAll('b').length >= 0, evMap(avalOf(t.id, 1), t.alunos[0].id, 'Voleibol').I3.length];
+  });
+  expect(r).toEqual([true, 6]);
+});

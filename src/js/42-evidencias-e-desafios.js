@@ -16,6 +16,7 @@ function evDots(arr, n) {
 function evAdd(t, d, aid, m, cid, ok) {
   const v = avalOf(t.id, periodOf(d)); v.ev = v.ev || {}; const a = v.ev[aid] = v.ev[aid] || {}, b = a[m] = a[m] || {}, l = b[cid] = b[cid] || [];
   const i = l.findIndex(x => x[0] === d); if (i >= 0) { if (l[i][1] === ok) l.splice(i, 1); else l[i][1] = ok; } else { l.push([d, ok]); l.sort((x, y) => x[0].localeCompare(y[0])); }
+  if (l.length > 6) l.splice(0, l.length - 6);   // limita o tamanho de cada avaliação guardada
   if (!l.length) delete b[cid]; touchAval(v);
   evApply(t, periodOf(d), m, [aid]); // as evidências contam logo, sem passo extra
 }
