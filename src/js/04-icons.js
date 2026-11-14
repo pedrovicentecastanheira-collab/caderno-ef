@@ -16,3 +16,6 @@ function normTab() { const o = OLDTAB[UI.tab]; if (o) { UI.tab = o[0]; if (o[1])
 const byNome = (a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true});
 function tcor(t) { if (!t) return 1; if (t.cor) return t.cor; const i = Object.values(S.turmas).sort(byNome).indexOf(t); return i < 0 ? 1 : i % 8 + 1; }
 
+
+// Símbolo do Caderno EF (o mesmo desenho do ícone da app, em tools/icone.mjs).
+const LOGO = '<svg class="logo" viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B7BF0"/><stop offset=".55" stop-color="#1C55CF"/><stop offset="1" stop-color="#0F2F86"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#lg-f)"/><g transform="rotate(-6 244 250)"><rect x="120" y="96" width="248" height="316" rx="30" fill="#fff"/><rect x="188" y="150" width="40" height="40" rx="10" fill="#18A86B"/><rect x="188" y="216" width="40" height="40" rx="10" fill="#18A86B"/><rect x="244" y="161" width="92" height="18" rx="9" fill="#CFDDFB"/><rect x="244" y="227" width="92" height="18" rx="9" fill="#CFDDFB"/><rect x="244" y="293" width="70" height="18" rx="9" fill="#E3ECFD"/></g><circle cx="356" cy="364" r="82" fill="#F7781F"/><g fill="none" stroke="#8C3305" stroke-width="9" opacity=".5"><path d="M356 282V446M274 364H438"/></g></svg>';

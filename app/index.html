@@ -7,8 +7,8 @@
 <meta name="description" content="Caderno de Educação Física: aulas, sumários, presenças, avaliação PNEF, FITescola e pauta.">
 <meta name="theme-color" content="#1C55CF">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192-v2.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-v2.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Caderno EF">
@@ -72,7 +72,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-
 .top-in{display:flex;align-items:center;gap:8px;padding-block:8px;min-height:56px}
 .brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;margin-right:6px}
 .brand b{color:var(--accent)}
-@media (max-width:639px){ .top-in .brand{display:none} }
+@media (max-width:639px){ .top-in .brand{font-size:0;letter-spacing:0;margin-right:2px} .top-in .brand b{display:none} .top-in .brand .logo{margin-right:4px;width:28px;height:28px} }
 .tdot{width:12px;height:12px;border-radius:4px;background:var(--tc);flex:none}
 .turma-sel{flex:1;min-width:0;position:relative}
 .turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.1;padding:2px 22px 2px 0;text-overflow:ellipsis;min-height:44px}
@@ -1151,13 +1151,16 @@ function normTab() { const o = OLDTAB[UI.tab]; if (o) { UI.tab = o[0]; if (o[1])
 const byNome = (a, b) => a.nome.localeCompare(b.nome, 'pt', {numeric:true});
 function tcor(t) { if (!t) return 1; if (t.cor) return t.cor; const i = Object.values(S.turmas).sort(byNome).indexOf(t); return i < 0 ? 1 : i % 8 + 1; }
 
+
+// Símbolo do Caderno EF (o mesmo desenho do ícone da app, em tools/icone.mjs).
+const LOGO = '<svg class="logo" viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B7BF0"/><stop offset=".55" stop-color="#1C55CF"/><stop offset="1" stop-color="#0F2F86"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#lg-f)"/><g transform="rotate(-6 244 250)"><rect x="120" y="96" width="248" height="316" rx="30" fill="#fff"/><rect x="188" y="150" width="40" height="40" rx="10" fill="#18A86B"/><rect x="188" y="216" width="40" height="40" rx="10" fill="#18A86B"/><rect x="244" y="161" width="92" height="18" rx="9" fill="#CFDDFB"/><rect x="244" y="227" width="92" height="18" rx="9" fill="#CFDDFB"/><rect x="244" y="293" width="70" height="18" rx="9" fill="#E3ECFD"/></g><circle cx="356" cy="364" r="82" fill="#F7781F"/><g fill="none" stroke="#8C3305" stroke-width="9" opacity=".5"><path d="M356 282V446M274 364H438"/></g></svg>';
 /* ---------- render ---------- */
 function render() {
   normTab(); saveUI(); applyLook();
   document.body.classList.toggle('wide', WIDE() && UI.tab !== 'defs');
   const t = turma(), ts = Object.values(S.turmas).sort(byNome), c = tcor(t);
   document.documentElement.style.setProperty('--tc', `var(--v${c})`);
-  let top = '<div class="brand">Caderno <b>EF</b></div>';
+  let top = '<div class="brand">' + LOGO + 'Caderno <b>EF</b></div>';
   if (t) {
     top += `<span class="tdot" aria-hidden="true"></span><div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma (deslize no cabeçalho para mudar)">` +
       ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') + '<option value="__new">+ Nova turma…</option></select></div>';
@@ -3954,8 +3957,8 @@ async function notify(title, body, tag) {
   if (notifOk()) {
     try {
       const reg = navigator.serviceWorker && await Promise.race([navigator.serviceWorker.getRegistration(), sleep(800)]);
-      if (reg && reg.showNotification) { await reg.showNotification(title, {body, tag, icon:'icons/icon-192.png', badge:'icons/icon-192.png'}); return; }
-      new Notification(title, {body, tag, icon:'icons/icon-192.png'}); return;
+      if (reg && reg.showNotification) { await reg.showNotification(title, {body, tag, icon:'icons/icon-192-v2.png', badge:'icons/icon-192-v2.png'}); return; }
+      new Notification(title, {body, tag, icon:'icons/icon-192-v2.png'}); return;
     } catch (e) {}
   }
   toast(title + (body ? ' · ' + body : ''));

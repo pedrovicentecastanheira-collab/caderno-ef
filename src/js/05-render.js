@@ -4,7 +4,7 @@ function render() {
   document.body.classList.toggle('wide', WIDE() && UI.tab !== 'defs');
   const t = turma(), ts = Object.values(S.turmas).sort(byNome), c = tcor(t);
   document.documentElement.style.setProperty('--tc', `var(--v${c})`);
-  let top = '<div class="brand">Caderno <b>EF</b></div>';
+  let top = '<div class="brand">' + LOGO + 'Caderno <b>EF</b></div>';
   if (t) {
     top += `<span class="tdot" aria-hidden="true"></span><div class="turma-sel"><select id="sel-turma" data-in="turma" aria-label="Turma (deslize no cabeçalho para mudar)">` +
       ts.map(x => `<option value="${esc(x.id)}"${x.id === t.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('') + '<option value="__new">+ Nova turma…</option></select></div>';

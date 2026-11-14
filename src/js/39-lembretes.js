@@ -10,8 +10,8 @@ async function notify(title, body, tag) {
   if (notifOk()) {
     try {
       const reg = navigator.serviceWorker && await Promise.race([navigator.serviceWorker.getRegistration(), sleep(800)]);
-      if (reg && reg.showNotification) { await reg.showNotification(title, {body, tag, icon:'icons/icon-192.png', badge:'icons/icon-192.png'}); return; }
-      new Notification(title, {body, tag, icon:'icons/icon-192.png'}); return;
+      if (reg && reg.showNotification) { await reg.showNotification(title, {body, tag, icon:'icons/icon-192-v2.png', badge:'icons/icon-192-v2.png'}); return; }
+      new Notification(title, {body, tag, icon:'icons/icon-192-v2.png'}); return;
     } catch (e) {}
   }
   toast(title + (body ? ' · ' + body : ''));

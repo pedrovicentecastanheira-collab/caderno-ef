@@ -4,7 +4,7 @@
 .top-in{display:flex;align-items:center;gap:8px;padding-block:8px;min-height:56px}
 .brand{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;margin-right:6px}
 .brand b{color:var(--accent)}
-@media (max-width:639px){ .top-in .brand{display:none} }
+@media (max-width:639px){ .top-in .brand{font-size:0;letter-spacing:0;margin-right:2px} .top-in .brand b{display:none} .top-in .brand .logo{margin-right:4px;width:28px;height:28px} }
 .tdot{width:12px;height:12px;border-radius:4px;background:var(--tc);flex:none}
 .turma-sel{flex:1;min-width:0;position:relative}
 .turma-sel select{width:100%;appearance:none;-webkit-appearance:none;border:0;background:transparent;font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.1;padding:2px 22px 2px 0;text-overflow:ellipsis;min-height:44px}
