@@ -515,3 +515,11 @@ test('OneDrive: ligar (início de sessão simulado), guardar sozinho, recuperar 
   await page.evaluate(() => snapFazer());
   await page.click('[data-a="snap-ver"]'); await expect(page.locator('[data-a="snap-rest"]')).toHaveCount(1);
 });
+
+test('o nível sobe à medida que se assinalam as competências motoras e táticas', async ({page}) => {
+  await demo(page);
+  const seq = await page.evaluate(() => { const t = turma(), al = t.alunos[3], m = 'Voleibol', v = avalOf(t.id, 1); if (v.af[al.id]) delete v.af[al.id][m]; if (v.comp) delete v.comp[al.id];
+    const cs = compsOf('3', m), out = []; ['I', 'E', 'A'].forEach(k => cs.filter(c => c.k === k && !geralC(c)).forEach(c => { tickSet(t, 1, al.id, m, id => id === c.id, true); out.push(avalOf(t.id, 1).af[al.id][m]); }));
+    return [...new Set(out)]; });
+  expect(seq).toEqual(['NI', 'PI', 'I', 'PE', 'E', 'PA', 'A']);
+});
