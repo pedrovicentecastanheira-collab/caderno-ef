@@ -34,9 +34,9 @@ async function png(svg, size, file) {
   writeFileSync(file, await p.screenshot({omitBackground:true, clip:{x:0, y:0, width:size, height:size}}));
 }
 const d = new URL('../app/icons/', import.meta.url).pathname;
-await png(arte(1, 112), 512, d + 'icon-512.png');
-await png(arte(1, 112), 192, d + 'icon-192.png');
-await png(arte(.8, 0), 512, d + 'icon-maskable-512.png');
-await png(arte(.86, 0), 180, d + 'apple-touch-icon.png');
+await png(arte(1, 112), 512, d + 'icon-512-v2.png');
+await png(arte(1, 112), 192, d + 'icon-192-v2.png');
+await png(arte(.8, 0), 512, d + 'icon-maskable-512-v2.png');
+await png(arte(.86, 0), 180, d + 'apple-touch-icon-v2.png');
 writeFileSync(new URL('../src/icone.svg', import.meta.url), arte(1, 112));
 await b.close(); console.log('ícones gerados');
