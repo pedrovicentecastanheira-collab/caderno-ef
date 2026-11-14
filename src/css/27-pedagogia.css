@@ -164,3 +164,7 @@ table.obs-t .ob.ok{background:var(--ok);border-color:var(--ok);color:#fff}
 table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
 .obs-leg{margin:4px 0 0;padding-left:18px}
 .ki-f .chip{text-align:left;font-size:12.5px;padding:6px 10px;border-radius:10px;line-height:1.3}
+.fit-lado{display:flex;align-items:center;gap:6px}
+.fit-lado>b{font-family:var(--f-display);font-size:13px;color:var(--muted);width:14px}
+.fit-lado input{width:84px}
+.fit-in{flex-wrap:wrap}

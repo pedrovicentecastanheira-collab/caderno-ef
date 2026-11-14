@@ -27,7 +27,8 @@ function pfitHtml(t, al, print) {
     ${P.ks.map(k => { const f = FIT.find(x => x.k === k), pl = FITP[k], ref = f.bool ? null : fitRef(k, al.sexo, age), l = last(k), b = P.base[k];
       const meta = f.bool ? 'conseguir realizar o teste' : ref ? `${f.dir > 0 ? 'pelo menos' : 'no máximo'} ${String(ref.zs).replace('.', ',')} ${f.u}` : 'entrar na Zona Saudável';
       const prog = l && b != null && b !== '' && l.x !== b ? ` · <span class="${(l.x - b) * (f.dir || 1) > 0 ? 'ok-t' : 'bad-t'}">agora ${esc(String(l.x))} ${esc(f.u)} (${perLabel(l.p)})</span>` : '';
-      return `<div class="pfit-k"><div><b>${esc(pl.cap)}</b> <span class="small muted">· ${esc(f.n)}: ${b != null && b !== '' ? esc(String(b)) + ' ' + esc(f.u) : '—'}${prog} · meta: ${esc(meta)}</span></div><ul>${pl.aula.map(x => `<li>${esc(x)}</li>`).join('')}<li><i>Em casa:</i> ${esc(pl.casa)}</li></ul></div>`; }).join('')}
+      const fo = (((avalOf(t.id, P.p).fit || {})[al.id]) || {}), ld = f.bi ? [fitLado(fo, f, 'd'), fitLado(fo, f, 'e')] : null, fraco = ld && ld[0] !== ld[1] && ld[0] != null && ld[1] != null ? (fitPior(f, ld[0], ld[1]) === ld[0] ? 'direito' : 'esquerdo') : null;
+      return `<div class="pfit-k"><div><b>${esc(pl.cap)}</b>${fraco ? ` <span class="pill bad">lado ${fraco}</span>` : ''} <span class="small muted">· ${esc(f.n)}: ${b != null && b !== '' ? esc(String(b)) + ' ' + esc(f.u) : '—'}${prog} · meta: ${esc(meta)}</span></div><ul>${pl.aula.map(x => `<li>${esc(x)}</li>`).join('')}<li><i>Em casa:</i> ${esc(pl.casa)}</li></ul></div>`; }).join('')}
     ${print ? '' : `<div class="btn-row"><button class="btn sm" data-a="pfit-print" data-id="${esc(al.id)}">Imprimir para o aluno</button><button class="btn sm ghost" data-a="pfit-del" data-id="${esc(al.id)}">Terminar o plano</button></div>`}</div>`;
 }
 function vAptidao(t) {

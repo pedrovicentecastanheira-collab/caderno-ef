@@ -14,8 +14,8 @@ const PS = ['P','F','A','M','D'];
 const PSN = {P:'Presente',F:'Falta',A:'Atraso',M:'Sem material',D:'Dispensado da prática'};
 const FIT = [
   {k:'vaivem',n:'Vaivém',u:'percursos',dir:1,pts:[0,2,4]},
-  {k:'ombros',n:'Flexibilidade de ombros',u:'',bool:true,pts:[0,1]},
-  {k:'senta',n:'Senta e alcança',u:'cm',dir:1,pts:[0,1,2]},
+  {k:'ombros',n:'Flexibilidade de ombros',u:'',bool:true,bi:true,pts:[0,1]},
+  {k:'senta',n:'Senta e alcança',u:'cm',dir:1,bi:true,pts:[0,1,2]},
   {k:'abd',n:'Abdominais',u:'rep.',dir:1,pts:[0,1,2]},
   {k:'flex',n:'Flexões de braços',u:'rep.',dir:1,pts:[0,1,2]},
   {k:'vel',n:'Velocidade 40 m',u:'s',dir:-1,pts:[0,1,2]},

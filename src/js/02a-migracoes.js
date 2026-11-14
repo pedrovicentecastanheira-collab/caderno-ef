@@ -1,6 +1,6 @@
 /* ---------- versão dos dados e migrações ---------- */
 // Cada mudança na estrutura dos dados tem um número e um passo de conversão: cópias antigas abrem sempre bem.
-const SCHEMA = 3;
+const SCHEMA = 4;
 const MIGRATIONS = [
   // 1 → 2: turma com ano de escolaridade; aluno com lista de lesões e dispensas.
   {v:2, run(D, touch) {
@@ -24,6 +24,12 @@ const MIGRATIONS = [
       }
       if (ch) touch(k, o);
     }));
+  }},
+  // 3 → 4: flexibilidade de ombros e senta e alcança passam a ter lado direito e esquerdo; o valor antigo conta para os dois.
+  {v:4, run(D, touch) {
+    Object.values(D.aval || {}).forEach(v => { let ch = false;
+      Object.values(v.fit || {}).forEach(o => ['ombros', 'senta'].forEach(k => { if (o && o[k] != null && o[k] !== '' && o[k + '_d'] === undefined && o[k + '_e'] === undefined) { o[k + '_d'] = o[k]; o[k + '_e'] = o[k]; ch = true; } }));
+      if (ch) touch('aval', v); });
   }}
 ];
 // Aplica as migrações em falta a um conjunto de dados (os guardados ou uma cópia importada).

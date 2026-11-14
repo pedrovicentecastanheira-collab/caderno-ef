@@ -13,6 +13,7 @@ function makeDemo() {
   t.alunos.forEach((al, i) => {
     v.af[al.id] = {'Voleibol': LV[1 + Math.floor(rnd() * 5)], 'Ginástica de Solo': LV[Math.floor(rnd() * 6)]};
     const m = al.sexo === 'M'; v.fit[al.id] = {vaivem: Math.round((m ? 22 : 18) + rnd() * 40), abd: Math.round((m ? 15 : 12) + rnd() * 45), ombros: rnd() < .8 ? 'S' : 'N', senta: Math.round(16 + rnd() * 16)};
+    { const o = v.fit[al.id]; fitSetLado(o, FIT.find(x => x.k === 'ombros'), 'e', rnd() < .85 ? o.ombros : 'N'); fitSetLado(o, FIT.find(x => x.k === 'senta'), 'e', Math.max(5, o.senta - Math.round(rnd() * 5))); }
     if (i % 3) v.con[al.id] = Math.round(8 + rnd() * 11);
     if (i % 4 !== 3) v.av[al.id] = {resp: 1 + Math.floor(rnd() * 3), emp: 1 + Math.floor(rnd() * 3), lid: Math.floor(rnd() * 4)};
   });

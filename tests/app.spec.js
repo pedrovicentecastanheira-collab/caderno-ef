@@ -183,7 +183,7 @@ test('dados antigos do localStorage passam para o IndexedDB e são migrados', as
   });
   await page.reload();
   await expect.poll(() => page.evaluate(() => Store.mode)).toBe('idb');
-  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 3, 0]);
+  expect(await page.evaluate(() => [S.turmas.t1.ano, S.turmas.t1.alunos[0].disp.length, CFG.schema, Object.keys(localStorage).filter(k => /^ef:(turmas|aval):/.test(k)).length])).toEqual([8, 0, 4, 0]);
   // versão 3: Judo/Luta passa a Luta; as competências assinaladas com a numeração antiga saem
   expect(await page.evaluate(() => [S.aval.t1_1.materias, S.aval.t1_1.af.a1.Luta, Object.keys(S.aval.t1_1.comp.a1)])).toEqual([['Voleibol', 'Luta'], 'E', []]);
   await page.waitForTimeout(700); await page.reload();
@@ -378,4 +378,20 @@ test('sincronizar: receber junta a versão mais recente de cada registo', async 
   expect(res).toEqual([1, 'Mudado no outro aparelho.', true]);
   await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
   await expect(page.locator('.sync-st')).toBeVisible();
+});
+
+test('FITescola: ombros e senta e alcança com lado direito e esquerdo; conta o lado mais fraco', async ({page}) => {
+  await demo(page);
+  const r = await page.evaluate(() => {
+    const t = turma(), al = t.alunos.find(x => x.sexo && x.nasc), v = avalOf(t.id, 1), f = FIT.find(x => x.k === 'senta'), o = {};
+    fitSetLado(o, f, 'd', 30); fitSetLado(o, f, 'e', 12);
+    const ob = {}, fo = FIT.find(x => x.k === 'ombros'); fitSetLado(ob, fo, 'd', 'S'); fitSetLado(ob, fo, 'e', 'N');
+    const leg = {senta: 20}; fitSetLado(leg, f, 'd', 25);             // valor antigo passa para os dois lados antes de mudar um
+    return [o.senta, ob.ombros, leg.senta_e, leg.senta, fitTxt(f, o)];
+  });
+  expect(r).toEqual([12, 'N', 20, 20, 'D 30 · E 12 cm']);
+  await go(page, 'avaliar');
+  await page.evaluate(() => { UI.glay = 'tabela'; render(); });
+  await expect(page.locator('th', {hasText: 'Senta e alc. D'})).toHaveCount(1);
+  await expect(page.locator('th', {hasText: 'Ombros E'})).toHaveCount(1);
 });
