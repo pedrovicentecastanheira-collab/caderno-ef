@@ -194,3 +194,4 @@ td.c.trans,.gcr .c.trans{opacity:.55;font-style:italic}
 .cl-n.parc{color:var(--warn);background:var(--warn-soft)}
 table.prop-t select{min-width:70px}
 .obs-auto-b{float:right;font-size:13px}
+code{font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:5px;word-break:break-all}
