@@ -83,7 +83,7 @@ test('competências assinaladas definem o nível', async ({page}) => {
   const nE = await page.locator('#ged input[data-in="comp"][data-id^="E"]').count();
   for (let i = 0; i < Math.ceil(nE / 2); i++) { const cb = page.locator('#ged input[data-in="comp"][data-id^="E"]').nth(i); await cb.click(); await expect(cb).toBeChecked(); }
   await expect(page.locator('td.c[data-k="m:Voleibol"]').nth(0)).toHaveText('PE');
-  await expect(page.locator('#ged .domd summary')).toContainText('Para melhorar');
+  await expect(page.locator('#ged .domd > summary')).toContainText('Para melhorar');
 });
 
 test('cartões: arrastar o aluno para outro nível', async ({page}, ti) => {
@@ -258,10 +258,16 @@ test('avaliação formativa: evidências, próximo desafio, estações por níve
   await demo(page); await go(page, 'turma');
   await page.evaluate(() => { A['aula-new'](null, null, '2026-10-20'); UI.draft.materias = ['Voleibol']; });
   await page.click('[data-a="obs-open"]');
-  await page.locator('[data-a="obs-set"][data-v="1"]').first().click();
+  // por aluno: várias competências de uma vez, o nível sai logo
+  for (let i = 0; i < 3; i++) await page.locator('#sheet input[data-in="obs-tk"]').nth(i).click();
+  await expect(page.locator('#sheet .obs-nav .lvpill')).toBeVisible();
+  // por competência: várias colunas, ✓/✗ por célula
+  await page.click('[data-a="obs-modo"][data-k="turma"]');
+  await page.locator('[data-a="obs-cell"]').first().click();
+  await expect(page.locator('[data-a="obs-cell"]').first()).toHaveClass(/ok/);
   // segunda evidência positiva noutra data: a competência passa a dominada e é assinalada
   // regra única: a segunda evidência positiva assinala logo a competência, sem passo extra
-  const ok = await page.evaluate(() => { const t = turma(), O = UI.obs; evAdd(t, '2026-10-13', t.alunos[0].id, O.m, O.cid, 1); closeSheet(); return !!tksOf(avalOf(t.id, 1), t.alunos[0].id, O.m)[O.cid]; });
+  const ok = await page.evaluate(() => { const t = turma(), O = UI.obs; evAdd(t, '2026-10-13', t.alunos[0].id, O.m, O.cids[0], 1); closeSheet(); return !!tksOf(avalOf(t.id, 1), t.alunos[0].id, O.m)[O.cids[0]]; });
   expect(ok).toBe(true);
   expect(await page.evaluate(() => { const t = turma(), d = desafioDe(t, 1, t.alunos[0], 'Voleibol'); return !!(d && d.txt); })).toBe(true);
   await page.evaluate(() => { UI.aluno = turma().alunos[0].id; UI.tsub = 'alunos'; UI.atab = 'comp'; render(); });

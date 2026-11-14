@@ -88,11 +88,17 @@ function lvFromTicks(ciclo, m, ticks) {
   const fI = f('I'), fE = f('E'), fA = f('A');
   return fI < 1 ? (fI >= .5 ? 'PI' : 'NI') : fE < 1 ? (fE >= .5 ? 'PE' : 'I') : fA < 1 ? (fA >= .5 ? 'PA' : 'E') : 'A';
 }
-function compCheck(ciclo, m, ticks, ev) {
-  const cs = compsOf(ciclo, m); ticks = ticks || {};
-  return ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return ''; const all = xs.every(c => ticks[c.id]); let last = null;
-    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(c.txt)}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`; }).join(''); }).join('');
+// Lista de verificação por nível: as competências motoras e táticas à vista, em frase curta (texto oficial ao tocar
+// em "texto oficial"); as de cooperação, regras e conhecimento ficam agrupadas por baixo. inp/all: data-in e ação.
+function checkList(ciclo, m, ticks, ev, inp, all) {
+  const cs = compsOf(ciclo, m); ticks = ticks || {}; const of = UI.clOf;
+  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`;
+  return (cs.some(c => c.of) ? `<div class="cl-top"><button class="link" data-a="cl-of">${of ? 'Ver frases curtas' : 'Ver o texto oficial'}</button></div>` : '') + ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return '';
+    const on = xs.every(c => ticks[c.id]), n = xs.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
+    return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xs.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
+      + key.map(item).join('') + (out.length ? `<details class="cl-more"${out.some(c => ticks[c.id]) ? '' : ''}><summary>Cooperação, regras e conhecimento (${out.filter(c => ticks[c.id]).length}/${out.length})</summary>${out.map(item).join('')}</details>` : ''); }).join('');
 }
+function compCheck(ciclo, m, ticks, ev) { return checkList(ciclo, m, ticks, ev, 'comp', 'comp-all'); }
 function regOf(t, p, aid) {
   let pos = 0, neg = 0;
   aulasOf(t.id).forEach(a => { if (periodOf(a.data) !== p) return; const r = (a.reg || {})[aid]; if (r) { pos += r.p || 0; neg += r.n || 0; } });

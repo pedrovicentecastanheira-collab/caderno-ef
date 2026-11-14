@@ -777,6 +777,22 @@ li.ok .bx{border-color:var(--ok);background:var(--ok-soft)}
 .sync-ol{margin:0;padding-left:20px;line-height:1.6}
 .sync-url{display:flex;gap:8px}
 .sync-url input{flex:1}
+.cl-top{display:flex;justify-content:flex-end}
+.clh{display:flex;align-items:baseline;gap:8px}
+.clh .link{margin-left:auto}
+details.cl-more{margin:2px 0 8px 28px}
+details.cl-more>summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600;padding:4px 0}
+.obs-nav{display:flex;align-items:center;gap:8px}
+.obs-nav select{flex:1;min-width:0}
+.obs-cl .cli{font-size:14.5px;padding:7px 0}
+.obs-cl .cli input{width:22px;height:22px}
+table.obs-t th span{display:block;font-size:10px;color:var(--muted)}
+table.obs-t td{padding:3px}
+table.obs-t .ob{width:44px;height:38px}
+table.obs-t .ob.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+table.obs-t .ob.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.obs-leg{margin:4px 0 0;padding-left:18px}
+.ki-f .chip{text-align:left;font-size:12.5px;padding:6px 10px;border-radius:10px;line-height:1.3}
 </style>
 </head>
 <body>
@@ -1393,11 +1409,17 @@ function lvFromTicks(ciclo, m, ticks) {
   const fI = f('I'), fE = f('E'), fA = f('A');
   return fI < 1 ? (fI >= .5 ? 'PI' : 'NI') : fE < 1 ? (fE >= .5 ? 'PE' : 'I') : fA < 1 ? (fA >= .5 ? 'PA' : 'E') : 'A';
 }
-function compCheck(ciclo, m, ticks, ev) {
-  const cs = compsOf(ciclo, m); ticks = ticks || {};
-  return ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return ''; const all = xs.every(c => ticks[c.id]); let last = null;
-    return `<div class="clh"><b>${LVN[k]}</b><button class="link" data-a="comp-all" data-k="${k}" data-v="${all ? 0 : 1}">${all ? 'Desmarcar todas' : 'Marcar todas'}</button></div>` + xs.map(c => { const hd = c.ctx !== last && c.ctx ? `<div class="cctx">${esc(c.ctx)}:</div>` : ''; last = c.ctx; return hd + `<label class="cli"><input type="checkbox" data-in="comp" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span>${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(c.txt)}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`; }).join(''); }).join('');
+// Lista de verificação por nível: as competências motoras e táticas à vista, em frase curta (texto oficial ao tocar
+// em "texto oficial"); as de cooperação, regras e conhecimento ficam agrupadas por baixo. inp/all: data-in e ação.
+function checkList(ciclo, m, ticks, ev, inp, all) {
+  const cs = compsOf(ciclo, m); ticks = ticks || {}; const of = UI.clOf;
+  const item = c => `<label class="cli"><input type="checkbox" data-in="${inp}" data-id="${c.id}"${ticks[c.id] ? ' checked' : ''}> <span title="${esc((c.ctx ? c.ctx + ': ' : '') + c.txt)}">${c.of ? `<b class="cid">${c.n}</b> ` : ''}${esc(of || !c.of ? c.txt : cAluno(ciclo, m, c))}${ev && ev[c.id] ? ' ' + evDots(ev[c.id]) : ''}</span></label>`;
+  return (cs.some(c => c.of) ? `<div class="cl-top"><button class="link" data-a="cl-of">${of ? 'Ver frases curtas' : 'Ver o texto oficial'}</button></div>` : '') + ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); if (!xs.length) return '';
+    const on = xs.every(c => ticks[c.id]), n = xs.filter(c => ticks[c.id]).length, key = xs.filter(c => !c.of || !geralC(c)), out = xs.filter(c => c.of && geralC(c));
+    return `<div class="clh"><b>${LVN[k]}</b><span class="small muted num-t">${n}/${xs.length}</span><button class="link" data-a="${all}" data-k="${k}" data-v="${on ? 0 : 1}">${on ? 'Desmarcar todas' : 'Marcar todas'}</button></div>`
+      + key.map(item).join('') + (out.length ? `<details class="cl-more"${out.some(c => ticks[c.id]) ? '' : ''}><summary>Cooperação, regras e conhecimento (${out.filter(c => ticks[c.id]).length}/${out.length})</summary>${out.map(item).join('')}</details>` : ''); }).join('');
 }
+function compCheck(ciclo, m, ticks, ev) { return checkList(ciclo, m, ticks, ev, 'comp', 'comp-all'); }
 function regOf(t, p, aid) {
   let pos = 0, neg = 0;
   aulasOf(t.id).forEach(a => { if (periodOf(a.data) !== p) return; const r = (a.reg || {})[aid]; if (r) { pos += r.p || 0; neg += r.n || 0; } });
@@ -4066,26 +4088,59 @@ function evApply(t, p, m, aids) {
 /* folha "Observar": uma competência de cada vez, a turma toda */
 function sheetObs(d, ms) {
   const t = turma(); ms = ms && ms.length ? ms : matsOf(t, periodOf(d)); if (!ms.length) ms = (MATS[t.ciclo] || GR).slice(0, 6);
-  const O = UI.obs = UI.obs && UI.obs.d === d ? UI.obs : {d, ms, m:ms[0], k:null, cid:null};
+  const O = UI.obs = UI.obs && UI.obs.d === d ? UI.obs : {d, ms, m:ms[0], k:null, cids:[], modo:'aluno', aid:null};
   O.ms = ms; if (!ms.includes(O.m)) O.m = ms[0];
   obsRender(true);
 }
+// Assinala (ou retira) competências de um aluno e recalcula o nível, como na lista do Avaliar.
+function tickSet(t, p, aid, m, match, on) {
+  const v = avalOf(t.id, p); v.comp = v.comp || {}; v.comp[aid] = v.comp[aid] || {}; const tk = v.comp[aid][m] = v.comp[aid][m] || {};
+  compsOf(t.ciclo, m).forEach(c => { if (match(c.id)) { if (on) tk[c.id] = true; else delete tk[c.id]; } });
+  v.af = v.af || {}; v.af[aid] = v.af[aid] || {};
+  if (Object.keys(tk).length) v.af[aid][m] = lvFromTicks(t.ciclo, m, tk); else { delete v.comp[aid][m]; }
+  if (v.man && v.man[aid]) delete v.man[aid][m];
+  touchAval(v);
+}
 function obsRender(open) {
   const t = turma(), O = UI.obs, p = periodOf(O.d), v = avalOf(t.id, p), cs = compsOf(t.ciclo, O.m);
-  if (!O.k) O.k = nivelTurma(t, O.m); let xs = cs.filter(c => c.k === O.k); if (!xs.length) { O.k = 'I'; xs = cs.filter(c => c.k === 'I'); }
-  if (!xs.some(c => c.id === O.cid)) O.cid = xs[0] && xs[0].id; const c = xs.find(x => x.id === O.cid);
   const als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0);
-  const body = `<div class="form obs"><p class="hint" style="margin:0">Escolha a competência que está a observar e toque em <b>✓</b> (conseguiu) ou <b>✗</b> (ainda não). Duas observações positivas, sendo a última positiva, contam como competência dominada: passa logo para as assinaladas e o nível é recalculado.</p>
-    <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>
-    ${cs.length ? `<div class="seg block">${['I', 'E', 'A'].filter(k => cs.some(x => x.k === k)).map(k => `<button data-a="obs-k" data-k="${k}" class="${O.k === k ? 'on' : ''}">${LVN[k]}</button>`).join('')}</div>
-    <div class="field"><label for="obs-c">Competência</label><select id="obs-c" data-in="obs-c">${xs.map(x => `<option value="${x.id}"${x.id === O.cid ? ' selected' : ''}>${esc((x.of ? x.id + ' · ' : '') + x.txt.slice(0, 90) + (x.txt.length > 90 ? '…' : ''))}</option>`).join('')}</select></div>
-    ${c ? `<div class="obs-c">${c.ctx ? `<span class="cctx">${esc(c.ctx)}:</span> ` : ''}${cidOf(c)}${esc(c.txt)}</div>` : ''}
-    <div class="obs-l">${als.map(al => { const arr = (evMap(v, al.id, O.m))[O.cid], hoje = (arr || []).find(x => x[0] === O.d), st = evState(arr), tk = (tksOf(v, al.id, O.m) || {})[O.cid];
-      return `<div class="obs-r"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}<span class="small muted">${tk ? 'assinalada' : st ? EVN[st] : ''} ${evDots(arr)}</span></span>
-        <button class="ob ok${hoje && hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="1" aria-label="${esc(al.nome)} conseguiu">✓</button><button class="ob no${hoje && !hoje[1] ? ' on' : ''}" data-a="obs-set" data-aid="${esc(al.id)}" data-v="0" aria-label="${esc(al.nome)} ainda não">✗</button></div>`; }).join('')}</div>` : '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>'}</div>`;
+  let b = `<div class="form obs"><div class="seg block">${[['aluno', 'Por aluno'], ['turma', 'Por competência']].map(([k, n]) => `<button data-a="obs-modo" data-k="${k}" class="${O.modo === k ? 'on' : ''}">${n}</button>`).join('')}</div>
+    <div class="chips">${O.ms.map(m => `<button class="chip ${m === O.m ? 'on' : ''}" data-a="obs-m" data-m="${esc(m)}">${subIcon(m, anoOf(t))}${esc(m)}</button>`).join('')}</div>`;
+  if (!cs.length) b += '<p class="hint">Esta matéria não tem competências descritas neste ciclo.</p>';
+  else if (O.modo === 'aluno') {
+    if (!als.some(al => al.id === O.aid)) O.aid = als[0] && als[0].id; const i = als.findIndex(al => al.id === O.aid), al = als[i];
+    if (al) { const l = (lvOf(v, al.id, O.m) || {}).l;
+      b += `<div class="obs-nav"><button class="icon-btn" data-a="obs-al" data-d="-1" aria-label="Aluno anterior"${i <= 0 ? ' disabled' : ''}>‹</button>${avatar(al, 'sm')}<select data-in="obs-al" aria-label="Aluno">${als.map(x => `<option value="${esc(x.id)}"${x.id === al.id ? ' selected' : ''}>${esc(x.num ?? '')} · ${esc(x.nome)}</option>`).join('')}</select>${l ? `<span class="lvpill ${GLV[l]}">${l}</span>` : ''}<button class="icon-btn" data-a="obs-al" data-d="1" aria-label="Aluno seguinte"${i >= als.length - 1 ? ' disabled' : ''}>›</button></div>
+        <p class="hint" style="margin:0">Marque as competências que ${esc(al.nome.split(' ')[0])} já domina. O nível é calculado logo (PI, PE e PA: metade do nível).</p>
+        <div class="cl obs-cl">${checkList(t.ciclo, O.m, tksOf(v, al.id, O.m), evMap(v, al.id, O.m), 'obs-tk', 'obs-all')}</div>`; }
+  } else {
+    if (!O.k) O.k = nivelTurma(t, O.m); let xs = cs.filter(c => c.k === O.k); if (!xs.length) { O.k = 'I'; xs = cs.filter(c => c.k === 'I'); }
+    O.cids = (O.cids || []).filter(id => cs.some(c => c.id === id)); if (!O.cids.length) O.cids = xs.filter(c => !geralC(c)).slice(0, 3).map(c => c.id);
+    const sel = O.cids.map(id => cs.find(c => c.id === id));
+    b += `<div class="seg block">${['I', 'E', 'A'].filter(k => cs.some(c => c.k === k)).map(k => `<button data-a="obs-k" data-k="${k}" class="${O.k === k ? 'on' : ''}">${LVN[k]}</button>`).join('')}</div>
+      <p class="hint" style="margin:0">Escolha até 4 competências e toque nas células: ✓ conseguiu, ✗ ainda não, vazio. Duas observações positivas (a última positiva) assinalam a competência.</p>
+      <div class="ki-f">${xs.map(c => `<button class="chip ${O.cids.includes(c.id) ? 'on' : ''}" data-a="obs-c" data-id="${c.id}" title="${esc(c.txt)}">${c.of ? c.id + ' · ' : ''}${esc(encurta(cAluno(t.ciclo, O.m, c), 70))}</button>`).join('')}</div>
+      <div class="tbl-wrap"><table class="obs-t"><thead><tr><th class="l">Aluno</th>${sel.map((c, j) => `<th title="${esc(c.txt)}">${j + 1}<span>${esc(c.id)}</span></th>`).join('')}</tr></thead><tbody>${als.map(al => { const ev = evMap(v, al.id, O.m), tk = tksOf(v, al.id, O.m) || {};
+        return `<tr><td class="l nm">${esc(nome2(al.nome))}</td>${sel.map(c => { const h = (ev[c.id] || []).find(x => x[0] === O.d), st = h ? (h[1] ? 'ok' : 'no') : '';
+          return `<td><button class="ob ${st} on" data-a="obs-cell" data-aid="${esc(al.id)}" data-id="${c.id}" aria-label="${esc(al.nome)}, ${esc(c.id)}">${st === 'ok' ? '✓' : st === 'no' ? '✗' : tk[c.id] ? '•' : ''}</button></td>`; }).join('')}</tr>`; }).join('')}</tbody></table></div>
+      <ol class="obs-leg small">${sel.map(c => `<li><b>${esc(c.id)}</b> ${esc(cAluno(t.ciclo, O.m, c))}</li>`).join('')}</ol>`;
+  }
+  b += '</div>';
   const foot = `<button class="btn primary" data-a="obs-done">Feito</button>`;
-  if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), body, foot); else { const b = $('#sheet .sh-b'), y = b ? b.scrollTop : 0; updSheet(body, foot); if (b) b.scrollTop = y; }
+  if (open) openSheet('Observar · ' + fmtDate(O.d, {day:'numeric', month:'short'}), b, foot); else { const el = $('#sheet .sh-b'), y = el ? el.scrollTop : 0; updSheet(b, foot); if (el) el.scrollTop = y; }
 }
+Object.assign(A, {
+  'obs-modo': el => { UI.obs.modo = el.dataset.k; obsRender(); },
+  'obs-al': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), als = alunosOf(t).filter(al => (REG[regAt(al, p)] || REG.Normal).af > 0), i = als.findIndex(al => al.id === O.aid) + +el.dataset.d; if (als[i]) { O.aid = als[i].id; obsRender(); $('#sheet .sh-b').scrollTop = 0; } },
+  'obs-all': el => { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id[0] === el.dataset.k, el.dataset.v === '1'); obsRender(); },
+  'obs-c': el => { const O = UI.obs, id = el.dataset.id, i = O.cids.indexOf(id); if (i >= 0) O.cids.splice(i, 1); else if (O.cids.length < 4) O.cids.push(id); else toast('No máximo 4 competências de cada vez.'); obsRender(); },
+  'obs-cell': el => { const t = turma(), O = UI.obs, p = periodOf(O.d), aid = el.dataset.aid, id = el.dataset.id, h = (evMap(avalOf(t.id, p), aid, O.m)[id] || []).find(x => x[0] === O.d);
+    if (!h) evAdd(t, O.d, aid, O.m, id, 1); else if (h[1]) evAdd(t, O.d, aid, O.m, id, 0); else evAdd(t, O.d, aid, O.m, id, 0); obsRender(); },
+  'cl-of': () => { UI.clOf = !UI.clOf; if (UI.obs && !$('#sheet').hidden && $('#sheet .obs')) obsRender(); else if (typeof gEditor === 'function' && SEL) gEditor(); }
+});
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k || !UI.obs) return;
+  if (k === 'obs-al') { UI.obs.aid = el.value; obsRender(); }
+  else if (k === 'obs-tk') { const t = turma(), O = UI.obs; tickSet(t, periodOf(O.d), O.aid, O.m, id => id === el.dataset.id, el.checked); obsRender(); } });
 
 /* próximo desafio: a primeira competência por dominar, escrita para o aluno */
 function paraAluno(s) {
@@ -4124,9 +4179,8 @@ function cartoesHtml(t, p) {
 
 Object.assign(A, {
   'obs-open': () => { const d = A['aula-save'](true); if (!d) return; sheetObs(d.data, d.materias); },
-  'obs-m': el => { UI.obs.m = el.dataset.m; UI.obs.k = null; UI.obs.cid = null; obsRender(); },
-  'obs-k': el => { UI.obs.k = el.dataset.k; UI.obs.cid = null; obsRender(); },
-  'obs-set': el => { const O = UI.obs; evAdd(turma(), O.d, el.dataset.aid, O.m, O.cid, +el.dataset.v); obsRender(); },
+  'obs-m': el => { UI.obs.m = el.dataset.m; UI.obs.k = null; UI.obs.cids = []; obsRender(); },
+  'obs-k': el => { UI.obs.k = el.dataset.k; UI.obs.cids = []; obsRender(); },
   'obs-done': () => { closeSheet(); render(); },
   'obs-apply': () => { const t = turma(), O = UI.obs, n = evApply(t, periodOf(O.d), O.m, alunosOf(t).map(a => a.id)); toast(n ? `Competências atualizadas em ${n} ${n === 1 ? 'aluno' : 'alunos'}; os níveis foram recalculados.` : 'Ainda não há competências dominadas pelas evidências (são precisas duas observações positivas).'); closeSheet(); render(); },
   'g-obs': () => sheetObs(today(), FOCUS && S.aulas[FOCUS] ? S.aulas[FOCUS].materias : null),
@@ -4137,7 +4191,6 @@ Object.assign(A, {
     touchAval(v); closeSheet(); render(); toast('Desafio guardado.'); },
   'doc-des': () => printDoc('Cartões de desafio', cartoesHtml(turma(), UI.p))
 });
-document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'obs-c' && UI.obs) { UI.obs.cid = el.value; obsRender(); } });
 // Evolução das competências observadas de um aluno numa matéria.
 function evList(t, v, al, m) {
   const ev = evMap(v, al.id, m), cs = compsOf(t.ciclo, m).filter(c => ev[c.id]); if (!cs.length) return '';
