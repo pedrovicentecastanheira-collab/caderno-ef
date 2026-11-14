@@ -34,9 +34,14 @@ const Store = {
   async loadAll() {
     const out = emptyData();
     if (this.mode === 'cloud') {
+      // Cada leitura devolve no máximo 1000 documentos: lê por páginas (pela ordem do id) até ao fim.
       for (const k of KINDS) {
-        const snap = await this.col(k).limit(1000).get();
-        snap.docs.forEach(d => { if (d.exists) out[k][d.id] = clone(d.data()); });
+        let last = null;
+        for (let pg = 0; pg < 50; pg++) {
+          const q = last == null ? this.col(k) : this.col(k).where('id', '>', last), snap = await q.limit(1000).get();
+          snap.docs.forEach(d => { if (d.exists) { out[k][d.id] = clone(d.data()); last = d.id; } });
+          if (snap.docs.length < 1000) break;
+        }
       }
     } else if (this.mode === 'idb') {
       const st = this.tx(), [keys, vals] = await Promise.all([idbReq(st.getAllKeys()), idbReq(st.getAll())]);
@@ -50,12 +55,13 @@ const Store = {
     return out;
   },
   save(k, obj, keepStamp) {
+    if (k === 'aulas') AULAS_V++;
     if (!keepStamp) obj._u = Date.now();
     const key = k + ':' + obj.id; clearTimeout(this.t[key]);
     const run = () => { delete this.pend[key]; return this._write(k, obj.id, () => clone(obj)); };
     this.pend[key] = run; this.t[key] = setTimeout(run, 450);
   },
-  del(k, id) { const key = k + ':' + id; clearTimeout(this.t[key]); delete this.pend[key]; return this._write(k, id, null); },
+  del(k, id) { if (k === 'aulas') AULAS_V++; const key = k + ':' + id; clearTimeout(this.t[key]); delete this.pend[key]; return this._write(k, id, null); },
   flush() { Object.keys(this.pend).forEach(key => { clearTimeout(this.t[key]); const fn = this.pend[key]; fn && fn(); }); },
   get local() { return this.mode === 'idb' || this.mode === 'local'; },
   _write(k, id, get) {
@@ -71,7 +77,10 @@ const Store = {
       } else if (this.mode === 'local') {
         if (body) localStorage.setItem('ef:' + key, JSON.stringify(body)); else localStorage.removeItem('ef:' + key);
       }
-    }).catch(e => { toast(e && (e.code === 'quota_exceeded' || e.name === 'QuotaExceededError') ? 'Não foi possível guardar: espaço cheio.' : 'Não foi possível guardar. Verifique a ligação e tente de novo.', 'bad'); });
+    }).catch(e => { const c = e && (e.code || e.name);
+      toast(c === 'invalid_argument' ? 'Não foi possível guardar: este registo ficou demasiado grande para a conta (limite de 256 KB). Faça uma cópia de segurança e fale com o suporte do Caderno EF.'
+        : c === 'quota_exceeded' || c === 'QuotaExceededError' ? 'Não foi possível guardar: o espaço disponível está cheio. Faça uma cópia de segurança e apague dados antigos (turmas de anos anteriores).'
+        : c === 'resource_exhausted' ? 'Muitas gravações seguidas: aguarde uns segundos, o caderno volta a tentar.' : 'Não foi possível guardar. Verifique a ligação e tente de novo.', 'bad'); });
     this.q[key] = p; return p;
   }
 };
