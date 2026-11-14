@@ -302,6 +302,7 @@ function compSet(match, on) {
   gSnap(c, col); const v = c.v; v.comp = v.comp || {}; v.comp[al.id] = v.comp[al.id] || {}; const tk = v.comp[al.id][col.m] = v.comp[al.id][col.m] || {};
   compsOf(c.t.ciclo, col.m).forEach(x => { if (match(x.id)) { if (on) tk[x.id] = true; else delete tk[x.id]; } });
   if (Object.keys(tk).length) { v.af = v.af || {}; v.af[al.id] = v.af[al.id] || {}; v.af[al.id][col.m] = lvFromTicks(c.t.ciclo, col.m, tk); } else delete v.comp[al.id][col.m];
+  if (v.man && v.man[al.id]) delete v.man[al.id][col.m];
   touchAval(v); UI.domOpen = true; gRefresh();
 }
 let DOCI = null;

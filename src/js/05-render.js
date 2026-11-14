@@ -29,6 +29,7 @@ function vTurma(t) {
     return `<div class="split"><div class="split-l">${vTurmaSeg(sub)}${vAlunos(t)}</div><div class="split-r">${vAlunoPage(t, sel, true)}</div></div>`;
   }
   if (sub === 'alunos' && al) return vAlunoPage(t, al, false);
+  if (sub === 'aula') return vModoAula(t);
   if (sub === 'planear') return `<div class="stack">${vTurmaSeg(sub)}${vPlanear(t)}</div>`;
   return `<div class="stack">${vTurmaSeg(sub)}</div>` + (sub === 'alunos' ? vAlunos(t) : vAulas(t));
 }
@@ -36,8 +37,8 @@ function vTurmaSeg(sub) {
   return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos'], ['planear', 'Planear']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
-const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
+const DEXTRA = {sync:() => vSync(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });

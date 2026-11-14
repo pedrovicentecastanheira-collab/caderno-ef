@@ -58,7 +58,7 @@ function descHtml(ciclo, m, open) {
   const cs = compsOf(ciclo, m), of = cs.length && cs[0].of, d = (PNEF[ciclo] || []).find(x => x.m === m);
   const body = of ? ['I', 'E', 'A'].map(k => { const xs = cs.filter(c => c.k === k); return xs.length ? `<div class="dlv"><b>${k} · ${LVN[k]}</b> <span class="muted small">${xs.length} competências</span>${compList(xs)}</div>` : ''; }).join('')
     : d ? `<dl>${['I','E','A'].map(k => `<dt>${k} · ${LVN[k]}</dt><dd>${esc(d[k] || '—')}</dd>`).join('')}</dl>` : '<p class="hint">Sem descritivo para esta matéria neste ciclo.</p>';
-  return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.</p></details>`;
+  return `<details class="desc"${open ? ' open' : ''}><summary>${of ? 'Competências · Aprendizagens Essenciais 2026' : 'Descritivos PNEF'} · ${esc(m)}${isAlt(ciclo, m) ? ' <span class="pill">alternativa</span>' : ''}</summary>${body}<p class="hint" style="margin:6px 0 12px">PI, PE e PA: domina pelo menos metade das competências do nível I, E ou A.${of ? ` <button class="link" data-a="cal-ed" data-m="${esc(m)}">Ver e editar a linguagem do aluno</button>` : ''}</p></details>`;
 }
 // O que domina e o que falta: pelas competências assinaladas ou, sem elas, pelo nível escolhido.
 function compSplit(ciclo, m, l, ticks) {
@@ -142,7 +142,7 @@ function gShow(c, col, al) {
     if (col.k === 't:FIN') return {txt:n ?? '—', cls:'calc ' + (r.EST === 'Apto' ? 'fin-ok' : r.EST === 'Não apto' ? 'fin-bad' : 'fin-inc')};
     return {txt:f1(n), cls:'calc' + (n != null && n < 10 ? ' low' : '')};
   }
-  if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l], auto:d.auto} : {txt:'', cls:''}; }
+  if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l] + (isMan(c.v, al.id, col.m) ? ' man' : ''), auto:d.auto} : {txt:'', cls:''}; }
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
     const z = zoneOf(col.f, al, ageAt(al.nasc, refDate(c.p)), c.v), zc = z != null ? 'z' + z : '';
@@ -175,7 +175,10 @@ function gSet(c, col, al, val) {
     if (val == null) delete a.reg[id]; else { if (val > 0) r.p++; else r.n++; a.reg[id] = r; }
     Store.save('aulas', a); return;
   }
-  if (k.startsWith('m:')) { const o = at(at(v, 'af'), id); if (val == null) delete o[col.m]; else o[col.m] = val; }
+  if (k.startsWith('m:')) { const o = at(at(v, 'af'), id); if (val == null) delete o[col.m]; else o[col.m] = val;
+    // Regra única: o nível vem das competências; escolhido à mão contra elas, fica marcado como exceção.
+    const tk = tksOf(v, id, col.m), lt = tk && Object.values(tk).some(Boolean) ? lvFromTicks(c.t.ciclo, col.m, tk) : null;
+    if (val != null && lt && val !== lt) at(at(v, 'man'), id)[col.m] = 1; else if (v.man && v.man[id]) delete v.man[id][col.m]; }
   else if (k.startsWith('i:')) { const o = at(at(v, 'iv'), id); if (val == null) delete o[col.ind.id]; else o[col.ind.id] = val; }
   else if (k.startsWith('f:')) at(at(v, 'fit'), id)[col.f.k] = val;
   else if (k === 'con') { const max = c.t.escala === '1-5' ? 5 : 20; at(v, 'con')[id] = val == null ? null : Math.max(0, Math.min(max, val)); }
@@ -281,7 +284,7 @@ function gEditor() {
   }
   if (col.type === 'lvl' && col.m && !col.ind && compsOf(c.t.ciclo, col.m).length) {
     const l = (lvOf(c.v, al.id, col.m) || {}).l, tk = tksOf(c.v, al.id, col.m), sm = lvSummary(c.t.ciclo, col.m, l, tk), ex = tk && Object.values(tk).some(Boolean);
-    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl"><div class="hint">${ex ? 'Nível calculado pelas competências assinaladas.' : 'Assinale as competências que o aluno já domina: o nível passa a ser calculado e o resumo fica exato.'}</div>${compCheck(c.t.ciclo, col.m, tk, evMap(c.v, al.id, col.m))}</div></details>`;
+    h += `<details class="domd"${UI.domOpen ? ' open' : ''}><summary>${lvShort(c.t.ciclo, col.m, l, tk) || 'Assinalar as competências que o aluno domina'}</summary>${sm ? `<div class="dom">${sm}</div>` : ''}<div class="cl">${isMan(c.v, al.id, col.m) ? `<div class="note warn man-n">Nível escolhido à mão: as competências apontam para <b>${lvFromTicks(c.t.ciclo, col.m, tk)}</b>. <button class="link" data-a="man-clear">Usar o das competências</button></div>` : `<div class="hint">${ex ? 'Nível calculado pelas competências assinaladas e pelas evidências das aulas.' : 'Assinale as competências que o aluno já domina (ou registe evidências nas aulas): o nível passa a ser calculado.'}</div>`}${compCheck(c.t.ciclo, col.m, tk, evMap(c.v, al.id, col.m))}</div></details>`;
   } else if (col.type === 'lvl') h += `<p class="hint">${col.ind ? 'Indicador de ' + esc(col.m) + '.' : 'Sem competências descritas para esta matéria neste ciclo.'}</p>`;
   else if (col.type === 'q4' && cur != null) h += `<p class="hint">${esc(AVD[col.ak][cur])}</p>`;
   const sc = el.querySelector('.cl'), st = sc ? sc.scrollTop : 0;
