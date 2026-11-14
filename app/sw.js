@@ -1,5 +1,5 @@
 // Caderno EF — service worker: funciona sem internet.
-const VERSAO = 'caderno-ef-v2';
+const VERSAO = 'caderno-ef-v3';
 const BASE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

@@ -152,6 +152,9 @@ function gShow(c, col, al) {
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
     const age = ageAt(al.nasc, refDate(c.p)), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
+    if (x == null && fitTrans(c.v)) { const po = ((avalOf(c.t.id, c.p - 1).fit || {})[al.id]) || {}, px = col.side ? fitLado(po, col.f, col.side) : po[col.f.k];
+      if (px != null && px !== '') { const pa = ageAt(al.nasc, refDate(c.p - 1)), pz = col.side ? (hasAuto(col.f, al, pa) ? autoZone(col.f, al, pa, px) : null) : z, pzc = pz != null ? 'z' + pz : '';
+        return {txt:col.f.bool ? (px === 'S' ? 'Sim' : 'Não') : String(px).replace('.', ','), cls:pzc + ' trans', auto:true}; } }
     if (col.f.bool) return {txt:x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '', cls:zc};
     return x != null ? {txt:String(x).replace('.', ','), cls:zc} : z != null ? {txt:['Fora', 'ZS', 'ZA'][z], cls:zc, auto:true} : {txt:'', cls:''};
   }
@@ -407,7 +410,7 @@ function vMais(t) {
   const nv = CFG.niv || [4, 10, 14, 18];
   h += `<div class="sec-h"><h2>Escola e relatórios</h2></div><div class="card form">
     <div class="grid2"><div class="field"><label for="cfg-escola">Escola / agrupamento</label><input type="text" id="cfg-escola" data-in="cfg-txt" data-k="escola" value="${esc(CFG.escola || '')}"></div><div class="field"><label for="cfg-prof">Professor(a)</label><input type="text" id="cfg-prof" data-in="cfg-txt" data-k="prof" value="${esc(CFG.prof || '')}"></div></div>
-    <div class="field"><span class="lbl">Conversão da classificação 0–20 em nível 1–5 (2.º e 3.º ciclos) e menção (1.º ciclo)</span><div class="tbl-wrap"><table class="ref"><thead><tr><th>Nível 2 a partir de</th><th>Nível 3</th><th>Nível 4</th><th>Nível 5</th></tr></thead><tbody><tr>${nv.map((x, i) => `<td><input type="text" inputmode="decimal" data-in="cfg-niv" data-i="${i}" value="${x}" aria-label="Limite do nível ${i + 2}"></td>`).join('')}</tr></tbody></table></div><p class="hint" style="margin:0">Por defeito: 1 (0–3), 2 (4–9), 3 (10–13), 4 (14–17), 5 (18–20). Ajuste aos critérios aprovados na sua escola.</p></div>
+    <div class="field"><span class="lbl">Conversão da classificação 0–20 em nível 1–5 (2.º e 3.º ciclos) e menção (1.º ciclo)</span><div class="tbl-wrap"><table class="ref"><thead><tr><th>Nível 2 a partir de</th><th>Nível 3</th><th>Nível 4</th><th>Nível 5</th></tr></thead><tbody><tr>${nv.map((x, i) => `<td><input type="text" inputmode="decimal" data-in="cfg-niv" data-i="${i}" value="${x}" aria-label="Limite do nível ${i + 2}"></td>`).join('')}</tr></tbody></table></div><p class="small" style="margin:4px 0 0">Intervalos: ${nivelFaixas().map((x, i) => `nível ${i + 1}: ${x}`).join(' · ')}.</p><p class="hint" style="margin:0">Por defeito: 1 (0–3), 2 (4–9), 3 (10–13), 4 (14–17), 5 (18–20). Ajuste aos critérios aprovados na sua escola.</p></div>
     <div class="field"><span class="lbl">Aprendizagens Essenciais · Conhecimentos (a escala das AE é descritiva; indique a partir de que classificação 0–20 considera)</span><div class="grid2">${['Proficiente', 'Elevado / Avançado'].map((n, i) => `<div class="field"><label for="aecon-${i}">${n} a partir de</label><input type="text" inputmode="decimal" id="aecon-${i}" data-in="cfg-aecon" data-i="${i}" value="${(CFG.aeCon || [10, 14])[i]}"></div>`).join('')}</div></div>
     <button class="btn" data-a="doc-crit">Critérios de avaliação (imprimir ou PDF)</button></div>`;
   h += `<div class="sec-h"><h2>Cópia de segurança</h2></div><div class="card form">

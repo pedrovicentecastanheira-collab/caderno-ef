@@ -72,13 +72,13 @@ function sheetPaste() {
 
 // Matérias do ciclo em chips: as nucleares à vista e as alternativas (Anexos de 2026) num grupo que abre.
 function matChips(t, chip, sel) {
-  const ms = MATS[t.ciclo] || GR, nuc = ms.filter(m => !isAlt(t.ciclo, m)).map(chip).join(''), alt = ms.filter(m => isAlt(t.ciclo, m)), ah = alt.map(chip).join('');
-  return `<div class="chips">${nuc}</div>` + (ah ? `<details class="alts"${(sel || []).some(m => alt.includes(m)) ? ' open' : ''}><summary>Matérias alternativas <span class="muted">(${alt.length})</span></summary><div class="chips">${ah}</div></details>` : '');
+  const ms = (MATS[t.ciclo] || GR).filter(m => !isMinha(m)), nuc = ms.filter(m => !isAlt(t.ciclo, m)).map(chip).join(''), alt = ms.filter(m => isAlt(t.ciclo, m)), ah = alt.map(chip).join(''), mi = minhas().map(chip).join('');
+  return `<div class="chips">${nuc}</div>` + (mi ? `<div class="lbl" style="margin-top:8px">As minhas modalidades</div><div class="chips">${mi}</div>` : '') + (ah ? `<details class="alts"${(sel || []).some(m => alt.includes(m)) ? ' open' : ''}><summary>Matérias alternativas <span class="muted">(${alt.length})</span></summary><div class="chips">${ah}</div></details>` : '');
 }
 // Lista de opções com as matérias alternativas num grupo à parte.
 function matOpts(t, cur) {
-  const ms = MATS[t.ciclo] || GR, o = m => `<option${cur === m ? ' selected' : ''}>${esc(m)}</option>`, alt = ms.filter(m => isAlt(t.ciclo, m));
-  return ms.filter(m => !isAlt(t.ciclo, m)).map(o).join('') + (alt.length ? `<optgroup label="Matérias alternativas">${alt.map(o).join('')}</optgroup>` : '');
+  const ms = (MATS[t.ciclo] || GR).filter(m => !isMinha(m)), o = m => `<option${cur === m ? ' selected' : ''}>${esc(m)}</option>`, alt = ms.filter(m => isAlt(t.ciclo, m)), mi = minhas();
+  return ms.filter(m => !isAlt(t.ciclo, m)).map(o).join('') + (mi.length ? `<optgroup label="As minhas modalidades">${mi.map(o).join('')}</optgroup>` : '') + (alt.length ? `<optgroup label="Matérias alternativas">${alt.map(o).join('')}</optgroup>` : '');
 }
 function sheetMatAdd() {
   const t = turma(); const cur = matsOf(t, UI.p);

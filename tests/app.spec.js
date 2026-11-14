@@ -426,3 +426,34 @@ test('calendário escolar editável, aulas reais no plano, quem falta observar, 
   await page.locator('[data-a="fe-go"][data-k="con"]').click();
   await expect.poll(() => page.evaluate(() => [UI.tab, UI.hide.con])).toEqual(['avaliar', false]);
 });
+
+test('modalidades do período: retirar, juntar e criar uma modalidade nova', async ({page}) => {
+  await demo(page); await go(page, 'turma');
+  await page.evaluate(() => { const t = turma(); t.plano = {2:[{m:'Badminton', n:8}]}; UI.p = 2; render(); A['mats-per'](); });
+  await expect(page.locator('#sheet .chip.on', {hasText: 'Badminton'})).toHaveCount(1);   // o plano do período conta
+  await page.fill('#mp-n', 'Boccia'); await page.click('[data-a="mp-new"]');
+  await expect(page.locator('#sheet .chip.on', {hasText: 'Boccia'})).toHaveCount(1);
+  await page.locator('#sheet .chip.on', {hasText: 'Boccia'}).click();                   // retirar
+  const r = await page.evaluate(() => [matsOf(turma(), 2).includes('Boccia'), matsOf(turma(), 1).includes('Boccia'), (MATS['3'] || []).includes('Boccia')]);
+  expect(r).toEqual([false, false, true]);
+});
+
+test('FITescola do 2.º período transita para o 3.º e conta o melhor resultado', async ({page}) => {
+  await demo(page);
+  const r = await page.evaluate(() => {
+    const t = turma(), al = t.alunos.find(x => x.sexo && x.nasc), f = FIT.find(x => x.k === 'vaivem'), age = ageAt(al.nasc, refDate(2)), ref = fitRef('vaivem', al.sexo, age);
+    const v2 = avalOf(t.id, 2); v2.fit = {[al.id]: {vaivem: ref.zs + 5}}; S.aval[v2.id] = v2;   // na Zona Saudável no 2.º período
+    const v3 = avalOf(t.id, 3); S.aval[v3.id] = v3;
+    const z3 = zoneOf(f, al, ageAt(al.nasc, refDate(3)), v3);                                      // sem teste no 3.º: transita
+    v3.fit = {[al.id]: {vaivem: 1}}; const pior = zoneOf(f, al, ageAt(al.nasc, refDate(3)), v3);  // pior no 3.º: fica o anterior
+    CFG.fitTransita = false; const sem = zoneOf(f, al, ageAt(al.nasc, refDate(3)), v3); CFG.fitTransita = true;
+    return [z3 >= 1, pior >= 1, sem];
+  });
+  expect(r).toEqual([true, true, 0]);
+});
+
+test('critérios: intervalos da conversão em nível são exclusivos', async ({page}) => {
+  await demo(page);
+  const r = await page.evaluate(() => [nivelFaixas(), [3, 4, 9, 10, 13, 14, 17, 18].map(x => nivel(turma(), x))]);
+  expect(r).toEqual([['0–3', '4–9', '10–13', '14–17', '18–20'], [1, 2, 2, 3, 3, 4, 4, 5]]);
+});

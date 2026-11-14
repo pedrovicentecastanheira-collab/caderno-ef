@@ -20,10 +20,13 @@ function aulasOf(tid) { return Object.values(S.aulas).filter(a => a.turmaId === 
 function avalOf(tid, p) { const id = tid + '_' + p; return S.aval[id] || {id, turmaId:tid, p, materias:[], af:{}, fit:{}, con:{}, av:{}}; }
 function touchAval(v) { histRecord(v); S.aval[v.id] = v; Store.save('aval', v); }
 function matsOf(t, p) {
-  const set = new Set(avalOf(t.id, p).materias || []);
+  // Matérias do período: as escolhidas, as do plano do período, as das aulas e as que já têm níveis; menos as retiradas.
+  const v = avalOf(t.id, p), off = new Set(v.matsOff || []), set = new Set(v.materias || []);
+  (typeof planOf === 'function' ? planOf(t, p) : []).forEach(u => set.add(u.m));
   aulasOf(t.id).forEach(a => { if (periodOf(a.data) === p) (a.materias || []).forEach(m => set.add(m)); });
-  Object.values(avalOf(t.id, p).af || {}).forEach(o => Object.keys(o).forEach(m => set.add(m)));
-  const order = MATS[t.ciclo] || GR; return [...set].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  off.forEach(m => set.delete(m));
+  Object.values(v.af || {}).forEach(o => Object.keys(o).forEach(m => set.add(m)));
+  const order = MATS[t.ciclo] || GR, ix = m => { const i = order.indexOf(m); return i < 0 ? 999 : i; }; return [...set].sort((a, b) => ix(a) - ix(b));
 }
 function counts(t, p, aid) {
   const c = {P:0, F:0, A:0, M:0, D:0, n:0};
@@ -62,7 +65,14 @@ function fitTxt(f, o) {
   if (f.bi) { const d = fitLado(o, f, 'd'), e = fitLado(o, f, 'e'); if ((d == null || d === '') && (e == null || e === '')) return '—'; return `D ${one(d)} · E ${one(e)}${f.bool ? '' : ' ' + f.u}`; }
   const x = o[f.k]; return f.bool || x == null || x === '' ? one(x) : one(x) + ' ' + f.u;
 }
+// No último período, a aptidão física do período anterior transita; se o aluno repetir o teste e melhorar, conta o melhor.
+const fitTrans = v => CFG.fitTransita !== false && v && v.p > 1 && v.p === CFG.nper && v.turmaId;
 function zoneOf(f, al, age, v) {
+  const z = zoneRaw(f, al, age, v); if (!fitTrans(v)) return z;
+  const pv = avalOf(v.turmaId, v.p - 1), zp = zoneRaw(f, al, ageAt(al.nasc, refDate(v.p - 1)), pv);
+  return zp != null && (z == null || zp > z) ? zp : z;
+}
+function zoneRaw(f, al, age, v) {
   const r = (v.fit || {})[al.id] || {};
   const a = hasAuto(f, al, age) ? autoZone(f, al, age, r[f.k]) : null;
   if (a != null) return a;
