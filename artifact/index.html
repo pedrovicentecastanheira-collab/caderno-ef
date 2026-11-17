@@ -918,6 +918,123 @@ ul.marcos li span{display:inline-block;width:56px;color:var(--muted)}
 .pj-g.e0{--gc:#60A5FA}.pj-g.e1{--gc:#F59E0B}.pj-g.e2{--gc:#34D399}.pj-g.e3{--gc:#F472B6}.pj-g.e4{--gc:#A78BFA}.pj-g.e5{--gc:#FB7185}
 .pj-vazio{font-size:22px;opacity:.8;text-align:center}
 @media print{#guardado,#celeb{display:none}}
+/* novo ano, programa da escola, colega, voz, pesquisa, relatório anual, sem internet, semana, fotografias, comparar, diplomas, arrastar, gestos */
+.na-l .na-r{display:grid;grid-template-columns:1fr minmax(120px,40%);gap:10px;align-items:center}
+.na-nome{display:flex;flex-direction:column;gap:2px}
+.na-nome input{width:100%}
+.na-nome input:disabled{opacity:.45}
+.card.ant{border-left:4px solid var(--accent)}
+.ant-fit{display:flex;flex-wrap:wrap;gap:6px}
+.ant-fit .tag{display:inline-flex;align-items:center;gap:4px;font-weight:500}
+.ant-fit .tag svg{width:16px;height:16px}
+.ant-fit .tag.z0{background:var(--bad-soft);color:var(--bad)}
+.ant-fit .tag.z1{background:var(--ok-soft);color:var(--ok)}
+.ant-fit .tag.z2{background:var(--accent-soft);color:var(--accent)}
+.ee-prev td{font-size:12px;white-space:nowrap}
+.ee-prev tr:first-child td{font-weight:700}
+
+/* caderno de um colega */
+#cons-bar{position:sticky;top:var(--top-h,56px);z-index:19;display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:#5B2FA0;color:#fff;font-size:14px}
+#cons-bar .btn{background:#fff;color:#5B2FA0;border-color:#fff}
+body.consulta #top{box-shadow:inset 0 -3px 0 var(--mat)}
+
+/* pesquisa */
+.pesq-b{margin-left:auto}
+.top-in .pesq-b + .gear{margin-left:0}
+#pq{font-size:17px;padding:12px 14px}
+.pq-l{max-height:min(60vh,520px);overflow:auto}
+.pq-k{width:28px;height:28px;border-radius:8px;display:inline-grid;place-items:center;flex:none;background:var(--accent-soft);color:var(--accent);font-family:var(--f-display);font-weight:700}
+
+/* notas de voz */
+.voz-l{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.voz-r{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+.voz-r audio{width:100%;height:36px}
+.btn.rec{background:var(--bad);color:#fff;border-color:var(--bad)}
+.voz-on{color:var(--bad);display:flex;align-items:center;gap:6px}
+.voz-on i{width:10px;height:10px;border-radius:50%;background:var(--bad);animation:vozp 1s infinite}
+@keyframes vozp{50%{opacity:.25}}
+
+/* sem internet */
+body.offline::after{content:"Sem internet · tudo fica guardado neste aparelho";position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--surface);font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;opacity:.9;pointer-events:none}
+
+/* relatório anual */
+.ranual h3{font-family:var(--f-display);font-size:17px;margin:18px 0 6px}
+.ranual .tiles{margin:10px 0}
+
+/* horário da semana */
+.semw{padding:10px 8px 12px}
+.sem{display:grid;grid-template-columns:30px repeat(var(--n),minmax(0,1fr));column-gap:4px}
+.sem-hd{text-align:center;font-size:12px;color:var(--muted);padding-bottom:6px;display:flex;flex-direction:column;line-height:1.1}
+.sem-hd b{font-weight:700;color:var(--ink)}
+.sem-hd.hoje b,.sem-hd.hoje span{color:var(--accent)}
+.sem-hs{position:relative}
+.sem-hs span{position:absolute;right:2px;transform:translateY(-50%);font-size:10px;color:var(--muted)}
+.sem-hs span:first-child{transform:none}
+.sem-c{position:relative;background:var(--surface-2);border-radius:8px}
+.sem-c.hoje{background:var(--accent-soft)}
+.sem-c.off{background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--line) 6px 7px)}
+.sem-c > .sem-l{position:absolute;left:0;right:0;border-top:1px dashed var(--line)}
+.sem-off{position:absolute;inset:8px 2px auto;font-size:10px;text-align:center;color:var(--muted)}
+.sem-b{position:absolute;left:2px;right:2px;border:0;border-radius:6px;padding:3px 4px;text-align:left;overflow:hidden;cursor:pointer;color:#fff;background:var(--c);display:flex;flex-direction:column;gap:1px;font:inherit;line-height:1.1}
+.sem-b b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sem-b span{font-size:10px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sem-b em{position:absolute;right:4px;bottom:2px;font-style:normal;font-weight:700;font-size:12px}
+.sem-b.feita{opacity:.7}
+.sem-b:focus-visible{outline:3px solid var(--ink);outline-offset:1px}
+.sem-now{position:absolute;left:-2px;right:-2px;height:2px;background:var(--bad);border-radius:2px}
+.sem-now::before{content:"";position:absolute;left:-3px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+
+/* fotografias */
+.av.xl{width:168px;height:168px;font-size:56px}
+.fses{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.fses h3{margin:0;font-family:var(--f-display);font-size:24px}
+.fses p{margin:0}
+.fses-p{display:flex;align-items:center;gap:10px;width:100%;font-size:13px;color:var(--muted)}
+.fses-p .pl-b{flex:1}
+.qq{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.qq .btn{white-space:normal;min-height:52px}
+.qq .btn.ok{background:var(--ok);color:#fff;border-color:var(--ok);opacity:1}
+.qq .btn.bad{background:var(--bad);color:#fff;border-color:var(--bad);opacity:1}
+body.fotog .rh .av.sm,body.fotog .gcr .av{width:42px;height:42px;font-size:15px}
+
+/* comparar turmas */
+table.cmp .tdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--tc);vertical-align:middle}
+
+/* diplomas */
+.rel.dipl{padding:0}
+.dp-in{margin:18px;border:3px double var(--accent);border-radius:16px;padding:36px 28px 28px;text-align:center;position:relative;background:radial-gradient(circle at 50% 0,var(--accent-soft),transparent 60%)}
+.dp-selo svg{width:92px;height:92px}
+.dp-k{font-family:var(--f-display);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:6px 0 18px}
+.dp-c{margin:6px 0;font-size:16px;color:var(--muted)}
+.dp-n{font-family:var(--f-display);font-size:44px;font-weight:700;margin:4px 0 6px;line-height:1.05;color:var(--ink)}
+.dp-m{font-family:var(--f-display);font-size:30px;font-weight:700;margin:4px 0 14px;display:inline-flex;align-items:center;gap:8px;color:var(--ink)}
+.dp-m svg{width:30px;height:30px}
+.dp-s{font-size:13px;color:var(--muted);margin:0 0 34px}
+.dp-f{display:grid;grid-template-columns:1fr 1fr;gap:40px;text-align:center}
+.dp-f span{display:block;min-height:20px;font-size:14px}
+.dp-f i{display:block;border-top:1px solid var(--ink);margin:4px 0}
+.dp-f small{color:var(--muted)}
+@media print{.dp-in{margin:0;min-height:170mm;display:flex;flex-direction:column;justify-content:center}}
+
+/* arrastar */
+.pl-ed[data-i]{grid-template-columns:32px 1fr 92px 40px}
+.drag-h{width:32px;height:40px;border:0;background:none;color:var(--muted);font-size:20px;cursor:grab;touch-action:none;border-radius:8px}
+.drag-h:focus-visible{outline:2px solid var(--accent)}
+.pl-ed.drag{background:var(--accent-soft);border-radius:10px;box-shadow:var(--shadow);position:relative;z-index:2}
+.pl-ed.drag .drag-h{cursor:grabbing;color:var(--accent)}
+body.cal-drag{cursor:grabbing;user-select:none}
+.cal .cd.mv{outline:2px solid var(--ink);outline-offset:1px;animation:vozp 1s infinite}
+.cal .cd.drop{outline:2px dashed var(--accent);outline-offset:1px}
+body.cal-mv .cal .cd:not(.off){cursor:copy}
+
+/* gestos nas presenças */
+#sheet .pr{touch-action:pan-y;transition:transform .15s ease,background .15s;position:relative;background:var(--surface)}
+#sheet .pr.sw-f{background:var(--bad-soft)}
+#sheet .pr.sw-a{background:var(--warn-soft)}
+#sheet .pr.sw-ok{animation:pop .35s ease}
+.swipe-h{margin:0 0 6px}
+@media (hover:hover) and (pointer:fine){.swipe-h{display:none}}
+@media (prefers-reduced-motion:reduce){#sheet .pr{transition:none}.cal .cd.mv,.voz-on i{animation:none}}
 </style>
 
 <style>body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--surface)}</style>
@@ -3384,6 +3501,7 @@ function vInicio() {
   if (cur || next) h += `<div class="card nowc">${cur ? slot(cur, 'Agora') : ''}${next ? slot(next, cur ? 'A seguir' : 'Próxima aula') : ''}${all.length > (cur ? 1 : 0) + (next ? 1 : 0) ? `<p class="hint" style="margin:0">Hoje: ${all.map(x => esc(x.h + ' ' + x.t.nome)).join(' · ')}</p>` : ''}</div>`;
   else h += `<div class="card"><p style="margin:0">${all.length ? 'Já não há mais aulas hoje.' : 'Não há aulas de Educação Física no horário de hoje.'}</p>${Object.values(S.turmas).some(x => (x.horario || []).length) ? '' : '<p class="hint" style="margin:6px 0 0">Defina o horário de cada turma (Mais → turma) para ver aqui a aula de agora e a seguinte.</p>'}</div>`;
   // Turmas: avaliação e assiduidade
+  h += '<!--S:semana-->' + (typeof vSemanaIni === 'function' ? vSemanaIni() : '');
   h += '<!--S:turmas-->';
   h += `<div class="sec-h"><h2>Turmas · ${esc(perLabel(p))}</h2></div><div class="tgrid2">`;
   ts.forEach(tm => {
@@ -5711,7 +5829,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = 'ec30f95a';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '4107ac1a';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6063,4 +6181,446 @@ Object.assign(A, {
   'pj-sair': () => { PROJ.run = false; clearInterval(PROJ.tm); const el = $('#proj'); if (el) { el.hidden = true; el.innerHTML = ''; } document.body.classList.remove('locked'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) {} }
 });
 document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'ini-on') { const off = new Set(UI.iniOff || []); el.checked ? off.delete(el.dataset.k) : off.add(el.dataset.k); UI.iniOff = [...off]; saveUI(); render(); } });
+/* ---------- novo ano letivo, programa da escola, caderno de um colega, notas de voz, pesquisa, relatório anual, sem internet ---------- */
+
+/* A. Novo ano letivo */
+const anoSeg = a => { const m = /(\d{4})\D+(\d{4})/.exec(a || ''), y = new Date().getFullYear(); return m ? (+m[1] + 1) + '/' + (+m[2] + 1) : y + '/' + (y + 1); };
+const nomeSeg = n => String(n || '').replace(/(\d{1,2})(\s*\.?\s*º)/, (_, d, r) => (+d + 1) + r);
+const cicloDe = a => a <= 4 ? '1' : a <= 6 ? '2' : a <= 9 ? '3' : 'S';
+const mais1 = d => d && /^\d{4}/.test(d) ? (+d.slice(0, 4) + 1) + d.slice(4) : d;
+function ultimoP(t, al) { for (let p = CFG.nper; p >= 1; p--) { const r = calc(t, p, al); if (r.FIN != null || Object.keys(r.lv).length) return p; } return CFG.nper; }
+function anteriorDe(t, al) {
+  const p = ultimoP(t, al), r = calc(t, p, al), v = avalOf(t.id, p);
+  return {ano:CFG.ano, turma:t.nome, p, fin:r.FIN ?? null, nv:nivel(t, r.FIN) ?? null, est:r.EST, niveis:Object.assign({}, r.lv), fit:clone((v.fit || {})[al.id] || {}), zonas:Object.assign({}, r.zones)};
+}
+function sheetNovoAno(open) {
+  const ts = Object.values(S.turmas).sort(byNome), novo = anoSeg(CFG.ano);
+  if (open || !UI.draft || !UI.draft.nano) UI.draft = {nano:true, ts:Object.fromEntries(ts.map(t => [t.id, {on:(anoOf(t) || 0) < 12, nome:nomeSeg(t.nome)}]))};
+  const D = UI.draft.ts;
+  const body = `<div class="form"><p class="hint" style="margin:0">Fecha <b>${esc(CFG.ano)}</b> e prepara <b>${esc(novo)}</b>. Primeiro, o ano que termina é guardado inteiro num ficheiro${typeof odOn === 'function' && odOn() ? ' (e no OneDrive)' : ''}. Depois, cada turma escolhida passa para o ano seguinte com os mesmos alunos e as fotografias. O nível de cada matéria, a classificação final e os resultados do FITescola ficam como ponto de partida na ficha de cada aluno. As outras turmas ficam só no ficheiro.</p>
+    <div class="list na-l">${ts.map(t => `<div class="li na-r"><label class="cli"><input type="checkbox" data-in="na-on" data-id="${esc(t.id)}"${D[t.id] && D[t.id].on ? ' checked' : ''}> <span><b>${esc(t.nome)}</b> <span class="muted small">${(t.alunos || []).length} alunos</span></span></label>
+      <label class="na-nome"><span class="small muted">passa a</span><input type="text" data-in="na-nome" data-id="${esc(t.id)}" value="${esc((D[t.id] || {}).nome || '')}" aria-label="Novo nome de ${esc(t.nome)}"${D[t.id] && D[t.id].on ? '' : ' disabled'}></label></div>`).join('') || '<p class="muted">Não há turmas.</p>'}</div>
+    <p class="hint" style="margin:0">As datas dos períodos e os feriados fixos passam para ${esc(novo)}. As interrupções letivas mudam todos os anos: confirme-as depois em Ano letivo.</p></div>`;
+  const foot = `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="na-go">Guardar ${esc(CFG.ano)} e começar ${esc(novo)}</button>`;
+  if (open) openSheet('Novo ano letivo', body, foot); else updSheet(body, foot);
+}
+async function novoAnoAplicar(D) {
+  Store.flush(); await Promise.all(Object.values(Store.q || {}));
+  const velho = CFG.ano, novo = anoSeg(velho), nome = 'caderno-ef-' + String(velho || 'ano').replace(/\W+/g, '-') + '.json';
+  let txt = JSON.stringify(Object.assign(syncData(), {anoLetivo:velho}));
+  txt = await copiaCifrar(txt);
+  await saveFile(nome, new Blob([txt], {type:'application/json'}));
+  if (typeof odOn === 'function' && odOn()) { try { await _odEnv2(nome, txt); } catch (e) {} }
+  const velhas = Object.values(S.turmas), keepDocs = new Set(), novas = [];
+  velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on) return; const a = (anoOf(t) || 0) + 1;
+    novas.push({id:uid(), nome:(o.nome || '').trim() || nomeSeg(t.nome), ciclo:anoOf(t) ? cicloDe(a) : t.ciclo, ano:anoOf(t) ? a : null, escala:t.escala, cor:t.cor,
+      alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
+  const fica = new Set(novas.flatMap(t => t.alunos.map(a => a.id)));
+  for (const k of ['aulas', 'aval', 'hist']) for (const id of Object.keys(S[k])) { delete S[k][id]; Store.del(k, id); }
+  for (const id of Object.keys(S.fotos)) if (!fica.has(id)) { delete S.fotos[id]; Store.del('fotos', id); }
+  for (const id of Object.keys(S.docs)) if (!keepDocs.has(id)) { delete S.docs[id]; Store.del('docs', id); }
+  velhas.forEach(t => { delete S.turmas[t.id]; Store.del('turmas', t.id); });
+  novas.forEach(t => { S.turmas[t.id] = t; Store.save('turmas', t); });
+  CFG.ano = novo; CFG.per = CFG.per.map(x => ({ini:mais1(x.ini), fim:mais1(x.fim)}));
+  CFG.semAulas = (CFG.semAulas || []).filter(x => x[0] === x[1] && !/corpo de deus|carnaval|p[áa]scoa/i.test(x[2] || '')).map(x => [mais1(x[0]), mais1(x[1]), x[2]]);
+  CFG.fimAno = Object.fromEntries(Object.entries(CFG.fimAno || {}).map(([k, v]) => [k, mais1(v)])); CFG.cal2627 = false; CFG.anoNovo = today(); Store.save('cfg', CFG);
+  if (typeof AULAS_V !== 'undefined') AULAS_V++;
+  UI.turma = novas[0] ? novas[0].id : null; UI.p = 1; UI.tab = 'inicio'; UI.draft = null;
+  return {nome, n:novas.length, novo};
+}
+function antHtml(al, tab) {
+  const a = al.ant; if (!a) return '';
+  if (tab === 'fit') { const val = f => a.fit[f.k] != null ? a.fit[f.k] : [a.fit[f.k + '_d'], a.fit[f.k + '_e']].filter(x => x != null).join(' / ');
+    const rows = FIT.map(f => [f, val(f)]).filter(x => x[1] !== '' && x[1] != null); if (!rows.length) return '';
+    return `<div class="card ant"><b>Ponto de partida · ${esc(a.ano)}</b><p class="small muted" style="margin:4px 0 8px">Resultados do FITescola no fim do ano anterior (${esc(a.turma)}).</p><div class="ant-fit">${rows.map(([f, x]) => { const z = a.zonas[f.k]; return `<span class="tag ${z === 0 ? 'z0' : z === 1 ? 'z1' : z === 2 ? 'z2' : ''}">${esc(f.n)}: <b>${esc(String(x))}</b></span>`; }).join('')}</div></div>`; }
+  const nv = Object.entries(a.niveis || {});
+  return `<div class="card ant"><b>Ano anterior · ${esc(a.ano)}</b><p class="small" style="margin:4px 0 6px">${esc(a.turma)} · final <b>${a.fin ?? '—'}</b>${a.nv != null ? ' (nível ' + a.nv + ')' : ''} · ${esc(a.est || '')}</p>${nv.length ? `<div class="ant-fit">${nv.map(([m, l]) => `<span class="tag">${subIcon(m, 7)} ${esc(m)}: <b>${esc(l)}</b></span>`).join('')}</div>` : ''}</div>`;
+}
+const _vAlunoPage57 = vAlunoPage;
+vAlunoPage = function (t, al, split) {
+  let h = _vAlunoPage57(t, al, split); const tab = UI.atab || 'resumo';
+  const extra = (tab === 'resumo' || tab === 'fit' ? antHtml(al, tab) : '') + (tab === 'resumo' ? vozHtml(t, al) : '');
+  if (!extra) return h; const i = h.lastIndexOf('</div>'); return h.slice(0, i) + extra + h.slice(i);
+};
+DEXTRA.ano = (f => () => `<div class="sec-h"><h2>Novo ano letivo</h2></div><div class="card form"><p class="small" style="margin:0">No fim de ${esc(CFG.ano)}: guarde o ano num ficheiro e passe as turmas para ${esc(anoSeg(CFG.ano))}, com os alunos, as fotografias e o ponto de partida de cada um.</p><button class="btn" data-a="na-open">Começar o novo ano letivo…</button></div>` + f())(DEXTRA.ano);
+
+/* B. Exportar para o programa da escola */
+const EXPC = [['num', 'N.º'], ['proc', 'N.º de processo'], ['nome', 'Nome'], ['nota', 'Classificação (nível ou 0–20)'], ['fin', 'Classificação 0–20'], ['nivel', 'Nível 1–5'], ['faltas', 'Faltas'], ['atrasos', 'Atrasos'], ['est', 'Situação'], ['obs', 'Observação do período'], ['turma', 'Turma']];
+const expCfg = () => (CFG.escExp = Object.assign({cols:['num', 'nome', 'nota', 'faltas'], fmt:'csv;', dec:',', head:true, todas:false}, CFG.escExp || {}));
+function expVal(k, t, p, al, dec) {
+  const r = calc(t, p, al), c = counts(t, p, al.id), n = x => x == null ? '' : dec === ',' && typeof x === 'number' ? String(x).replace('.', ',') : x;
+  return ({num:al.num ?? '', proc:al.proc ?? '', nome:al.nome, nota:n(t.ciclo === 'S' ? r.FIN : nivel(t, r.FIN)), fin:n(r.FIN), nivel:n(nivel(t, r.FIN)), faltas:c.F, atrasos:c.A, est:r.EST, obs:(avalOf(t.id, p).obs || {})[al.id] || '', turma:t.nome})[k] ?? '';
+}
+function expLinhas(ts, p) {
+  const E = expCfg(), cols = E.cols.filter(k => EXPC.some(x => x[0] === k)), nm = Object.fromEntries(EXPC);
+  const head = cols.map(k => nm[k]), out = E.head ? [head] : [];
+  ts.forEach(t => alunosOf(t).forEach(al => out.push(cols.map(k => expVal(k, t, p, al, E.dec)))));
+  return out;
+}
+const csvCel = (x, sep) => { const s = String(x ?? ''); return /["\n\r]/.test(s) || s.includes(sep) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+function sheetEscExp() {
+  const E = expCfg(), t = turma(), nm = Object.fromEntries(EXPC), ord = E.cols.concat(EXPC.map(x => x[0]).filter(k => !E.cols.includes(k)));
+  if (E.todas && !E.cols.includes('turma')) { /* com várias turmas num só ficheiro, a coluna Turma ajuda o programa a separá-las */ }
+  const ts = E.todas ? Object.values(S.turmas).sort(byNome) : [t], prev = expLinhas(ts, UI.p).slice(0, 4);
+  const body = `<div class="form"><p class="hint" style="margin:0">A maioria dos programas da escola aceita um ficheiro CSV ou Excel com uma linha por aluno. Escolha as colunas pela ordem que o programa pede; a configuração fica guardada para a próxima vez.</p>
+    <div class="field"><span class="lbl">Colunas (por esta ordem)</span><div class="list">${ord.map((k, i) => `<div class="li"><label class="cli" style="flex:1"><input type="checkbox" data-in="ee-col" data-k="${k}"${E.cols.includes(k) ? ' checked' : ''}> <span>${esc(nm[k])}</span></label>${E.cols.includes(k) ? `<button class="icon-btn" data-a="ee-mv" data-k="${k}" data-d="-1" aria-label="Subir"${E.cols.indexOf(k) ? '' : ' disabled'}>↑</button><button class="icon-btn" data-a="ee-mv" data-k="${k}" data-d="1" aria-label="Descer"${E.cols.indexOf(k) < E.cols.length - 1 ? '' : ' disabled'}>↓</button>` : ''}</div>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Formato</span><div class="seg block">${[['csv;', 'CSV com ;'], ['csv,', 'CSV com ,'], ['xlsx', 'Excel']].map(([k, n]) => `<button data-a="ee-set" data-k="fmt" data-v="${k}" class="${E.fmt === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Casas decimais</span><div class="seg block">${[[',', 'Vírgula (14,5)'], ['.', 'Ponto (14.5)']].map(([k, n]) => `<button data-a="ee-set" data-k="dec" data-v="${k}" class="${E.dec === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    <label class="cli"><input type="checkbox" data-in="ee-b" data-k="head"${E.head ? ' checked' : ''}> Primeira linha com os nomes das colunas</label>
+    <label class="cli"><input type="checkbox" data-in="ee-b" data-k="todas"${E.todas ? ' checked' : ''}> Todas as turmas num só ficheiro</label>
+    <div class="field"><span class="lbl">Pré-visualização · ${esc(perLabel(UI.p, true))}</span><div class="tbl-wrap"><table class="ee-prev"><tbody>${prev.map(r => `<tr>${r.map(x => `<td>${esc(String(x))}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div></div>`;
+  const foot = `<button class="btn" data-a="sh-close">Fechar</button><button class="btn primary" data-a="ee-go">Exportar</button>`;
+  if ($('#sheet').hidden) openSheet('Exportar para o programa da escola', body, foot); else updSheet(body, foot);
+}
+async function escExportar() {
+  const E = expCfg(), ts = E.todas ? Object.values(S.turmas).sort(byNome) : [turma()], base = (E.todas ? 'turmas' : norm(ts[0].nome).replace(/[^a-z0-9]+/g, '-')) + '-' + perLabel(UI.p).replace(/\W+/g, '');
+  const rows = expLinhas(ts, UI.p);
+  if (E.fmt === 'xlsx') { if (typeof XLSX === 'undefined') { toast('A biblioteca do Excel não carregou. Escolha CSV.', 'bad'); return; }
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Classificações');
+    await saveFile('escola-' + base + '.xlsx', new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); }
+  else { const sep = E.fmt === 'csv,' ? ',' : ';'; await saveFile('escola-' + base + '.csv', new Blob(['﻿' + rows.map(r => r.map(x => csvCel(x, sep)).join(sep)).join('\r\n')], {type:'text/csv;charset=utf-8'})); }
+  toast('Ficheiro para o programa da escola criado.');
+}
+
+/* C. Ver o caderno de um colega (só leitura) */
+let CONS = null;
+async function consultaAbrir(file) {
+  let d; try { d = JSON.parse(await copiaDecifrar(await file.text())); } catch (e) { if (e && e.message !== 'cancelado') toast('Este ficheiro não é uma cópia do Caderno EF (ou a palavra-passe está errada).', 'bad'); return; }
+  if (!d || d.app !== 'Caderno EF' || !d.turmas || !Object.keys(d.turmas).length) { toast('Este ficheiro não tem turmas do Caderno EF.', 'bad'); return; }
+  { const e = validarCopia(d); if (e.length) { toast('Não foi possível abrir: ' + e.slice(0, 2).join('; ') + '.', 'bad'); return; } }
+  Store.flush(); migrate(d);
+  CONS = {S:Object.fromEntries(['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].map(k => [k, S[k]])), CFG, UI:{turma:UI.turma, p:UI.p, tab:UI.tab}, quem:(d.cfg && d.cfg.geral && d.cfg.geral.prof) || d.autor || file.name.replace(/\.json$/i, '')};
+  ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].forEach(k => { S[k] = clone(d[k] || {}); });
+  Object.values(S.aval).forEach(v => { SHADOW[v.id] = clone(v); });
+  if (d.cfg && d.cfg.geral) { CFG = Object.assign(clone(CONS.CFG), d.cfg.geral); CFG.fit = Object.assign(clone(FITREF), CFG.fit || {}); while (CFG.per.length < 3) CFG.per.push({ini:'', fim:''}); }
+  if (typeof AULAS_V !== 'undefined') AULAS_V++;
+  UI.turma = Object.keys(S.turmas)[0]; UI.p = 1; UI.tab = 'relatorios'; closeSheet(); document.body.classList.add('consulta'); render();
+  toast('A ver o caderno de ' + CONS.quem + '. Nada do que fizer aqui fica guardado.');
+}
+function consultaSair() {
+  if (!CONS) return; Object.assign(S, CONS.S); CFG = CONS.CFG; Object.assign(UI, CONS.UI); CONS = null;
+  Object.values(S.aval).forEach(v => { SHADOW[v.id] = clone(v); });
+  if (typeof AULAS_V !== 'undefined') AULAS_V++;
+  document.body.classList.remove('consulta'); render(); toast('Voltou ao seu caderno.');
+}
+for (const fn of ['save', 'del']) { const o = Store[fn].bind(Store); Store[fn] = function (...a) { if (CONS) return Promise.resolve(); return o(...a); }; }
+{ const _sd = syncData; syncData = function () { if (!CONS) return _sd(); const cur = {}; ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].forEach(k => { cur[k] = S[k]; S[k] = CONS.S[k]; }); const c = CFG; CFG = CONS.CFG; try { return _sd(); } finally { Object.assign(S, cur); CFG = c; } }; }
+const _render57 = render;
+render = function () {
+  _render57();
+  let b = $('#cons-bar'); if (CONS) { if (!b) { b = document.createElement('div'); b.id = 'cons-bar'; b.setAttribute('role', 'status'); $('#top').after(b); } b.innerHTML = `<span>👁 A ver o caderno de <b>${esc(CONS.quem)}</b> · só leitura</span><button class="btn sm" data-a="cons-sair">Voltar ao meu caderno</button>`; } else if (b) b.remove();
+  const top = $('#top .top-in'); if (top && !top.querySelector('.pesq-b')) { const g = top.querySelector('.gear'); const x = document.createElement('button'); x.className = 'icon-btn pesq-b'; x.dataset.a = 'pesq'; x.setAttribute('aria-label', 'Pesquisar'); x.title = 'Pesquisar (Ctrl+K)'; x.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'; top.insertBefore(x, g); }
+  document.body.classList.toggle('offline', navigator.onLine === false);
+};
+
+/* D. Notas de voz */
+const VOZ = {rec:null, aid:null, t0:0, tm:null};
+const vozesDe = aid => Object.values(S.docs).filter(x => x.tipo === 'voz' && x.aid === aid).sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+function vozHtml(t, al) {
+  const vs = vozesDe(al.id), rec = VOZ.rec && VOZ.aid === al.id, ok = !!(navigator.mediaDevices && window.MediaRecorder);
+  return `<div class="card voz"><div class="sec-h" style="margin:0"><b>Notas de voz</b>${ok ? `<button class="btn sm${rec ? ' rec' : ' primary'}" data-a="voz-rec" data-id="${esc(al.id)}">${rec ? '■ Parar' : '● Gravar'}</button>` : ''}</div>
+    ${rec ? '<p class="small voz-on" style="margin:6px 0 0"><i></i> A gravar… (até 1 minuto)</p>' : ''}
+    ${vs.length ? `<div class="voz-l">${vs.map(x => `<div class="voz-r"><span class="small muted">${esc(fmtDate((x.at || '').slice(0, 10), {day:'numeric', month:'short'}))} · ${x.dur || 0} s</span><audio controls preload="none" src="${esc(x.d)}"></audio><button class="icon-btn" data-a="voz-del" data-id="${esc(x.id)}" aria-label="Apagar nota de voz">×</button></div>`).join('')}</div>` : `<p class="small muted" style="margin:6px 0 0">${ok ? 'Grave uma observação rápida no pavilhão, sem escrever. Fica só neste caderno.' : 'Este navegador não permite gravar som.'}</p>`}</div>`;
+}
+const blobURL = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
+async function vozGuardar(aid, blob, dur) {
+  const t = turma(), id = uid(), d = await blobURL(blob);
+  S.docs[id] = {id, tipo:'voz', aid, turmaId:t.id, nome:'nota-de-voz.' + (blob.type.includes('mp4') ? 'm4a' : 'webm'), d, dur:Math.round(dur), at:new Date().toISOString()}; Store.save('docs', S.docs[id]);
+  render();
+}
+async function vozGravar(aid) {
+  if (VOZ.rec) { VOZ.rec.stop(); return; }
+  let st; try { st = await navigator.mediaDevices.getUserMedia({audio:true}); } catch (e) { toast('Sem acesso ao microfone. Autorize-o nas definições do navegador.', 'bad'); return; }
+  const tipo = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(x => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x));
+  const rec = new MediaRecorder(st, Object.assign({audioBitsPerSecond:24000}, tipo ? {mimeType:tipo} : {})), parts = [];
+  rec.ondataavailable = e => e.data.size && parts.push(e.data);
+  rec.onstop = () => { clearTimeout(VOZ.tm); st.getTracks().forEach(x => x.stop()); const dur = (Date.now() - VOZ.t0) / 1000; VOZ.rec = null; VOZ.aid = null; if (parts.length) vozGuardar(aid, new Blob(parts, {type:rec.mimeType || 'audio/webm'}), dur); else render(); };
+  VOZ.rec = rec; VOZ.aid = aid; VOZ.t0 = Date.now(); rec.start(); VOZ.tm = setTimeout(() => rec.state === 'recording' && rec.stop(), 60000); render();
+}
+{ const _tp = turmaPacote; turmaPacote = function (t) { const P = _tp(t); Object.values(S.docs).filter(x => x.tipo === 'voz' && x.turmaId === t.id).forEach(x => { P.docs[x.id] = x; }); return P; }; }
+
+/* E. Pesquisa global */
+function pesqRes(q) {
+  const n = norm(q.trim()); if (n.length < 2) return [];
+  const out = [], has = s => norm(s || '').includes(n);
+  Object.values(S.turmas).sort(byNome).forEach(t => {
+    if (has(t.nome)) out.push({k:'turma', t, txt:t.nome, sub:(t.alunos || []).length + ' alunos'});
+    (t.alunos || []).forEach(al => { if (has(al.nome) || String(al.num) === q.trim() || (al.proc && String(al.proc) === q.trim())) out.push({k:'aluno', t, al, txt:al.nome, sub:t.nome + (al.num != null ? ' · n.º ' + al.num : '')}); });
+  });
+  Object.values(S.aulas).filter(a => S.turmas[a.turmaId] && (has(a.sumario) || (a.materias || []).some(has))).sort((a, b) => b.data.localeCompare(a.data)).slice(0, 12)
+    .forEach(a => out.push({k:'aula', a, txt:(a.sumario || (a.materias || []).join(', ') || 'Aula').slice(0, 90), sub:S.turmas[a.turmaId].nome + ' · ' + fmtDate(a.data)}));
+  exAll().filter(x => has(x.nome) || has(x.desc) || has(x.m)).slice(0, 12).forEach(x => out.push({k:'ex', x, txt:x.nome, sub:x.m + ' · ' + (x.lv || '')}));
+  return out.slice(0, 40);
+}
+const PQK = {turma:'Turma', aluno:'Aluno', aula:'Aula', ex:'Exercício'};
+function pesqLista(q) {
+  const rs = pesqRes(q);
+  return rs.length ? `<div class="list pq-l">${rs.map((r, i) => `<button class="li pq-r" data-a="pq-ir" data-i="${i}">${r.k === 'aluno' ? avatar(r.al, 'sm') : `<span class="pq-k">${PQK[r.k][0]}</span>`}<span class="who"><div class="nm">${esc(r.txt)}</div><div class="meta">${PQK[r.k]} · ${esc(r.sub)}</div></span></button>`).join('')}</div>`
+    : `<p class="muted small">${q.trim().length < 2 ? 'Escreva pelo menos duas letras: nome de um aluno, de uma turma, de um exercício ou uma palavra de um sumário.' : 'Nada encontrado.'}</p>`;
+}
+function pesqAbrir() {
+  UI.pq = ''; openSheet('Pesquisar', `<div class="form"><input type="search" id="pq" data-in="pq" placeholder="Aluno, turma, exercício, sumário…" autocomplete="off" enterkeyhint="search" aria-label="Pesquisar"><div id="pq-out">${pesqLista('')}</div></div>`, '');
+  setTimeout(() => { const i = $('#pq'); if (i) i.focus(); }, 30);
+}
+function pesqIr(r) {
+  closeSheet();
+  if (r.k === 'turma') { UI.turma = r.t.id; UI.tab = 'turma'; render(); }
+  else if (r.k === 'aluno') { UI.turma = r.t.id; UI.tab = 'turma'; UI.tsub = 'alunos'; UI.aluno = r.al.id; UI.atab = 'resumo'; render(); window.scrollTo(0, 0); }
+  else if (r.k === 'aula') { UI.turma = r.a.turmaId; UI.tab = 'turma'; UI.tsub = 'aulas'; render(); A['aula-edit']({dataset:{id:r.a.id}}); }
+  else { const x = r.x; openSheet(x.nome, `<div class="form"><p class="small muted" style="margin:0">${esc(x.m)}${x.lv ? ' · ' + esc(x.lv) : ''}</p>${x.desc ? `<p style="margin:0">${esc(x.desc)}</p>` : ''}${x.crit ? `<p style="margin:0"><b>Critérios de êxito:</b> ${esc(x.crit)}</p>` : ''}${x.link ? `<a class="btn" href="${esc(x.link)}" target="_blank" rel="noopener">Abrir o vídeo</a>` : ''}</div>`, ''); }
+}
+document.addEventListener('input', e => { const el = e.target; if (el.id === 'pq') { UI.pq = el.value; const o = $('#pq-out'); if (o) o.innerHTML = pesqLista(el.value); } });
+document.addEventListener('keydown', e => {
+  const lk = $('#lock'); if (!CFG || (lk && !lk.hidden)) return;
+  if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 'k' || e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName || '') && !e.target.isContentEditable) { e.preventDefault(); pesqAbrir(); }
+  else if (e.key === 'Enter' && e.target.id === 'pq') { const r = pesqRes(e.target.value)[0]; if (r) pesqIr(r); }
+});
+
+/* F. Relatório anual da turma */
+function relAnualHtml(t) {
+  const als = alunosOf(t), ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1), R = Object.fromEntries(ps.map(p => [p, als.map(al => ({al, r:calc(t, p, al), c:counts(t, p, al.id)}))]));
+  const med = xs => { const v = xs.filter(x => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10 : null; };
+  const ser = [{name:'Média final', color:'var(--v1)', vals:ps.map(p => med(R[p].map(x => x.r.FIN)))}, {name:'Matérias', color:'var(--v2)', vals:ps.map(p => med(R[p].map(x => x.r.AF)))}, {name:'Apt. física', color:'var(--v3)', vals:ps.map(p => med(R[p].map(x => x.r.APF)))}];
+  const keep = CHW; CHW = 640;
+  let h = `<section class="rel ranual">${docHead('Relatório anual · ' + t.nome, alunosOf(t).length + ' alunos')}
+    <div class="tiles">${ps.map(p => { const xs = R[p], ap = xs.filter(x => x.r.EST === 'Apto').length; return `<div class="tile"><b>${med(xs.map(x => x.r.FIN)) ?? '—'}</b><span>${esc(perLabel(p, true))} · ${ap}/${xs.length} aptos</span></div>`; }).join('')}</div>`;
+  if (ser[0].vals.some(x => x != null)) h += fig('Evolução da turma', 'Médias por período (0–20)', chLine(ps.map(p => perLabel(p)), ser, {h:180, label:'Evolução da turma'}) + legend(ser));
+  h += `<h3>Classificações</h3><div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Aluno</th>${ps.map(p => `<th>${esc(perLabel(p))}</th>`).join('')}<th>Faltas</th></tr></thead><tbody>${als.map((al, i) => `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td>${ps.map(p => { const r = R[p][i].r, nv = nivel(t, r.FIN); return `<td class="${r.FIN != null && r.FIN < 10 ? 'low' : ''}">${r.FIN ?? '—'}${t.ciclo !== 'S' && nv != null ? ` <span class="muted">(${nv})</span>` : ''}</td>`; }).join('')}<td>${ps.reduce((s, p) => s + R[p][i].c.F, 0)}</td></tr>`).join('')}</tbody></table></div>`;
+  const ms = [...new Set(ps.flatMap(p => matsOf(t, p)))];
+  if (ms.length) h += `<h3>Matérias: alunos por nível</h3><div class="tbl-wrap"><table><thead><tr><th class="l">Matéria</th><th>Período</th>${LV.map(l => `<th>${l}</th>`).join('')}</tr></thead><tbody>${ms.flatMap(m => ps.filter(p => R[p].some(x => x.r.lv[m])).map(p => `<tr><td class="l">${esc(m)}</td><td>${esc(perLabel(p))}</td>${LV.map(l => { const n = R[p].filter(x => x.r.lv[m] === l).length; return `<td>${n || ''}</td>`; }).join('')}</tr>`)).join('')}</tbody></table></div>`;
+  h += `<h3>Aptidão física: alunos na Zona Saudável</h3><div class="tbl-wrap"><table><thead><tr><th class="l">Teste</th>${ps.map(p => `<th>${esc(perLabel(p))}</th>`).join('')}</tr></thead><tbody>${FIT.map(f => `<tr><td class="l">${esc(f.n)}</td>${ps.map(p => { const z = R[p].map(x => x.r.zones[f.k]).filter(x => x != null); return `<td>${z.length ? Math.round(z.filter(x => x >= 1).length / z.length * 100) + '%' : '—'}</td>`; }).join('')}</tr>`).join('')}</tbody></table></div>`;
+  h += `<h3>Assiduidade</h3><div class="tbl-wrap"><table><thead><tr><th class="l">Período</th><th>Aulas</th><th>Faltas</th><th>Atrasos</th><th>Sem material</th></tr></thead><tbody>${ps.map(p => { const n = aulasOf(t.id).filter(a => periodOf(a.data) === p).length, s = k => R[p].reduce((a, x) => a + x.c[k], 0); return `<tr><td class="l">${esc(perLabel(p, true))}</td><td>${n}</td><td>${s('F')}</td><td>${s('A')}</td><td>${s('M')}</td></tr>`; }).join('')}</tbody></table></div></section>`;
+  CHW = keep; return h;
+}
+
+/* G. Sem internet */
+window.addEventListener('online', () => { document.body.classList.remove('offline'); toast('Voltou a haver internet.'); });
+window.addEventListener('offline', () => { document.body.classList.add('offline'); toast('Sem internet: pode continuar a trabalhar, tudo fica guardado neste aparelho.'); });
+
+const _vDocs57 = vDocs;
+vDocs = function (t) {
+  const extra = [['doc-anual', 'Relatório anual da turma', 'Classificações dos três períodos, evolução da turma, níveis por matéria, aptidão física e assiduidade, num só documento para o departamento.'],
+    ['doc-anual-todas', 'Relatório anual de todas as turmas', 'O mesmo relatório, uma turma por página.'],
+    ['doc-dipl', 'Diplomas de unidade', 'Um diploma por aluno que concluiu um nível numa matéria, com o selo e o nome, para entregar no fim da unidade.'],
+    ['ee-open', 'Exportar para o programa da escola', 'Classificações e faltas em CSV ou Excel, com as colunas pela ordem que o programa da escola pede.'],
+    ['col-open', 'Ver o caderno de um colega', 'Abre a cópia que um colega lhe enviou, só para consulta (substituições, conselhos de turma). Nada se mistura com o seu caderno.']];
+  return _vDocs57(t).replace(/(<button class="card doc" data-a="auto-first">[\s\S]*?<\/button>)/, `$1${extra.map(([a, n, d]) => `<button class="card doc" data-a="${a}"><b>${n}</b><span class="hint">${d}</span></button>`).join('')}`);
+};
+
+Object.assign(A, {
+  'na-open': () => sheetNovoAno(true),
+  'na-go': async el => { if (!armed(el, 'Confirmar: fechar ' + CFG.ano + '?')) return; el.disabled = true;
+    try { const r = await novoAnoAplicar(UI.draft.ts); closeSheet(); render(); toast(`Começou ${r.novo}: ${r.n} ${r.n === 1 ? 'turma passou' : 'turmas passaram'}. O ano anterior ficou no ficheiro ${r.nome}.`); }
+    catch (e) { el.disabled = false; toast('Não foi possível guardar o ficheiro do ano. Nada foi apagado.', 'bad'); } },
+  'ee-open': () => { expCfg(); sheetEscExp(); },
+  'ee-mv': el => { const c = expCfg().cols, i = c.indexOf(el.dataset.k), j = i + +el.dataset.d; if (j < 0 || j >= c.length) return; [c[i], c[j]] = [c[j], c[i]]; Store.save('cfg', CFG); sheetEscExp(); },
+  'ee-set': el => { expCfg()[el.dataset.k] = el.dataset.v; Store.save('cfg', CFG); sheetEscExp(); },
+  'ee-go': () => escExportar(),
+  'col-open': () => { const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json'; i.onchange = () => { if (i.files[0]) consultaAbrir(i.files[0]); }; i.click(); },
+  'cons-sair': () => consultaSair(),
+  'voz-rec': el => vozGravar(el.dataset.id),
+  'voz-del': el => { if (!armed(el, '?')) return; const id = el.dataset.id; delete S.docs[id]; Store.del('docs', id); render(); },
+  'pesq': () => pesqAbrir(),
+  'pq-ir': el => { const r = pesqRes(UI.pq || '')[+el.dataset.i]; if (r) pesqIr(r); },
+  'doc-anual': () => printDoc('Relatório anual', relAnualHtml(turma())),
+  'doc-anual-todas': () => printDoc('Relatório anual', Object.values(S.turmas).sort(byNome).map(relAnualHtml).join(''))
+});
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'na-on') { UI.draft.ts[el.dataset.id].on = el.checked; sheetNovoAno(); }
+  else if (k === 'na-nome') { UI.draft.ts[el.dataset.id].nome = el.value; }
+  else if (k === 'ee-col') { const E = expCfg(); if (el.checked) { if (!E.cols.includes(el.dataset.k)) E.cols.push(el.dataset.k); } else E.cols = E.cols.filter(x => x !== el.dataset.k); Store.save('cfg', CFG); sheetEscExp(); }
+  else if (k === 'ee-b') { expCfg()[el.dataset.k] = el.checked; Store.save('cfg', CFG); sheetEscExp(); } });
+/* ---------- horário da semana, fotografias, comparar turmas, diplomas, arrastar e gestos ---------- */
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* I. Horário da semana no Início */
+INI_SEC.splice(1, 0, ['semana', 'Horário da semana']);
+const minDe = s => +String(s).slice(0, 2) * 60 + +String(s).slice(3, 5);
+function segundaDe(d) { const x = new Date(d + 'T12:00:00'), w = x.getDay() || 7; x.setDate(x.getDate() - w + 1); return x; }
+const isoDe = x => x.getFullYear() + '-' + pad(x.getMonth() + 1) + '-' + pad(x.getDate());
+const nomeCurto = n => { const m = /\d{1,2}\s*\.?\s*º\s*\S*/.exec(n || ''); return m ? m[0] : n; };
+function vSemanaIni() {
+  const sl = Object.values(S.turmas).flatMap(t => (t.horario || []).filter(h => h.h).map(h => ({t, d:+h.d, h:h.h}))); if (!sl.length) return '';
+  const dur = CFG.durAula || 50, seg = segundaDe(today()), ds = [1, 2, 3, 4, 5].concat(sl.some(x => x.d === 6) ? [6] : []);
+  const lo = Math.floor(Math.min(...sl.map(x => minDe(x.h))) / 60) * 60, hi = Math.ceil((Math.max(...sl.map(x => minDe(x.h))) + dur) / 60) * 60, k = 0.8, H = (hi - lo) * k;
+  const agora = new Date(), mAgora = agora.getHours() * 60 + agora.getMinutes(), td = today();
+  let h = `<div class="sec-h"><h2>Esta semana</h2><span class="small muted">${esc(fmtDate(isoDe(seg), {day:'numeric', month:'short'}))} a ${esc(fmtDate(isoDe(new Date(seg.getTime() + (ds.length - 1) * 864e5)), {day:'numeric', month:'short'}))}</span></div>
+    <div class="card semw"><div class="sem" style="--n:${ds.length}"><div class="sem-hd"></div>${ds.map(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)); return `<div class="sem-hd${iso === td ? ' hoje' : ''}"><b>${DIAS[d]}</b><span>${+iso.slice(8)}</span></div>`; }).join('')}
+    <div class="sem-hs" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span style="top:${i * 60 * k}px">${pad((lo / 60) + i)}h</span>`).join('')}</div>`;
+  ds.forEach(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)), off = semAulas(iso);
+    h += `<div class="sem-c${iso === td ? ' hoje' : ''}${off ? ' off' : ''}" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span class="sem-l" style="top:${i * 60 * k}px"></span>`).join('')}`;
+    if (off) h += `<span class="sem-off">${esc(off[2] || 'Sem aulas')}</span>`;
+    else sl.filter(x => x.d === d).sort((a, b) => a.h.localeCompare(b.h)).forEach(x => { const feita = aulasOf(x.t.id).some(a => a.data === iso), ult = aulasOf(x.t.id).filter(a => a.data <= iso).pop();
+      h += `<button class="sem-b${feita ? ' feita' : ''}" style="top:${(minDe(x.h) - lo) * k}px;height:${dur * k - 3}px;--c:var(--v${tcor(x.t)})" data-a="sem-ir" data-id="${esc(x.t.id)}" data-d="${iso}" title="${esc(x.t.nome + ' · ' + x.h)}"><b>${esc(nomeCurto(x.t.nome))}</b><span>${esc(x.h)}${ult && (ult.materias || [])[0] ? ' · ' + esc(ult.materias[0]) : ''}</span>${feita ? '<em aria-label="registada">✓</em>' : ''}</button>`; });
+    if (iso === td && mAgora >= lo && mAgora <= hi) h += `<span class="sem-now" style="top:${(mAgora - lo) * k}px"></span>`;
+    h += '</div>'; });
+  return h + '</div><p class="hint" style="margin:6px 0 0">Toque numa aula para a abrir. ✓ = já registada.</p></div>';
+}
+
+/* J. Fotografias: sessão com a câmara, «Quem é quem?» e fotografias maiores na grelha */
+let FSES = 0;
+function camInput() { let i = $('#file-cam'); if (!i) { i = document.createElement('input'); i.type = 'file'; i.id = 'file-cam'; i.accept = 'image/*'; i.setAttribute('capture', 'environment'); i.hidden = true; document.body.appendChild(i);
+  i.addEventListener('change', async () => { const f = i.files[0]; i.value = ''; if (!f) return; const t = turma(), al = alunosOf(t)[FSES]; if (!al) return;
+    try { const d = await thumb(f); S.fotos[al.id] = {id:al.id, d}; Store.save('fotos', S.fotos[al.id]); } catch (e) { toast('Não foi possível ler a fotografia.', 'bad'); return; }
+    const als = alunosOf(t), nx = als.findIndex((a, j) => j > FSES && !S.fotos[a.id]); FSES = nx < 0 ? Math.min(FSES + 1, als.length - 1) : nx; sheetFotoSessao(); }); }
+  return i; }
+function sheetFotoSessao(open) {
+  const t = turma(), als = alunosOf(t), al = als[FSES]; if (!al) { toast('A turma não tem alunos.'); return; }
+  const n = als.filter(a => S.fotos[a.id]).length;
+  const body = `<div class="fses"><div class="fses-p"><span>${FSES + 1} / ${als.length}</span><span class="pl-b"><i style="width:${n / als.length * 100}%"></i></span><span>${n} com fotografia</span></div>
+    <div class="fses-a">${avatar(al, 'xl')}</div><h3>${esc(al.nome)}</h3><p class="muted small">N.º ${esc(al.num ?? '—')}</p>
+    <button class="btn primary big" data-a="fs-cam">${S.fotos[al.id] ? 'Tirar outra fotografia' : 'Tirar fotografia'}</button>
+    <div class="btn-row" style="justify-content:center"><button class="btn" data-a="fs-mv" data-d="-1"${FSES ? '' : ' disabled'}>‹ Anterior</button><button class="btn" data-a="fs-mv" data-d="1"${FSES < als.length - 1 ? '' : ' disabled'}>Seguinte ›</button></div>
+    <p class="hint">As fotografias ficam reduzidas (cerca de 6 KB) e só neste caderno.</p></div>`;
+  if (open || $('#sheet').hidden) openSheet('Sessão de fotografias', body, ''); else updSheet(body, '');
+}
+const QQ = {al:null, ops:[], ok:0, n:0, resp:null};
+function quemNovo() { const als = alunosOf(turma()).filter(a => S.fotos[a.id]); const al = als[Math.floor(Math.random() * als.length)], outros = alunosOf(turma()).filter(a => a.id !== al.id).sort(() => Math.random() - .5).slice(0, 3);
+  QQ.al = al; QQ.ops = [al, ...outros].sort(() => Math.random() - .5); QQ.resp = null; }
+function sheetQuem(open) {
+  const t = turma(); if (alunosOf(t).filter(a => S.fotos[a.id]).length < 4) { toast('São precisas pelo menos 4 fotografias. Faça primeiro uma sessão de fotografias.'); return; }
+  if (open) { QQ.ok = 0; QQ.n = 0; quemNovo(); }
+  const r = QQ.resp, body = `<div class="fses"><div class="fses-p"><span>${QQ.ok} certas em ${QQ.n}</span></div><div class="fses-a">${avatar(QQ.al, 'xl')}</div>
+    <div class="qq">${QQ.ops.map(o => `<button class="btn${r ? (o.id === QQ.al.id ? ' ok' : o.id === r ? ' bad' : '') : ''}" data-a="qq-r" data-id="${esc(o.id)}"${r ? ' disabled' : ''}>${esc(o.nome)}</button>`).join('')}</div>
+    ${r ? `<button class="btn primary big" data-a="qq-next">Seguinte ›</button>` : '<p class="hint">Quem é? Ótimo para aprender os nomes no início do ano.</p>'}</div>`;
+  if (open || $('#sheet').hidden) openSheet('Quem é quem?', body, ''); else updSheet(body, '');
+}
+const _vAlunos58 = vAlunos;
+vAlunos = function (t) { return _vAlunos58(t).replace('<button class="btn" data-a="fotos-import">Fotografias</button>', '<button class="btn" data-a="fotos-import">Fotografias</button><button class="btn" data-a="fs-open">Sessão de fotografias</button><button class="btn" data-a="qq-open">Quem é quem?</button>'); };
+const _applyLook58 = applyLook;
+applyLook = function () { _applyLook58(); document.body.classList.toggle('fotog', !!UI.fotoG); };
+const _vAparencia58 = vAparencia;
+vAparencia = function () { return _vAparencia58().replace('<p class="hint" style="margin:0">Estas opções', `<label class="cli"><input type="checkbox" data-in="foto-g"${UI.fotoG ? ' checked' : ''}> Fotografias maiores na grelha de avaliação</label><p class="hint" style="margin:0">Estas opções`); };
+
+/* K. Comparar turmas */
+const media = xs => { const v = xs.filter(x => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10 : null; };
+function vComparar() {
+  const ts = Object.values(S.turmas).sort(byNome).filter(t => (t.alunos || []).length); if (ts.length < 2) return '';
+  const ps = CFG.per.slice(0, CFG.nper).map((_, i) => i + 1), p = UI.p, R = new Map(ts.map(t => [t.id, Object.fromEntries(ps.map(q => [q, alunosOf(t).map(al => calc(t, q, al))]))]));
+  const ser = ts.slice(0, 8).map(t => ({name:t.nome, color:`var(--v${tcor(t)})`, vals:ps.map(q => media(R.get(t.id)[q].map(r => r.FIN)))}));
+  let h = `<div class="sec-h"><h2>Comparar turmas</h2></div>`;
+  if (ser.some(s => s.vals.some(x => x != null))) h += fig('Média final por período', 'Cada linha é uma turma (0–20)', chLine(ps.map(q => perLabel(q)), ser, {h:200, label:'Média final por turma'}) + legend(ser));
+  h += fig('Média final · ' + perLabel(p, true), 'Turmas lado a lado', chBars(ts.map(t => ({label:t.nome, v:media(R.get(t.id)[p].map(r => r.FIN)), color:`var(--v${tcor(t)})`})), {label:'Média final por turma'}));
+  const ms = [...new Set(ts.flatMap(t => matsOf(t, p)))].filter(m => ts.filter(t => matsOf(t, p).includes(m)).length >= 2);
+  const ate = r => m => r.lv[m] && LV.indexOf(r.lv[m]) >= LV.indexOf('E');
+  h += `<div class="card"><div class="tbl-wrap"><table class="cmp"><thead><tr><th class="l">Turma</th><th>Alunos</th><th>Média</th><th>Aptos</th><th>Vaivém na ZS</th><th>Faltas por aluno</th>${ms.map(m => `<th title="Alunos no nível Elementar ou acima">${esc(m)} ≥ E</th>`).join('')}</tr></thead><tbody>${ts.map(t => { const rs = R.get(t.id)[p], n = rs.length, zs = rs.map(r => r.zones.vaivem).filter(x => x != null), f = alunosOf(t).reduce((s, al) => s + counts(t, p, al.id).F, 0);
+    const pct = x => n ? Math.round(x / n * 100) + '%' : '—';
+    return `<tr><td class="l"><span class="tdot" style="--tc:var(--v${tcor(t)})"></span> ${esc(t.nome)}</td><td>${n}</td><td>${media(rs.map(r => r.FIN)) ?? '—'}</td><td>${pct(rs.filter(r => r.EST === 'Apto').length)}</td><td>${zs.length ? Math.round(zs.filter(z => z >= 1).length / zs.length * 100) + '%' : '—'}</td><td>${n ? (Math.round(f / n * 10) / 10).toLocaleString('pt-PT') : '—'}</td>${ms.map(m => matsOf(t, p).includes(m) ? `<td>${pct(rs.filter(r => ate(r)(m)).length)}</td>` : '<td class="muted">—</td>').join('')}</tr>`; }).join('')}</tbody></table></div><p class="hint" style="margin:6px 0 0">${esc(perLabel(p, true))}. As matérias aparecem quando são dadas em pelo menos duas turmas.</p></div>`;
+  return h;
+}
+const _vGraficos58 = vGraficos;
+vGraficos = function (t) { return _vGraficos58(t) + vComparar(); };
+
+/* L. Diplomas de unidade */
+const DIPN = {I:'Introdução', E:'Elementar', A:'Avançado'};
+const DIPMIN = {I:'I', E:'E', A:'A'};
+function diplomados(t, p, m, k) { const v = avalOf(t.id, p); return alunosOf(t).filter(al => { const x = lvOf(v, al.id, m); return x && LV.indexOf(x.l) >= LV.indexOf(DIPMIN[k]); }); }
+function diplomaHtml(t, al, m, k) {
+  return `<section class="rel dipl"><div class="dp-in"><div class="dp-selo">${selo(k, true)}</div><div class="dp-k">Diploma · Educação Física</div>
+    <p class="dp-c">Certifica-se que</p><div class="dp-n">${esc(al.nome)}</div><p class="dp-c">concluiu o nível <b>${DIPN[k]}</b> de</p><div class="dp-m">${subIcon(m, anoOf(t))} ${esc(m)}</div>
+    <p class="dp-s">${esc(t.nome)} · ${esc(CFG.escola || 'Escola')} · Ano letivo ${esc(CFG.ano)}</p>
+    <div class="dp-f"><div><span>${esc(fmtDate(today(), {day:'numeric', month:'long', year:'numeric'}))}</span><i></i><small>Data</small></div><div><span>${esc(CFG.prof || '')}</span><i></i><small>O professor de Educação Física</small></div></div></div></section>`;
+}
+function sheetDiplomas() {
+  const t = turma(), ms = [...new Set(CFG.per.slice(0, CFG.nper).flatMap((_, i) => matsOf(t, i + 1)))];
+  UI.dip = Object.assign({m:ms[0] || '', k:'E'}, UI.dip || {}); if (!ms.includes(UI.dip.m)) UI.dip.m = ms[0] || '';
+  const D = UI.dip, als = D.m ? diplomados(t, UI.p, D.m, D.k) : [];
+  const body = `<div class="form"><div class="field"><label for="dp-m">Matéria</label><select id="dp-m" data-in="dip" data-k="m">${ms.map(m => `<option${m === D.m ? ' selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
+    <div class="field"><span class="lbl">Nível concluído</span><div class="seg block">${['I', 'E', 'A'].map(k => `<button data-a="dip-k" data-k="${k}" class="${D.k === k ? 'on' : ''}">${DIPN[k]}</button>`).join('')}</div></div>
+    <p class="small" style="margin:0">${als.length ? `<b>${als.length}</b> ${als.length === 1 ? 'aluno concluiu' : 'alunos concluíram'} este nível no ${esc(perLabel(UI.p, true))}: ${esc(als.map(a => a.nome.split(' ')[0]).join(', '))}.` : 'Nenhum aluno concluiu ainda este nível neste período.'}</p></div>`;
+  const foot = `<button class="btn" data-a="sh-close">Fechar</button><button class="btn primary" data-a="dip-go"${als.length ? '' : ' disabled'}>Ver ${als.length} ${als.length === 1 ? 'diploma' : 'diplomas'}</button>`;
+  if ($('#sheet').hidden) openSheet('Diplomas de unidade', body, foot); else updSheet(body, foot);
+}
+
+/* M. Arrastar para mudar a ordem (plano do período) e a data das aulas (calendário) */
+const _planoRender58 = planoRender;
+planoRender = function (open) {
+  _planoRender58(open);
+  $$('#sheet .pl-ed').forEach((r, i) => { if (r.querySelector('.drag-h')) return; r.dataset.i = i; const b = document.createElement('button'); b.className = 'drag-h'; b.type = 'button'; b.setAttribute('aria-label', 'Arrastar para mudar a ordem (ou setas para cima e para baixo)'); b.textContent = '⠿'; r.prepend(b); });
+};
+let DRG = null;
+document.addEventListener('pointerdown', e => {
+  const hnd = e.target.closest && e.target.closest('#sheet .drag-h'); if (!hnd) return;
+  const it = hnd.closest('.pl-ed'); e.preventDefault(); hnd.setPointerCapture && hnd.setPointerCapture(e.pointerId);
+  DRG = {it, y:e.clientY}; it.classList.add('drag');
+});
+document.addEventListener('pointermove', e => {
+  if (!DRG) return; const it = DRG.it, sib = [...it.parentNode.querySelectorAll('.pl-ed')].filter(x => x !== it);
+  const alvo = sib.find(x => { const r = x.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
+  if (alvo) { if (it.nextElementSibling !== alvo) alvo.before(it); } else { const last = sib[sib.length - 1]; if (last && last.nextElementSibling !== it) last.after(it); }
+});
+const planoReordenar = ordem => { if (ordem.some((x, i) => x !== i)) { UI.draft = ordem.map(i => UI.draft[i]); } planoRender(); };
+document.addEventListener('pointerup', () => { if (!DRG) return; const it = DRG.it; DRG = null; it.classList.remove('drag'); planoReordenar([...it.parentNode.querySelectorAll('.pl-ed')].map(x => +x.dataset.i)); });
+document.addEventListener('keydown', e => { const hnd = e.target.closest && e.target.closest('#sheet .drag-h'); if (!hnd || !/^Arrow(Up|Down)$/.test(e.key)) return; e.preventDefault();
+  const i = +hnd.closest('.pl-ed').dataset.i, j = i + (e.key === 'ArrowUp' ? -1 : 1); if (j < 0 || j >= UI.draft.length) return; const o = UI.draft.map((_, k) => k); [o[i], o[j]] = [o[j], o[i]]; planoReordenar(o);
+  const b = $$('#sheet .drag-h')[j]; if (b) b.focus(); });
+// Calendário: com o rato, arrasta-se a lição para outro dia; no telemóvel, toque longo na lição e depois toque no dia novo.
+const CALMV = {aid:null, drag:null, tm:null, sup:false};
+function calMover(aid, iso) {
+  const a = S.aulas[aid]; if (!a || !iso || a.data === iso) return false;
+  if (aulasOf(a.turmaId).some(x => x.data === iso)) { toast('Já há uma aula nesse dia.', 'bad'); return false; }
+  const de = a.data; a.data = iso; Store.save('aulas', a); render();
+  toast(`Lição passou de ${fmtDate(de, {day:'numeric', month:'short'})} para ${fmtDate(iso, {weekday:'short', day:'numeric', month:'short'})}${semAulas(iso) ? ' (dia sem aulas no calendário)' : ''}.`); return true;
+}
+const aulaDoDia = d => { const t = turma(); return t && aulasOf(t.id).find(a => a.data === d); };
+const _calDia58 = A['cal-dia'];
+A['cal-dia'] = el => { if (CALMV.aid) { const id = CALMV.aid; CALMV.aid = null; document.body.classList.remove('cal-mv'); $$('.cd.mv').forEach(x => x.classList.remove('mv')); if (S.aulas[id] && S.aulas[id].data === el.dataset.d) return; calMover(id, el.dataset.d); return; } _calDia58(el); };
+document.addEventListener('pointerdown', e => {
+  const c = e.target.closest && e.target.closest('.cal .cd.au'); if (!c) return; const a = aulaDoDia(c.dataset.d); if (!a) return;
+  if (e.pointerType === 'mouse') { CALMV.drag = {aid:a.id, x:e.clientX, y:e.clientY, on:false, from:c}; return; }
+  clearTimeout(CALMV.tm); const x0 = e.clientX, y0 = e.clientY;
+  CALMV.tm = setTimeout(() => { CALMV.aid = a.id; CALMV.sup = true; c.classList.add('mv'); document.body.classList.add('cal-mv'); try { navigator.vibrate && navigator.vibrate(30); } catch (er) {} toast('Toque no dia para onde quer passar a lição.'); }, 450);
+  CALMV.p0 = [x0, y0];
+});
+document.addEventListener('pointermove', e => {
+  if (CALMV.tm && CALMV.p0 && Math.hypot(e.clientX - CALMV.p0[0], e.clientY - CALMV.p0[1]) > 10) { clearTimeout(CALMV.tm); CALMV.tm = null; }
+  const D = CALMV.drag; if (!D) return;
+  if (!D.on && Math.hypot(e.clientX - D.x, e.clientY - D.y) > 6) { D.on = true; document.body.classList.add('cal-drag'); D.from.classList.add('mv'); }
+  if (D.on) { $$('.cd.drop').forEach(x => x.classList.remove('drop')); const t = document.elementFromPoint(e.clientX, e.clientY), cd = t && t.closest('.cal .cd'); if (cd && cd !== D.from) cd.classList.add('drop'); }
+});
+document.addEventListener('pointerup', e => {
+  clearTimeout(CALMV.tm); CALMV.tm = null; const D = CALMV.drag; CALMV.drag = null; if (!D || !D.on) return;
+  document.body.classList.remove('cal-drag'); $$('.cd.drop, .cd.mv').forEach(x => x.classList.remove('drop', 'mv')); CALMV.sup = true;
+  const t = document.elementFromPoint(e.clientX, e.clientY), cd = t && t.closest('.cal .cd'); if (cd && cd.dataset.d) calMover(D.aid, cd.dataset.d);
+});
+window.addEventListener('click', e => { if (CALMV.sup) { CALMV.sup = false; if (e.target.closest && e.target.closest('.cal')) { e.stopPropagation(); e.preventDefault(); } } }, true);
+document.addEventListener('pointercancel', () => { clearTimeout(CALMV.tm); CALMV.tm = null; });
+
+/* N. Gestos: deslizar um aluno na lista de presenças */
+const _openSheet58 = openSheet;
+openSheet = function (title, body, foot) {
+  if (typeof body === 'string' && body.includes('data-a="d-pres"')) body = body.replace('<div class="list"><div class="pr">', '<p class="hint swipe-h">Deslize um aluno para a esquerda para marcar falta, para a direita para atraso. Volte a deslizar para o pôr presente.</p><div class="list"><div class="pr">');
+  return _openSheet58(title, body, foot);
+};
+let SWP = null;
+document.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; const r = e.target.closest && e.target.closest('#sheet .pr'); if (!r || e.target.closest('.ps')) return; SWP = {r, x:e.clientX, y:e.clientY, dx:0, on:false}; });
+document.addEventListener('pointermove', e => {
+  if (!SWP) return; const dx = e.clientX - SWP.x, dy = e.clientY - SWP.y;
+  if (!SWP.on && Math.abs(dy) > 12 && Math.abs(dy) > Math.abs(dx)) { SWP = null; return; }
+  if (Math.abs(dx) > 8) SWP.on = true;
+  if (SWP.on) { SWP.dx = dx; SWP.r.style.transform = `translateX(${Math.max(-90, Math.min(90, dx))}px)`; SWP.r.classList.toggle('sw-f', dx < -50); SWP.r.classList.toggle('sw-a', dx > 50); }
+});
+function swipeFim() {
+  if (!SWP) return; const {r, dx, on} = SWP; SWP = null; r.style.transform = ''; r.classList.remove('sw-f', 'sw-a'); if (!on || Math.abs(dx) < 60) return;
+  const alvo = dx < 0 ? 'F' : 'A', cur = r.querySelector('.ps button.on'), s = cur && cur.dataset.s === alvo ? 'P' : alvo, b = r.querySelector(`.ps button[data-s="${s}"]`);
+  if (b) { b.click(); r.classList.add('sw-ok'); setTimeout(() => r.classList.remove('sw-ok'), 400); }
+}
+document.addEventListener('pointerup', swipeFim); document.addEventListener('pointercancel', swipeFim);
+
+Object.assign(A, {
+  'sem-ir': el => { const t = S.turmas[el.dataset.id]; if (!t) return; UI.turma = t.id; const a = aulasOf(t.id).find(x => x.data === el.dataset.d);
+    if (a) { UI.tab = 'turma'; UI.tsub = 'aulas'; render(); A['aula-edit']({dataset:{id:a.id}}); } else if (el.dataset.d === today()) { UI.tab = 'turma'; UI.tsub = 'aulas'; render(); A['aula-new'](null, null, el.dataset.d); } else { UI.tab = 'turma'; render(); } },
+  'fs-open': () => { const als = alunosOf(turma()), i = als.findIndex(a => !S.fotos[a.id]); FSES = i < 0 ? 0 : i; camInput(); sheetFotoSessao(true); },
+  'fs-cam': () => camInput().click(),
+  'fs-mv': el => { FSES = Math.max(0, Math.min(alunosOf(turma()).length - 1, FSES + +el.dataset.d)); sheetFotoSessao(); },
+  'qq-open': () => sheetQuem(true),
+  'qq-r': el => { QQ.resp = el.dataset.id; QQ.n++; if (el.dataset.id === QQ.al.id) QQ.ok++; sheetQuem(); },
+  'qq-next': () => { quemNovo(); sheetQuem(); },
+  'doc-dipl': () => sheetDiplomas(),
+  'dip-k': el => { UI.dip.k = el.dataset.k; sheetDiplomas(); },
+  'dip-go': () => { const t = turma(), D = UI.dip, als = diplomados(t, UI.p, D.m, D.k); closeSheet(); printDoc('Diplomas · ' + D.m, als.map(al => diplomaHtml(t, al, D.m, D.k)).join('')); }
+});
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'dip') { UI.dip[el.dataset.k] = el.value; sheetDiplomas(); }
+  else if (k === 'foto-g') { UI.fotoG = el.checked; saveUI(); render(); } });
 </script>
