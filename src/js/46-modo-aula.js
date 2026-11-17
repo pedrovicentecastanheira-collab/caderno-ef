@@ -42,7 +42,7 @@ function vModoAula(t) {
     h += `<div class="btn-row"><button class="btn" data-a="ma-edit">${P ? 'Editar o plano e a aula' : 'Preparar o plano'}</button><button class="btn primary" data-a="ma-st" data-k="durante">Começar a aula ›</button></div>`;
   } else if (st === 'durante') {
     const als = alunosOf(t), c = {}; PSCY.forEach(k => c[k] = 0); als.forEach(al => c[a.presencas[al.id] || 'P']++);
-    h += `<div class="btn-row ma-ac"><button class="btn primary" data-a="ma-obs">Observar competências</button><button class="btn" data-a="tools">Cronómetro, equipas e sorteio</button></div>
+    h += `<div class="btn-row ma-ac"><button class="btn primary" data-a="ma-obs">Observar competências</button><button class="btn" data-a="tools">Cronómetro, equipas e sorteio</button><button class="btn" data-a="proj">Projetar no quadro</button><button class="btn${UI.pav ? ' on' : ''}" data-a="pav-t">${UI.pav ? 'Sair do modo pavilhão' : 'Modo pavilhão'}</button></div>
       <div class="sec-h"><h2>Presenças</h2><span class="small muted">${PSCY.filter(k => c[k]).map(k => `${c[k]} ${(c[k] === 1 ? PSL1 : PSLN)[k]}`).join(' · ')} · <button class="link" data-a="ma-allp">Todos presentes</button></span></div>
       <p class="hint" style="margin:-4px 0 0">Toque no aluno para mudar: presente → falta → atraso → sem material → dispensado.</p>
       <div class="ma-ps">${als.map(al => { const s = a.presencas[al.id] || 'P'; return `<button class="ma-pr ps-${s}" data-a="ma-ps" data-aid="${esc(al.id)}">${avatar(al, 'sm')}<span>${esc(nome2(al.nome))}</span><b>${s === 'P' ? '' : s}</b></button>`; }).join('')}</div>
@@ -65,6 +65,7 @@ function vModoAula(t) {
 Object.assign(A, {
   'hoje-go': el => { UI.turma = el.dataset.id; maulaAbrir(turma(), today()); },
   'ma-abrir': el => { const a = S.aulas[el.dataset.id]; if (!a) return; UI.turma = a.turmaId; maulaAbrir(turma(), a.data); },
+  'pav-t': () => { UI.pav = !UI.pav; render(); },
   'ma-st': el => { UI.mstep = el.dataset.k; render(); window.scrollTo(0, 0); },
   'ma-sair': () => { UI.tsub = 'aulas'; UI.maula = null; render(); window.scrollTo(0, 0); },
   'ma-mat': el => { const a = S.aulas[UI.maula]; a.materias.push(el.dataset.m); maSave(a); render(); },
