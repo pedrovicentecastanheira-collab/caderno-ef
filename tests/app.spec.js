@@ -508,7 +508,9 @@ test('OneDrive: ligar (início de sessão simulado), guardar sozinho, recuperar 
   await page.click('[data-a="dsec"][data-k="sync"]');
   await expect(page.locator('.sync-url, .card')).toContainText(['Ligado']);
   // recuperar: o OneDrive devolve uma cópia com uma aula alterada mais recente
-  enviados.copia = await page.evaluate(() => { const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0]; a.sumario = 'Vindo do OneDrive'; a._u = Date.now() + 5000; return JSON.stringify(d); });
+  // cópia feita noutro aparelho: o sumário de uma aula foi alterado lá, mais recentemente
+  enviados.copia = await page.evaluate(() => { const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0]; a.sumario = 'Vindo do OneDrive'; a._u = Date.now() + 5000;
+    d.dev = 'outro-aparelho'; d.meta = Object.assign({}, d.meta, {['aulas' + FS_SEP + a.id + FS_SEP + 'sumario']: Date.now() + 5000}); return JSON.stringify(d); });
   await page.click('[data-a="od-rec"]'); await page.click('[data-a="od-rec"]');
   await expect.poll(() => page.evaluate(() => Object.values(S.aulas).some(a => a.sumario === 'Vindo do OneDrive'))).toBe(true);
   // cópias diárias no aparelho
@@ -540,4 +542,62 @@ test('robustez: mais de 1000 registos na conta, nomes com aspas, evidências lim
     return [document.querySelectorAll('b').length >= 0, evMap(avalOf(t.id, 1), t.alunos[0].id, 'Voleibol').I3.length];
   });
   expect(r).toEqual([true, 6]);
+});
+
+test('dois aparelhos: alterações em alunos diferentes juntam-se, eliminações passam, conflitos ficam registados', async ({browser}) => {
+  const abrir = async () => { const ctx = await browser.newContext(); const p = await ctx.newPage(); const er = []; p.on('pageerror', e => er.push(e.message));
+    await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort()); await p.goto('/'); await p.waitForFunction(() => typeof CFG !== 'undefined' && CFG && typeof FS !== 'undefined' && FS.dev); return {ctx, p, er}; };
+  const A1 = await abrir(), B1 = await abrir();
+  await A1.p.evaluate(() => makeDemo()); await A1.p.waitForTimeout(300);
+  const base = await A1.p.evaluate(() => JSON.stringify(syncData()));
+  expect(await B1.p.evaluate(d => syncMerge(JSON.parse(d)), base)).toBeGreaterThan(5);
+  // cada aparelho muda um aluno diferente da mesma turma e período
+  const nivel = (p, i, l) => p.evaluate(([i, l]) => { const t = turma(), v = avalOf(t.id, 1); v.af[t.alunos[i].id] = Object.assign(v.af[t.alunos[i].id] || {}, {Voleibol: l}); touchAval(v); }, [i, l]);
+  await nivel(A1.p, 0, 'A'); await nivel(B1.p, 1, 'NI');
+  // A apaga uma aula; B altera o sumário de outra
+  const [apagada, outra] = await A1.p.evaluate(() => { const as = aulasOf(turma().id); delete S.aulas[as[0].id]; Store.del('aulas', as[0].id); return [as[0].id, as[1].id]; });
+  await B1.p.evaluate(id => { const a = S.aulas[id]; a.sumario = 'Mudado no aparelho B'; Store.save('aulas', a); }, outra);
+  const dA = await A1.p.evaluate(() => JSON.stringify(syncData())), dB = await B1.p.evaluate(() => JSON.stringify(syncData()));
+  await A1.p.evaluate(d => syncMerge(JSON.parse(d)), dB); await B1.p.evaluate(d => syncMerge(JSON.parse(d)), dA);
+  const ver = p => p.evaluate(([apagada, outra]) => { const t = turma(), v = avalOf(t.id, 1); return [v.af[t.alunos[0].id].Voleibol, v.af[t.alunos[1].id].Voleibol, !!S.aulas[apagada], S.aulas[outra].sumario]; }, [apagada, outra]);
+  expect(await ver(A1.p)).toEqual(['A', 'NI', false, 'Mudado no aparelho B']);
+  expect(await ver(B1.p)).toEqual(['A', 'NI', false, 'Mudado no aparelho B']);
+  // conflito: o mesmo campo muda nos dois; fica o mais recente e regista-se o conflito
+  await nivel(A1.p, 2, 'E'); await A1.p.waitForTimeout(20); await nivel(B1.p, 2, 'PI');
+  const dA2 = await A1.p.evaluate(() => JSON.stringify(syncData())), dB2 = await B1.p.evaluate(() => JSON.stringify(syncData()));
+  await A1.p.evaluate(d => syncMerge(JSON.parse(d)), dB2); await B1.p.evaluate(d => syncMerge(JSON.parse(d)), dA2);
+  const c = p => p.evaluate(() => { const t = turma(); return [avalOf(t.id, 1).af[t.alunos[2].id].Voleibol, FS.conf.length]; });
+  const [ca, cb] = [await c(A1.p), await c(B1.p)];
+  expect(ca[0]).toBe('PI'); expect(cb[0]).toBe('PI'); expect(ca[1] + cb[1]).toBeGreaterThan(0);
+  // uma cópia inválida não é aplicada
+  expect(await A1.p.evaluate(() => syncMerge({app: 'Caderno EF', turmas: {x: {id: 'x', alunos: 'mau'}}, aulas: {y: {id: 'y'}}}))).toBe(0);
+  expect(A1.er.concat(B1.er)).toEqual([]);
+  await A1.ctx.close(); await B1.ctx.close();
+});
+
+test('privacidade: cópias cifradas, código de acesso, arquivo, exportação sem nomes, verificação e arrumação', async ({page}) => {
+  await demo(page);
+  // cifra: só se abre com a palavra-passe
+  const r = await page.evaluate(async () => { await cifraDefinir('palavra-secreta-1'); CFG.cifraOn = true; const c = await copiaCifrar('{"app":"Caderno EF","x":1}'); const o = JSON.parse(c);
+    return [o.enc, c.includes('"x":1'), JSON.parse(await copiaDecifrar(c)).x]; });
+  expect(r).toEqual([1, false, 1]);
+  // exportação sem nomes
+  const csv = await page.evaluate(() => csvAnonimo(1));
+  expect(csv).toContain('A01'); expect(csv).not.toContain('Alice');
+  // verificação: uma aula órfã é encontrada e arrumada
+  await page.evaluate(() => { S.aulas.orfa = {id: 'orfa', turmaId: 'nao-existe', data: '2026-10-01', materias: [], presencas: {}}; });
+  expect(await page.evaluate(() => verificar().some(x => x.k === 'aulas'))).toBe(true);
+  await page.evaluate(() => arrumar());
+  expect(await page.evaluate(() => !!S.aulas.orfa)).toBe(false);
+  // diagnóstico e privacidade abrem
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="diag"]'); await expect(page.locator('.diag')).toContainText('Versão');
+  await page.click('[data-a="dsec"][data-k="priv"]'); await expect(page.locator('ul.priv')).toBeVisible();
+  // código de acesso: ao voltar a abrir, pede o código
+  await page.evaluate(async () => { const salt = crypto.getRandomValues(new Uint8Array(16)); localStorage.setItem('ef:pin', JSON.stringify({salt: b64(salt), hash: await pinHash('2468', salt), n: 4, min: 5})); });
+  await page.reload(); await expect(page.locator('#lock .lk-pad')).toBeVisible();
+  for (const d of ['2', '4', '6', '8']) await page.click(`#lock [data-a="lk-d"][data-v="${d}"]`);
+  await expect(page.locator('#lock')).toBeHidden();
+  // arquivar uma turma retira-a do caderno
+  await page.evaluate(() => { const t = turma(); return arquivar(t); });
+  expect(await page.evaluate(() => Object.keys(S.turmas).length)).toBe(0);
 });
