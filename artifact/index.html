@@ -816,6 +816,25 @@ td.c.trans,.gcr .c.trans{opacity:.55;font-style:italic}
 table.prop-t select{min-width:70px}
 .obs-auto-b{float:right;font-size:13px}
 code{font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:5px;word-break:break-all}
+body.bloq #app,body.bloq #ged{visibility:hidden}
+#lock{position:fixed;inset:0;z-index:80;background:var(--bg);display:grid;place-items:center;padding:20px}
+#lock[hidden]{display:none}
+.lk{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:300px}
+.lk .logo{width:64px;height:64px;border-radius:16px}
+.lk h1{font-family:var(--f-display);font-size:24px;margin:0}
+.lk-dots{display:flex;gap:12px;margin:6px 0}
+.lk-dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
+.lk-dots i.on{background:var(--accent)}
+.lk-dots.erro{animation:abana .35s}
+@keyframes abana{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.lk-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+.lk-pad button{height:62px;border-radius:16px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-display);font-size:24px;font-weight:700;color:var(--text)}
+.lk-pad button:active{background:var(--accent-soft)}
+.conf{display:flex;flex-direction:column;gap:4px;padding:8px 0;border-top:1px solid var(--line)}
+.conf:first-of-type{border-top:0}
+.diag{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:13.5px}
+.diag span{color:var(--muted)}
+ul.priv{margin:0;padding-left:18px;line-height:1.55}
 </style>
 
 <style>body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--surface)}</style>
@@ -1199,8 +1218,8 @@ function vTurmaSeg(sub) {
   return `<div class="seg block" role="group" aria-label="Turma">${[['aulas', 'Aulas'], ['alunos', 'Alunos'], ['planear', 'Planear']].map(([k, n]) => `<button data-a="tsub" data-k="${k}" class="${sub === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
 }
 // Definições arrumadas por secções (as secções vêm de vMais).
-const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
-const DEXTRA = {fit:() => vFitTrans(), ano:() => vCalEsc(), sync:() => vSync() + vCopias(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
+const DSECS = [['turmas', 'Turmas', ['Turmas', 'Todas as turmas']], ['ano', 'Ano letivo', ['Ano letivo', 'Horário semanal']], ['escola', 'Escola', ['Escola e relatórios', 'Regras de cálculo']], ['fit', 'FITescola', ['Tabelas FITescola']], ['sync', 'Sincronizar', []], ['priv', 'Privacidade', []], ['diag', 'Diagnóstico', []], ['grupo', 'Grupo de EF', []], ['lemb', 'Lembretes', []], ['dados', 'Dados', ['Cópia de segurança']], ['ver', 'Aparência', []]];
+const DEXTRA = {fit:() => vFitTrans(), ano:() => vCalEsc(), sync:() => vConflitos() + vSync() + vCopias(), priv:() => vPrivacidade(), diag:() => vDiagnostico(), ver:() => vAparencia(), lemb:() => vLembretes(), grupo:() => vPartilha()};
 function vDefs(t) {
   const full = vMais(t), body = full.replace(/^<div class="stack">/, '').replace(/<\/div>$/, ''), parts = {};
   body.split('<div class="sec-h"><h2>').slice(1).forEach(x => { parts[x.slice(0, x.indexOf('</h2>'))] = '<div class="sec-h"><h2>' + x; });
@@ -4832,7 +4851,7 @@ Object.assign(A, {
 // 3) no computador (Chrome ou Edge), ligar o caderno a um ficheiro numa pasta do Google Drive ou do OneDrive:
 //    grava-o sozinho a cada alteração e, ao abrir, junta o que lá estiver de mais recente.
 const SYNC = {h:null, ok:false, t:null, quando:null};
-const syncData = () => { Store.flush(); return {app:'Caderno EF', versao:1, sync:true, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; };
+let syncData = () => { Store.flush(); return {app:'Caderno EF', versao:1, sync:true, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; };
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 // Junta uma cópia: em cada turma, aula, avaliação, fotografia, documento e definições fica a versão mais recente.
 function syncMerge(d) {
@@ -5292,4 +5311,435 @@ Object.assign(A, {
   'snap-rest': async el => { if (!armed(el, 'Substituir tudo?')) return; try { const d = await idbReq(Store.tx().get(el.dataset.k)); if (!d) return; A._pending = d; await A['restore-go'](); toast('Caderno reposto como estava em ' + fmtDate(el.dataset.k.slice(5), {day:'numeric', month:'long'}) + '.'); } catch (e) { toast('Não foi possível repor a cópia.', 'bad'); } }
 });
 document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in === 'od-cid') { const b = el.parentNode.querySelector('[data-a="od-entrar"]'); if (b) b.disabled = !/^[0-9a-f-]{36}$/i.test(el.value.trim()); } });
+/* ---------- sincronização por campo (aparelhos sem a conta Claude) ---------- */
+// Cada campo alterado (ex.: nível do Rui em Voleibol no 1.º período) fica com a hora da alteração (FS.meta).
+// As eliminações ficam registadas (FS.tomb). Ao juntar uma cópia de outro aparelho, fica o valor mais recente de
+// cada campo: dois aparelhos a mexer em alunos diferentes já não se anulam. Se o mesmo campo mudou nos dois desde a
+// última vez que se juntaram, fica o mais recente e regista-se um conflito para o professor confirmar.
+// Turmas, aulas, avaliações e definições juntam-se campo a campo; fotografias, documentos e histórico, registo a registo.
+const FS_KINDS = ['turmas', 'aulas', 'aval', 'cfg'], FS_SEP = '␟';
+const FS = {on:false, dev:null, meta:{}, tomb:{}, seen:{}, conf:[], js:{}, merging:false, t:null};
+const fsKey = (k, id) => k + FS_SEP + id;
+const isObj = x => x && typeof x === 'object' && !Array.isArray(x);
+// Folhas de um objeto: caminho → valor em texto (as listas contam como uma folha).
+function folhas(o, pre, out) {
+  Object.keys(o || {}).forEach(k => { if (k === '_u' && !pre) return; const v = o[k], p = pre ? pre + FS_SEP + k : k;
+    if (isObj(v) && Object.keys(v).length) folhas(v, p, out); else out[p] = JSON.stringify(v === undefined ? null : v); });
+  return out;
+}
+function getPath(o, parts) { for (const p of parts) { if (!isObj(o) || !(p in o)) return undefined; o = o[p]; } return o; }
+function setPath(o, parts, v) {
+  for (let i = 0; i < parts.length - 1; i++) { if (!isObj(o[parts[i]])) o[parts[i]] = {}; o = o[parts[i]]; }
+  if (v === undefined) delete o[parts[parts.length - 1]]; else o[parts[parts.length - 1]] = v;
+}
+function fsInit() {
+  FS.on = Store.mode !== 'cloud'; if (!FS.on) return;
+  try { FS.dev = localStorage.getItem('ef:dev'); if (!FS.dev) { FS.dev = uid(); localStorage.setItem('ef:dev', FS.dev); } } catch (e) { FS.dev = FS.dev || uid(); }
+  FS_KINDS.forEach(k => Object.values(S[k] || {}).forEach(o => { if (o && o.id) FS.js[fsKey(k, o.id)] = clone(o); }));
+}
+async function fsLoad() {
+  try { let x = null; if (Store.mode === 'idb') x = await idbReq(Store.tx().get('sync:meta')); else x = JSON.parse(localStorage.getItem('ef:syncmeta') || 'null');
+    if (x) Object.assign(FS, {meta:x.meta || {}, tomb:x.tomb || {}, seen:x.seen || {}, conf:x.conf || []}); } catch (e) {}
+}
+function fsGuardar() {
+  clearTimeout(FS.t); FS.t = setTimeout(async () => {
+    // compacta: as marcas com mais de 180 dias já foram juntadas por todos os aparelhos
+    const lim = Date.now() - 180 * 864e5; Object.keys(FS.meta).forEach(p => { if (FS.meta[p] < lim) delete FS.meta[p]; }); Object.keys(FS.tomb).forEach(p => { if (FS.tomb[p] < lim) delete FS.tomb[p]; });
+    const x = {meta:FS.meta, tomb:FS.tomb, seen:FS.seen, conf:FS.conf.slice(-100)};
+    try { if (Store.mode === 'idb') await idbReq(Store.tx(true).put(x, 'sync:meta')); else localStorage.setItem('ef:syncmeta', JSON.stringify(x)); } catch (e) {}
+  }, 800);
+}
+// Regista a hora de cada campo que mudou desde a última gravação deste registo.
+function fsMarcar(k, obj) {
+  if (!FS.on || !obj || !obj.id) return; const key = fsKey(k, obj.id);
+  if (!FS_KINDS.includes(k)) { delete FS.tomb[key]; return; }
+  const a = folhas(FS.js[key] || {}, '', {}), b = folhas(obj, '', {}), now = Date.now(); let ch = false;
+  if (!FS.merging) { new Set([...Object.keys(a), ...Object.keys(b)]).forEach(p => { if (a[p] !== b[p]) { FS.meta[key + FS_SEP + p] = now; ch = true; } }); if (FS.tomb[key]) { delete FS.tomb[key]; ch = true; } }
+  FS.js[key] = clone(obj); if (ch) fsGuardar();
+}
+const _fsSave = Store.save.bind(Store), _fsDel = Store.del.bind(Store);
+Store.save = function (k, obj, keep) { try { fsMarcar(k, obj); } catch (e) {} return _fsSave(k, obj, keep); };
+Store.del = function (k, id) { if (FS.on && !FS.merging) { FS.tomb[fsKey(k, id)] = Date.now(); delete FS.js[fsKey(k, id)]; fsGuardar(); } return _fsDel(k, id); };
+// As cópias levam as marcas de cada campo e as eliminações.
+const _syncData = syncData;
+syncData = function () { const d = _syncData(); if (FS.on) Object.assign(d, {sync2:true, dev:FS.dev, at:Date.now(), meta:FS.meta, tomb:FS.tomb}); return d; };
+
+// Junta uma cópia campo a campo. Devolve o número de registos alterados.
+function fsMerge(d) {
+  migrate(d); const rdev = d.dev || '?', seen = FS.seen[rdev] || 0, rmeta = d.meta || {}, rtomb = d.tomb || {}, mudou = new Set(), now = Date.now();
+  const porReg = {}; Object.keys(rmeta).forEach(p => { const i = p.indexOf(FS_SEP, p.indexOf(FS_SEP) + 1), key = i < 0 ? p : p.slice(0, i); (porReg[key] = porReg[key] || []).push(p); });
+  const maxMeta = (M, key) => Object.keys(M).filter(p => p === key || p.startsWith(key + FS_SEP)).reduce((m, p) => Math.max(m, M[p]), 0);
+  FS.merging = true;
+  try {
+    for (const k of ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist', 'cfg']) {
+      Object.values(d[k] || {}).forEach(R => {
+        if (!R || !R.id) return; const key = fsKey(k, R.id), L = S[k][R.id];
+        if (!L) {   // registo que não existe aqui: entra, a não ser que tenha sido apagado aqui depois
+          if (FS.tomb[key] && FS.tomb[key] >= Math.max(maxMeta(rmeta, key), R._u || 0)) return;
+          S[k][R.id] = clone(R); Object.keys(rmeta).forEach(p => { if (p.startsWith(key + FS_SEP)) FS.meta[p] = Math.max(FS.meta[p] || 0, rmeta[p]); });
+          delete FS.tomb[key]; mudou.add(k + '\u0000' + R.id); return;
+        }
+        if (!FS_KINDS.includes(k)) { if ((R._u || 0) > (L._u || 0)) { S[k][R.id] = clone(R); mudou.add(k + '\u0000' + R.id); } return; }
+        (porReg[key] || []).forEach(p => {
+          const rt = rmeta[p], lt = FS.meta[p] || 0; if (rt <= lt) return;
+          const parts = p.split(FS_SEP).slice(2), rv = getPath(R, parts), lv = getPath(L, parts);
+          if (JSON.stringify(rv) === JSON.stringify(lv)) { FS.meta[p] = rt; return; }
+          if (lt > seen && rt > seen && lt) FS.conf.push({p, ficou:rv, outro:lv, de:rdev, t:now});   // mudou nos dois: fica o mais recente
+          setPath(L, parts, rv === undefined ? undefined : clone(rv)); FS.meta[p] = rt; mudou.add(k + '\u0000' + R.id);
+        });
+        // conflito ao contrário: o valor daqui é mais recente, mas o outro aparelho também o tinha alterado
+        (porReg[key] || []).forEach(p => { const rt = rmeta[p], lt = FS.meta[p] || 0; if (lt > rt && rt > seen && lt > seen) { const parts = p.split(FS_SEP).slice(2), rv = getPath(R, parts), lv = getPath(L, parts);
+          if (JSON.stringify(rv) !== JSON.stringify(lv) && !FS.conf.some(c => c.p === p && c.t === now)) FS.conf.push({p, ficou:lv, outro:rv, de:rdev, t:now}); } });
+      });
+    }
+    // eliminações feitas no outro aparelho
+    Object.entries(rtomb).forEach(([key, ts]) => { const i = key.indexOf(FS_SEP), k = key.slice(0, i), id = key.slice(i + 1), L = S[k] && S[k][id];
+      if (!L) { FS.tomb[key] = Math.max(FS.tomb[key] || 0, ts); return; }
+      if (ts > Math.max(maxMeta(FS.meta, key), FS_KINDS.includes(k) ? 0 : (L._u || 0))) { delete S[k][id]; Store.del(k, id); delete FS.js[key]; FS.tomb[key] = ts; mudou.add('x'); } });
+    mudou.forEach(x => { const [k, id] = x.split('\u0000'); if (!id || !S[k][id]) return; const o = S[k][id]; if (k === 'aval') SHADOW[o.id] = clone(o); Store.save(k, o, true); });
+  } finally { FS.merging = false; }
+  if (d.cfg && d.cfg.geral) { CFG = S.cfg.geral; CFG.fit = Object.assign(clone(FITREF), CFG.fit || {}); while (CFG.per.length < 3) CFG.per.push({ini:'', fim:''}); }
+  if (d.at) FS.seen[rdev] = Math.max(FS.seen[rdev] || 0, d.at);
+  if (!S.turmas[UI.turma]) UI.turma = Object.keys(S.turmas)[0] || null;
+  fsGuardar(); return mudou.size;
+}
+const _syncMerge = syncMerge;
+syncMerge = function (d) { return FS.on && d && d.sync2 ? fsMerge(d) : _syncMerge(d); };
+
+/* conflitos: o que ficou e o que se pode repor */
+function confRotulo(p) {
+  const [k, id, ...r] = p.split(FS_SEP), al = aid => { for (const t of Object.values(S.turmas)) { const a = (t.alunos || []).find(x => x.id === aid); if (a) return a.nome; } return 'aluno'; };
+  if (k === 'aval') { const [tid, per] = [id.slice(0, id.lastIndexOf('_')), id.slice(id.lastIndexOf('_') + 1)], t = S.turmas[tid], base = (t ? t.nome : 'turma') + ' · ' + perLabel(+per || 1);
+    const o = {af:'nível', comp:'competência', fit:'FITescola', con:'conhecimentos', av:'atitudes', obs:'observação', ev:'evidência', des:'desafio'}[r[0]] || r[0];
+    return `${base} · ${r[1] ? al(r[1]) + ' · ' : ''}${o}${r[2] ? ' em ' + r[2] : ''}`; }
+  if (k === 'aulas') { const a = S.aulas[id]; return `Aula de ${a ? fmtDate(a.data, {day:'numeric', month:'short'}) : '?'} · ${r[0] === 'presencas' && r[1] ? 'presença de ' + al(r[1]) : r.join(' › ')}`; }
+  if (k === 'turmas') { const t = S.turmas[id]; return `${t ? t.nome : 'Turma'} · ${r.join(' › ')}`; }
+  return 'Definições · ' + r.join(' › ');
+}
+const confValor = v => v === undefined || v === null ? '(vazio)' : typeof v === 'string' ? v : Array.isArray(v) ? v.length + ' registos' : typeof v === 'object' ? '(vários)' : String(v);
+function vConflitos() {
+  if (!FS.on || !FS.conf.length) return '';
+  return `<div class="sec-h"><h2>Conflitos de sincronização (${FS.conf.length})</h2><button class="link" data-a="conf-ok-all">Aceitar todos</button></div><div class="card"><p class="hint" style="margin:0 0 6px">Estes campos foram alterados nos dois aparelhos antes de se juntarem. Ficou a alteração mais recente; pode repor a outra.</p>
+    ${FS.conf.slice(-30).reverse().map((c, i) => { const j = FS.conf.length - 1 - i; return `<div class="conf"><b>${esc(confRotulo(c.p))}</b><span class="small">Ficou: <b>${esc(confValor(c.ficou))}</b> · outro valor: ${esc(confValor(c.outro))}</span><span class="btn-row"><button class="btn sm" data-a="conf-ok" data-i="${j}">Manter</button><button class="btn sm ghost" data-a="conf-troca" data-i="${j}">Repor o outro</button></span></div>`; }).join('')}</div>`;
+}
+Object.assign(A, {
+  'conf-ok': el => { FS.conf.splice(+el.dataset.i, 1); fsGuardar(); render(); },
+  'conf-ok-all': () => { FS.conf = []; fsGuardar(); render(); toast('Conflitos aceites.'); },
+  'conf-troca': el => { const c = FS.conf[+el.dataset.i]; if (!c) return; const [k, id, ...parts] = c.p.split(FS_SEP), o = k === 'cfg' ? S.cfg[id] : S[k][id];
+    if (o) { setPath(o, parts, c.outro === undefined ? undefined : clone(c.outro)); if (k === 'aval') touchAval(o); else Store.save(k, o); }
+    FS.conf.splice(+el.dataset.i, 1); fsGuardar(); render(); toast('Valor reposto: segue para os outros aparelhos na próxima sincronização.'); }
+});
+
+/* OneDrive: cada aparelho guarda o seu ficheiro (dev-<aparelho>.json) e junta os dos outros */
+async function odPuxar() {
+  if (!odOn() || OD.a || !FS.on) return 0; let n = 0;
+  try { const L = await odApi('GET', 'drive/special/approot/children?$select=name,lastModifiedDateTime&$top=200'), vistos = JSON.parse(localStorage.getItem('ef:odvistos') || '{}');
+    for (const f of (L.value || []).filter(f => /^dev-.+\.json$/.test(f.name) && f.name !== 'dev-' + FS.dev + '.json')) {
+      if (vistos[f.name] === f.lastModifiedDateTime) continue;
+      const x = await odApi('GET', 'drive/special/approot:/' + encodeURIComponent(f.name) + ':/content'), d = typeof x === 'string' ? JSON.parse(await odDecifrar(x)) : JSON.parse(await odDecifrar(JSON.stringify(x)));
+      if (d && d.app === 'Caderno EF') n += syncMerge(d); vistos[f.name] = f.lastModifiedDateTime; }
+    localStorage.setItem('ef:odvistos', JSON.stringify(vistos)); }
+  catch (e) {}
+  if (n) { render(); toast(`Sincronizado com o OneDrive: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.`); }
+  return n;
+}
+const odDecifrar = async txt => typeof copiaDecifrar === 'function' ? copiaDecifrar(txt) : txt;
+const _odGuardar = odGuardar;
+odGuardar = async function (manual) { if (FS.on) await odPuxar(); await _odGuardar(manual); };
+const _odEnviar = odEnviar;
+odEnviar = async function (nome, txt) { const r = await _odEnviar(nome, txt); if (nome === 'caderno-ef.json' && FS.on) await _odEnviar('dev-' + FS.dev + '.json', txt); return r; };
+setInterval(() => { if (document.visibilityState === 'visible') odPuxar(); }, 5 * 60000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(odPuxar, 1500); });
+
+(function esperar() { if (!CFG || !S || !S.cfg) { setTimeout(esperar, 200); return; } fsInit(); if (FS.on) fsLoad().then(() => setTimeout(odPuxar, 3000)); })();
+/* ---------- privacidade e segurança dos dados dos alunos ---------- */
+// 1) código de acesso (LOCK) com bloqueio automático; 2) cópias cifradas (AES-GCM, chave derivada da palavra-passe
+// do professor; sem ela ninguém as lê, nem a Microsoft); 3) arquivar uma turma num ficheiro e retirá-la do caderno;
+// 4) exportação sem nomes para o grupo de EF; 5) informação de privacidade.
+const te = new TextEncoder(), tdec = new TextDecoder();
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf))), unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function derivar(pass, salt, uso) {
+  const base = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveBits', 'deriveKey']);
+  return uso === 'bits' ? crypto.subtle.deriveBits({name:'PBKDF2', salt, iterations:150000, hash:'SHA-256'}, base, 256)
+    : crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:150000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt', 'decrypt']);
+}
+
+/* 1. código de acesso */
+const LOCK = {cfg:null, bloq:false, saiu:0, erros:0, ate:0};
+function pinCfg() { try { return JSON.parse(localStorage.getItem('ef:pin') || 'null'); } catch (e) { return null; } }
+async function pinHash(pin, salt) { return b64(await derivar(pin, salt, 'bits')); }
+function bloquear() {
+  if (!pinCfg() || LOCK.bloq) return; LOCK.bloq = true; LOCK.dig = ''; document.body.classList.add('bloq');
+  let el = $('#lock'); if (!el) { el = document.createElement('div'); el.id = 'lock'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); document.body.appendChild(el); }
+  lockRender();
+}
+function lockRender() {
+  const el = $('#lock'), espera = LOCK.ate > Date.now() ? Math.ceil((LOCK.ate - Date.now()) / 1000) : 0;
+  el.innerHTML = `<div class="lk">${typeof LOGO === 'string' ? LOGO : ''}<h1>Caderno EF</h1><p class="small muted">${espera ? `Demasiadas tentativas: aguarde ${espera} s.` : 'Introduza o código de acesso'}</p>
+    <div class="lk-dots">${[0, 1, 2, 3, 4, 5].slice(0, Math.max(4, (pinCfg() || {}).n || 4)).map(i => `<i class="${i < (LOCK.dig || '').length ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="lk-pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, '⌫'].map(x => x === '' ? '<span></span>' : `<button data-a="lk-d" data-v="${x}"${espera ? ' disabled' : ''}>${x}</button>`).join('')}</div>
+    <button class="link" data-a="lk-esq">Esqueci-me do código</button></div>`;
+  el.hidden = false;
+}
+async function pinTentar() {
+  const c = pinCfg(); if (!c) return desbloquear();
+  if (LOCK.dig.length < c.n) return;
+  if (await pinHash(LOCK.dig, unb64(c.salt)) === c.hash) { LOCK.erros = 0; desbloquear(); return; }
+  LOCK.erros++; LOCK.dig = ''; if (LOCK.erros >= 5) { LOCK.ate = Date.now() + 30000 * Math.pow(2, LOCK.erros - 5); setTimeout(lockRender, 30500); }
+  lockRender(); const el = $('#lock .lk-dots'); if (el) { el.classList.add('erro'); setTimeout(() => el.classList.remove('erro'), 400); }
+}
+function desbloquear() { LOCK.bloq = false; document.body.classList.remove('bloq'); const el = $('#lock'); if (el) { el.hidden = true; el.innerHTML = ''; } if (CFG) render(); }
+document.addEventListener('visibilitychange', () => {
+  const c = pinCfg(); if (!c) return;
+  if (document.visibilityState === 'hidden') LOCK.saiu = Date.now();
+  else if (LOCK.saiu && Date.now() - LOCK.saiu > (c.min ?? 5) * 60000) bloquear();
+});
+if (pinCfg()) bloquear();   // ao abrir, antes de mostrar os dados
+
+/* 2. cópias cifradas */
+const CIF = {key:null, salt:null};
+async function cifraChave() {
+  if (CIF.key) return CIF.key; const c = (CFG && CFG.cifra) || null; if (!c) return null;
+  try { const k = Store.mode === 'idb' ? await idbReq(Store.tx().get('sec:key')) : null; if (k && k.salt === c.salt) { CIF.key = k.key; CIF.salt = c.salt; } } catch (e) {}
+  return CIF.key;
+}
+async function cifraDefinir(pass) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), key = await derivar(pass, salt), s = b64(salt);
+  const ver = await crypto.subtle.encrypt({name:'AES-GCM', iv:new Uint8Array(12)}, key, te.encode('caderno-ef'));
+  CFG.cifra = {salt:s, ver:b64(ver)}; Store.save('cfg', CFG); CIF.key = key; CIF.salt = s;
+  if (Store.mode === 'idb') await idbReq(Store.tx(true).put({salt:s, key}, 'sec:key'));
+}
+async function copiaCifrar(txt) {
+  if (!(CFG && CFG.cifra && CFG.cifraOn)) return txt; const key = await cifraChave(); if (!key) { toast('Cópias cifradas: indique a palavra-passe em Definições › Privacidade.', 'bad'); throw new Error('sem chave'); }
+  const iv = crypto.getRandomValues(new Uint8Array(12)), ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, te.encode(txt));
+  return JSON.stringify({app:'Caderno EF', enc:1, salt:CIF.salt, iv:b64(iv), ct:b64(ct)});
+}
+async function copiaDecifrar(txt) {
+  let o; try { o = JSON.parse(txt); } catch (e) { return txt; } if (!o || o.enc !== 1) return txt;
+  let key = (CIF.salt === o.salt) ? await cifraChave() : null;
+  if (!key) { const pass = await pedirPass('Esta cópia está cifrada. Escreva a palavra-passe das cópias.'); if (!pass) throw new Error('cancelado'); key = await derivar(pass, unb64(o.salt)); }
+  try { return tdec.decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(o.iv)}, key, unb64(o.ct))); }
+  catch (e) { toast('Palavra-passe errada: não foi possível abrir a cópia.', 'bad'); throw e; }
+}
+function pedirPass(msg) {
+  return new Promise(res => { LOCK.res = res;
+    openSheet('Palavra-passe das cópias', `<div class="form"><p>${esc(msg)}</p><input type="password" id="pp-pass" autocomplete="current-password" aria-label="Palavra-passe"></div>`, `<button class="btn primary" data-a="pp-ok">Abrir</button>`);
+    setTimeout(() => { const i = $('#pp-pass'); if (i) i.focus(); }, 50); });
+}
+// As cópias que saem do aparelho passam pela cifra (se ativa): OneDrive, ficheiro ligado, enviar e cópia de segurança.
+const _odEnv2 = odEnviar;
+odEnviar = async function (nome, txt) { return _odEnv2(nome, await copiaCifrar(txt)); };
+syncEscrever = async function () { if (!SYNC.h || !SYNC.ok) return; try { const w = await SYNC.h.createWritable(); await w.write(await copiaCifrar(JSON.stringify(syncData()))); await w.close(); syncAgora(); } catch (e) { SYNC.ok = false; toast('Não foi possível gravar o ficheiro de sincronização. Volte a ligá-lo em Definições › Sincronizar.', 'bad'); } };
+syncLer = async function () { try { const f = await SYNC.h.getFile(); if (!f.size) return 0; const d = JSON.parse(await copiaDecifrar(await f.text())); return d && d.app === 'Caderno EF' ? syncMerge(d) : 0; } catch (e) { return 0; } };
+syncReceber = async function (file) {
+  let d; try { d = JSON.parse(await copiaDecifrar(await file.text())); } catch (e) { if (e && e.message !== 'cancelado') toast('Este ficheiro não é uma cópia do Caderno EF (ou a palavra-passe está errada).', 'bad'); return; }
+  if (!d || d.app !== 'Caderno EF') { toast('Este ficheiro não é uma cópia do Caderno EF.', 'bad'); return; }
+  const n = syncMerge(d); syncAgora(); render(); toast(n ? `Sincronizado: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.` : 'Já estava tudo igual.');
+};
+odRecuperar = async function () {
+  try { const x = await odApi('GET', 'drive/special/approot:/caderno-ef.json:/content'), d = JSON.parse(await copiaDecifrar(typeof x === 'string' ? x : JSON.stringify(x)));
+    if (!d || d.app !== 'Caderno EF') throw new Error('ficheiro'); const n = syncMerge(d); render(); toast(n ? `Recuperado do OneDrive: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.` : 'Este aparelho já tinha tudo o que está no OneDrive.'); }
+  catch (e) { if (!e || e.message !== 'cancelado') toast(OD.a ? 'Ligação expirada: volte a ligar o OneDrive.' : 'Não foi possível ler a cópia do OneDrive.', 'bad'); }
+};
+A['sync-env'] = async () => { try { saveFile('caderno-ef-sincronizar-' + today() + '.json', new Blob([await copiaCifrar(JSON.stringify(syncData()))], {type:'application/json'})); syncAgora(); render(); } catch (e) {} };
+A.backup = async () => { Store.flush(); try { const data = {app:'Caderno EF', versao:1, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist};
+  saveFile('caderno-ef-copia-' + today() + '.json', new Blob([await copiaCifrar(JSON.stringify(data, null, 1))], {type:'application/json'})); try { localStorage.setItem('ef:lastBackup', today()); } catch (e) {} } catch (e) {} };
+
+/* 3. arquivar uma turma: ficheiro com tudo o que lhe pertence, depois sai do caderno */
+function turmaPacote(t) {
+  const aids = new Set((t.alunos || []).map(a => a.id)), docs = new Set((t.alunos || []).flatMap(a => (a.disp || []).map(d => d.doc)).filter(Boolean)), pick = (o, f) => Object.fromEntries(Object.entries(o || {}).filter(([k, v]) => f(k, v)));
+  return {app:'Caderno EF', versao:1, arquivo:true, exportado:new Date().toISOString(), cfg:{}, turmas:{[t.id]:t}, aulas:pick(S.aulas, (k, a) => a.turmaId === t.id), aval:pick(S.aval, (k, v) => v.turmaId === t.id),
+    fotos:pick(S.fotos, k => aids.has(k)), docs:pick(S.docs, k => docs.has(k)), hist:pick(S.hist, k => k === t.id)};
+}
+async function arquivar(t) {
+  const P = turmaPacote(t), txt = await copiaCifrar(JSON.stringify(P)), nome = 'arquivo-' + norm(t.nome).replace(/[^a-z0-9]+/g, '-') + '-' + (CFG.ano || today().slice(0, 4)).replace('/', '-') + '.json';
+  await saveFile(nome, new Blob([txt], {type:'application/json'}));
+  if (typeof odOn === 'function' && odOn()) { try { await _odEnv2(nome, txt); } catch (e) {} }
+  for (const k of ['aulas', 'aval', 'fotos', 'docs', 'hist']) for (const id of Object.keys(P[k])) { delete S[k][id]; Store.del(k, id); }
+  delete S.turmas[t.id]; Store.del('turmas', t.id); UI.turma = Object.keys(S.turmas)[0] || null; render();
+  toast(`${t.nome} arquivada no ficheiro ${nome}${typeof odOn === 'function' && odOn() ? ' e no OneDrive' : ''}. Para a repor, use "Receber de outro aparelho" com esse ficheiro.`);
+}
+// Repor um arquivo: as eliminações registadas não impedem a reposição.
+const _syncMerge3 = syncMerge;
+syncMerge = function (d) { if (d && d.arquivo && typeof FS !== 'undefined') ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].forEach(k => Object.keys(d[k] || {}).forEach(id => { delete FS.tomb[fsKey(k, id)]; })); return _syncMerge3(d); };
+
+/* 4. exportação sem nomes (para o grupo de EF): código, sexo, idade, níveis, zonas e classificação */
+function csvAnonimo(p) {
+  const L = [['Turma', 'Código', 'Sexo', 'Idade', 'Matéria', 'Nível', 'Aptidão física (0-20)', 'Vaivém', 'Conhecimentos', 'Atitudes', 'Final', 'Situação'].join(';')];
+  Object.values(S.turmas).sort(byNome).forEach(t => alunosOf(t).forEach((al, i) => { const r = calc(t, p, al), cod = 'A' + String(i + 1).padStart(2, '0'), ms = Object.keys(r.lv).length ? Object.entries(r.lv) : [['', '']];
+    ms.forEach(([m, l]) => L.push([t.nome, cod, al.sexo || '', r.age ?? '', m, l, r.APF == null ? '' : f1(r.APF), r.zones.vaivem == null ? '' : ZN[r.zones.vaivem], r.CON == null ? '' : f1(r.CON), r.AV == null ? '' : f1(r.AV), r.FIN ?? '', r.EST].map(x => /[;"\n]/.test(String(x)) ? '"' + String(x).replace(/"/g, '""') + '"' : x).join(';'))); }));
+  return '﻿' + L.join('\r\n');
+}
+
+function vPrivacidade() {
+  const c = pinCfg(), cf = CFG.cifra, ts = Object.values(S.turmas).sort(byNome);
+  return `<div class="sec-h"><h2>Código de acesso</h2></div><div class="card form">
+    <p class="small" style="margin:0">${c ? `<b class="ok-t">Ativo</b> neste aparelho · bloqueia ${c.min === 0 ? 'sempre que sai da app' : 'ao fim de ' + c.min + ' minutos fora da app'}.` : 'Peça um código (4 a 6 algarismos) para abrir o caderno neste aparelho. Os dados dos alunos ficam protegidos se perder o telemóvel ou o emprestar.'}</p>
+    ${c ? `<div class="field"><label for="pin-min">Bloquear</label><select id="pin-min" data-in="pin-min">${[[0, 'Sempre que sai da app'], [1, 'Após 1 minuto fora'], [5, 'Após 5 minutos fora'], [15, 'Após 15 minutos fora']].map(([v, n]) => `<option value="${v}"${(c.min ?? 5) === v ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+      <div class="btn-row"><button class="btn" data-a="pin-novo">Mudar o código</button><button class="btn ghost" data-a="pin-tirar">Retirar o código</button><button class="btn" data-a="pin-bloq">Bloquear agora</button></div>`
+      : `<button class="btn primary" data-a="pin-novo">Definir código de acesso</button>`}</div>
+    <div class="sec-h"><h2>Cópias cifradas</h2></div><div class="card form">
+    <p class="small" style="margin:0">Com a cifra ativa, as cópias que saem deste aparelho (OneDrive, ficheiro ligado, enviar, cópia de segurança, arquivos) ficam ilegíveis sem a sua palavra-passe, mesmo para a Microsoft. <b>Se esquecer a palavra-passe, as cópias cifradas não podem ser abertas.</b> Use a mesma palavra-passe em todos os aparelhos.</p>
+    ${cf && !CIF.key ? '<p class="note warn" style="margin:0">A cifra foi ativada noutro aparelho. Introduza aqui a mesma palavra-passe para este aparelho poder fazer e abrir as cópias.</p><button class="btn primary" data-a="cif-entrar">Introduzir a palavra-passe</button>' : cf ? `<label class="cli"><input type="checkbox" data-in="cif-on"${CFG.cifraOn ? ' checked' : ''}> <span>Cifrar as cópias</span></label><button class="btn sm ghost" data-a="cif-def">Mudar a palavra-passe</button>` : '<button class="btn primary" data-a="cif-def">Definir a palavra-passe das cópias</button>'}</div>
+    <div class="sec-h"><h2>Arquivar uma turma</h2></div><div class="card form"><p class="small" style="margin:0">No fim do ano, guarde num ficheiro tudo o que pertence a uma turma (alunos, aulas, avaliações, fotografias, atestados) e retire-a do caderno. Pode repô-la com "Receber de outro aparelho". O ficheiro fica cifrado se a cifra estiver ativa.</p>
+      ${ts.length ? `<div class="sync-url"><select id="arq-t" aria-label="Turma a arquivar">${ts.map(t => `<option value="${esc(t.id)}">${esc(t.nome)}</option>`).join('')}</select><button class="btn" data-a="arq-go">Arquivar e retirar</button></div>` : '<p class="hint">Sem turmas.</p>'}</div>
+    <div class="sec-h"><h2>Partilhar resultados sem nomes</h2></div><div class="card form"><p class="small" style="margin:0">Tabela (CSV, abre no Excel) com os resultados de todas as turmas, com códigos em vez de nomes: turma, sexo, idade, níveis, aptidão física e classificação. Para o grupo de EF ou para estudos, sem dados pessoais identificáveis.</p><button class="btn" data-a="anon-csv">Exportar resultados sem nomes (${esc(perLabel(UI.p, true))})</button></div>
+    <div class="sec-h"><h2>Onde estão os dados</h2></div><div class="card"><ul class="small priv">
+      <li><b>Neste aparelho</b>: ${Store.mode === 'cloud' ? 'na versão da conta Claude, os dados ficam na sua área privada da conta (só o professor os vê).' : 'no armazenamento do navegador (IndexedDB). Não vão para nenhum servidor do Caderno EF: não existe servidor.'}</li>
+      <li><b>Cópias</b>: só onde as enviar (OneDrive da sua conta Microsoft, ficheiros que guardar ou partilhar). Com a cifra ativa, ilegíveis sem a sua palavra-passe.</li>
+      <li><b>Que dados</b>: nomes, número, sexo, data de nascimento e n.º de processo dos alunos; presenças, avaliações, aptidão física, observações, medidas de suporte, lesões e atestados que registar; fotografias, se as juntar.</li>
+      <li><b>Quem vê</b>: só o professor. O modo aluno mostra a cada aluno apenas a sua própria informação.</li>
+      <li><b>Quanto tempo</b>: até arquivar ou apagar. Recomenda-se arquivar as turmas no fim do ano letivo e apagar os arquivos quando já não forem necessários (regras da escola e RGPD).</li></ul></div>`;
+}
+Object.assign(A, {
+  'lk-d': el => { const v = el.dataset.v; if (v === '⌫') LOCK.dig = (LOCK.dig || '').slice(0, -1); else if ((LOCK.dig || '').length < 6) LOCK.dig = (LOCK.dig || '') + v; lockRender(); pinTentar(); },
+  'lk-esq': el => { if (!armed(el, 'Apagar os dados deste aparelho?')) return;
+    openSheet('Esqueceu-se do código?', `<div class="form"><p>Por segurança, o código não pode ser recuperado. Pode <b>apagar os dados deste aparelho</b> e depois repô-los a partir de uma cópia (OneDrive, ficheiro de sincronização ou cópia de segurança).</p><p class="note warn">Só faça isto se tiver uma cópia recente. O que não estiver numa cópia perde-se.</p></div>`, `<button class="btn danger" data-a="lk-apagar">Apagar os dados deste aparelho</button>`);
+    $('#sheet').style.zIndex = 90; },
+  'lk-apagar': async el => { if (!armed(el, 'Toque de novo para apagar tudo')) return; try { localStorage.clear(); if (window.indexedDB) indexedDB.deleteDatabase('caderno-ef'); } catch (e) {} location.reload(); },
+  'pin-novo': () => openSheet('Código de acesso', `<div class="form"><div class="field"><label for="pin-a">Novo código (4 a 6 algarismos)</label><input id="pin-a" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password"></div><div class="field"><label for="pin-b">Repita o código</label><input id="pin-b" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"></div><p class="hint">O código fica só neste aparelho. Se o esquecer, terá de apagar os dados deste aparelho e repô-los de uma cópia.</p></div>`, `<button class="btn primary" data-a="pin-guardar">Guardar</button>`),
+  'pin-guardar': async () => { const a = $('#pin-a').value, b = $('#pin-b').value; if (!/^\d{4,6}$/.test(a)) { toast('O código tem de ter 4 a 6 algarismos.', 'bad'); return; } if (a !== b) { toast('Os códigos não coincidem.', 'bad'); return; }
+    const salt = crypto.getRandomValues(new Uint8Array(16)), old = pinCfg(); localStorage.setItem('ef:pin', JSON.stringify({salt:b64(salt), hash:await pinHash(a, salt), n:a.length, min:old ? old.min : 5})); closeSheet(); render(); toast('Código de acesso definido.'); },
+  'pin-tirar': el => { if (!armed(el, 'Retirar o código?')) return; localStorage.removeItem('ef:pin'); render(); toast('Código retirado.'); },
+  'pin-bloq': () => bloquear(),
+  'cif-def': () => openSheet('Palavra-passe das cópias', `<div class="form"><div class="field"><label for="cif-a">Palavra-passe (8 ou mais caracteres)</label><input id="cif-a" type="password" autocomplete="new-password"></div><div class="field"><label for="cif-b">Repita a palavra-passe</label><input id="cif-b" type="password" autocomplete="new-password"></div><p class="note warn">Guarde-a num sítio seguro: sem ela, as cópias cifradas não podem ser abertas, nem por si nem por ninguém.</p></div>`, `<button class="btn primary" data-a="cif-guardar">Guardar e ativar</button>`),
+  'cif-guardar': async () => { const a = $('#cif-a').value, b = $('#cif-b').value; if (a.length < 8) { toast('Use pelo menos 8 caracteres.', 'bad'); return; } if (a !== b) { toast('As palavras-passe não coincidem.', 'bad'); return; }
+    await cifraDefinir(a); CFG.cifraOn = true; Store.save('cfg', CFG); closeSheet(); render(); toast('Cópias cifradas ativadas.'); },
+  'cif-entrar': async () => { const pass = await pedirPass('Escreva a palavra-passe das cópias definida no outro aparelho.'); if (!pass) return; const c = CFG.cifra;
+    try { const key = await derivar(pass, unb64(c.salt)); await crypto.subtle.decrypt({name:'AES-GCM', iv:new Uint8Array(12)}, key, unb64(c.ver)); CIF.key = key; CIF.salt = c.salt;
+      if (Store.mode === 'idb') await idbReq(Store.tx(true).put({salt:c.salt, key}, 'sec:key')); render(); toast('Palavra-passe confirmada neste aparelho.'); } catch (e) { toast('Palavra-passe errada.', 'bad'); } },
+  'pp-ok': () => { const v = $('#pp-pass').value, r = LOCK.res; LOCK.res = null; closeSheet(); if (r) r(v); },
+  'arq-go': el => { const t = S.turmas[$('#arq-t').value]; if (!t || !armed(el, 'Arquivar ' + t.nome + '?')) return; arquivar(t); },
+  'anon-csv': () => saveFile('resultados-sem-nomes-' + perLabel(UI.p).replace(/\W+/g, '') + '-' + today() + '.csv', new Blob([csvAnonimo(UI.p)], {type:'text/csv;charset=utf-8'}))
+});
+const _shClose = A['sh-close']; A['sh-close'] = el => { if (LOCK.res) { const r = LOCK.res; LOCK.res = null; r(null); } $('#sheet').style.zIndex = ''; return _shClose(el); };
+document.addEventListener('change', e => { const el = e.target, k = el.dataset && el.dataset.in; if (!k) return;
+  if (k === 'pin-min') { const c = pinCfg(); if (c) { c.min = +el.value; localStorage.setItem('ef:pin', JSON.stringify(c)); } }
+  else if (k === 'cif-on') { CFG.cifraOn = el.checked; Store.save('cfg', CFG); render(); } });
+
+(function esperar() { if (!CFG) { setTimeout(esperar, 300); return; } cifraChave(); })();
+/* ---------- integridade, recuperação e diagnóstico ---------- */
+// Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
+// validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
+const VERSAO_APP = '5c873e1f';   // trocado pelo build (resumo do código-fonte)
+
+/* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
+const ERRLOG = [];
+function logErro(msg, onde) {
+  ERRLOG.push({t:new Date().toISOString(), msg:String(msg || '').slice(0, 200), onde:String(onde || '').slice(0, 120)});
+  if (ERRLOG.length > 30) ERRLOG.shift(); try { localStorage.setItem('ef:errlog', JSON.stringify(ERRLOG)); } catch (e) {}
+}
+try { ERRLOG.push(...JSON.parse(localStorage.getItem('ef:errlog') || '[]')); } catch (e) {}
+window.addEventListener('error', e => logErro(e.message, (e.filename || '').split('/').pop() + ':' + e.lineno));
+window.addEventListener('unhandledrejection', e => logErro(e.reason && (e.reason.message || e.reason), 'promessa'));
+const _toast = toast; toast = function (msg, kind) { if (kind === 'bad') logErro(msg, 'aviso'); return _toast(msg, kind); };
+
+/* validação de uma cópia antes de a aplicar */
+function validarCopia(d) {
+  const err = [], isO = x => x && typeof x === 'object' && !Array.isArray(x), iso = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+  if (!isO(d) || d.app !== 'Caderno EF') return ['não é uma cópia do Caderno EF'];
+  ['turmas', 'aulas', 'aval'].forEach(k => { if (d[k] != null && !isO(d[k])) err.push(k + ' com formato inválido'); });
+  Object.values(d.turmas || {}).forEach(t => { if (!isO(t) || !t.id || !Array.isArray(t.alunos || [])) err.push('turma inválida'); });
+  const mal = Object.values(d.aulas || {}).filter(a => !isO(a) || !a.id || !a.turmaId || !iso(a.data)).length; if (mal) err.push(mal + ' aulas sem turma ou data');
+  const malv = Object.values(d.aval || {}).filter(v => !isO(v) || !v.id || !v.turmaId).length; if (malv) err.push(malv + ' avaliações inválidas');
+  return err;
+}
+function comValidacao(fn, nome) {
+  return function (d) { const e = validarCopia(d); if (e.length) { toast('A cópia não foi aplicada: ' + e.slice(0, 2).join('; ') + '. Os seus dados ficaram como estavam.', 'bad'); logErro('cópia inválida: ' + e.join('; '), nome); return 0; } return fn(d); };
+}
+syncMerge = comValidacao(syncMerge, 'juntar');
+// Substituir tudo a partir de uma cópia: valida primeiro e guarda antes uma cópia do estado atual.
+const _restGo = A['restore-go'], _restMerge = A['restore-merge'];
+A['restore-go'] = async () => { const d = A._pending, e = validarCopia(d); if (e.length) { toast('A cópia não foi aplicada: ' + e[0] + '.', 'bad'); return; } await snapAntes('antes-de-repor'); return _restGo(); };
+A['restore-merge'] = () => { const d = A._pending, e = validarCopia(d); if (e.length) { toast('A cópia não foi aplicada: ' + e[0] + '.', 'bad'); return; } return _restMerge(); };
+async function snapAntes(motivo) { if (Store.mode !== 'idb') return; try { await idbReq(Store.tx(true).put(JSON.parse(JSON.stringify(syncData())), 'snap:' + today() + '-' + motivo)); } catch (e) {} }
+
+/* verificação ao abrir */
+function verificar() {
+  const out = [], tids = new Set(Object.keys(S.turmas)), aids = new Set(Object.values(S.turmas).flatMap(t => (t.alunos || []).map(a => a.id))), iso = s => /^\d{4}-\d{2}-\d{2}$/.test(s || '');
+  const aOrf = Object.values(S.aulas).filter(a => !tids.has(a.turmaId)); if (aOrf.length) out.push({k:'aulas', n:aOrf.length, txt:'aulas de turmas que já não existem', fix:true});
+  const vOrf = Object.values(S.aval).filter(v => !tids.has(v.turmaId)); if (vOrf.length) out.push({k:'aval', n:vOrf.length, txt:'avaliações de turmas que já não existem', fix:true});
+  const fOrf = Object.keys(S.fotos).filter(id => !aids.has(id)); if (fOrf.length) out.push({k:'fotos', n:fOrf.length, txt:'fotografias de alunos que já não existem', fix:true});
+  let alOrf = 0; Object.values(S.aval).forEach(v => { if (!tids.has(v.turmaId)) return; ['af', 'comp', 'fit', 'con', 'av', 'ev', 'obs'].forEach(c => Object.keys(v[c] || {}).forEach(aid => { if (!aids.has(aid)) alOrf++; })); });
+  if (alOrf) out.push({k:'alunos', n:alOrf, txt:'registos de avaliação de alunos retirados das turmas', fix:true});
+  const dMal = Object.values(S.aulas).filter(a => !iso(a.data)).length; if (dMal) out.push({k:'datas', n:dMal, txt:'aulas com data inválida', fix:false});
+  const ids = Object.values(S.turmas).flatMap(t => (t.alunos || []).map(a => a.id)), dup = ids.length - new Set(ids).size; if (dup) out.push({k:'dup', n:dup, txt:'alunos repetidos em mais do que uma turma (mesmo identificador)', fix:false});
+  const grandes = []; for (const k of ['turmas', 'aulas', 'aval', 'hist']) Object.values(S[k]).forEach(o => { const z = JSON.stringify(o).length; if (z > 200000) grandes.push(o.id); });
+  if (grandes.length) out.push({k:'tam', n:grandes.length, txt:'registos perto do limite de tamanho (256 KB)' + (Store.mode === 'cloud' ? ': podem deixar de gravar na conta' : ''), fix:false});
+  return out;
+}
+async function arrumar() {
+  await snapAntes('antes-de-arrumar');
+  const tids = new Set(Object.keys(S.turmas)), aids = new Set(Object.values(S.turmas).flatMap(t => (t.alunos || []).map(a => a.id))); let n = 0;
+  Object.values(S.aulas).filter(a => !tids.has(a.turmaId)).forEach(a => { delete S.aulas[a.id]; Store.del('aulas', a.id); n++; });
+  Object.values(S.aval).filter(v => !tids.has(v.turmaId)).forEach(v => { delete S.aval[v.id]; Store.del('aval', v.id); n++; });
+  Object.keys(S.fotos).filter(id => !aids.has(id)).forEach(id => { delete S.fotos[id]; Store.del('fotos', id); n++; });
+  Object.values(S.aval).forEach(v => { let ch = false; ['af', 'comp', 'fit', 'con', 'av', 'ev', 'obs', 'iv', 'des', 'autoc', 'coav', 'quiz', 'pfit'].forEach(c => Object.keys(v[c] || {}).forEach(aid => { if (!aids.has(aid)) { delete v[c][aid]; ch = true; n++; } })); if (ch) touchAval(v); });
+  render(); toast(n ? `Arrumação feita: ${n} ${n === 1 ? 'registo retirado' : 'registos retirados'}. Guardei antes uma cópia (Definições › Sincronizar › Cópias diárias).` : 'Não havia nada a arrumar.');
+}
+
+/* repor uma só turma a partir de uma cópia (ficheiro) */
+let REPOR = null;
+function sheetRepor() {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = async () => { const f = inp.files[0]; if (!f) return; let d;
+    try { d = JSON.parse(await (typeof copiaDecifrar === 'function' ? copiaDecifrar(await f.text()) : f.text())); } catch (e) { if (!e || e.message !== 'cancelado') toast('Não foi possível ler a cópia.', 'bad'); return; }
+    const e = validarCopia(d); if (e.length) { toast('A cópia não é válida: ' + e[0] + '.', 'bad'); return; }
+    REPOR = d; const ts = Object.values(d.turmas || {});
+    openSheet('Repor uma turma', `<div class="form"><p class="small">Cópia de ${esc(fmtDate((d.exportado || '').slice(0, 10) || today(), {day:'numeric', month:'long', year:'numeric'}))}. A turma escolhida fica exatamente como estava na cópia (alunos, aulas, avaliações, fotografias); as outras turmas não mudam.</p>
+      <div class="list">${ts.map(t => `<div class="li"><span class="who col"><b>${esc(t.nome)}</b><span class="small muted">${(t.alunos || []).length} alunos · ${Object.values(d.aulas || {}).filter(a => a.turmaId === t.id).length} aulas</span></span><button class="btn sm" data-a="repor-go" data-id="${esc(t.id)}">Repor</button></div>`).join('')}</div></div>`); };
+  inp.click();
+}
+async function reporTurma(tid) {
+  const d = REPOR; if (!d || !d.turmas[tid]) return; await snapAntes('antes-de-repor-turma');
+  const t = d.turmas[tid], aids = new Set((t.alunos || []).map(a => a.id));
+  Object.values(S.aulas).filter(a => a.turmaId === tid).forEach(a => { delete S.aulas[a.id]; Store.del('aulas', a.id); });
+  Object.values(S.aval).filter(v => v.turmaId === tid).forEach(v => { delete S.aval[v.id]; Store.del('aval', v.id); });
+  const put = (k, o) => { S[k][o.id] = clone(o); if (k === 'aval') SHADOW[o.id] = clone(o); Store.save(k, S[k][o.id]); };
+  put('turmas', t); Object.values(d.aulas || {}).filter(a => a.turmaId === tid).forEach(a => put('aulas', a)); Object.values(d.aval || {}).filter(v => v.turmaId === tid).forEach(v => put('aval', v));
+  Object.entries(d.fotos || {}).forEach(([id, f]) => { if (aids.has(id)) put('fotos', Object.assign({id}, f)); }); if ((d.hist || {})[tid]) put('hist', d.hist[tid]);
+  REPOR = null; UI.turma = tid; closeSheet(); render(); toast(`${t.nome} reposta a partir da cópia. Guardei antes uma cópia do estado anterior.`);
+}
+
+/* diagnóstico */
+const DIAG = {est:null, prob:null};
+async function diagEstimar() { try { DIAG.est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null; } catch (e) {} }
+function vDiagnostico() {
+  const prob = DIAG.prob = verificar(), kb = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+  const tam = []; for (const k of ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist']) Object.values(S[k]).forEach(o => tam.push({k, id:o.id, z:JSON.stringify(o).length}));
+  tam.sort((a, b) => b.z - a.z); const tot = tam.reduce((s, x) => s + x.z, 0);
+  const nome = x => x.k === 'aval' ? 'Avaliação · ' + ((S.turmas[(S.aval[x.id] || {}).turmaId] || {}).nome || '?') + ' · ' + perLabel((S.aval[x.id] || {}).p || 1) : x.k === 'turmas' ? 'Turma ' + ((S.turmas[x.id] || {}).nome || '') : x.k === 'hist' ? 'Histórico · ' + ((S.turmas[x.id] || {}).nome || '') : x.k === 'fotos' ? 'Fotografia' : x.k === 'docs' ? 'Atestado' : 'Aula';
+  return `<div class="sec-h"><h2>Estado do caderno</h2></div><div class="card"><div class="diag">
+      <span>Versão</span><b>${esc(VERSAO_APP)} · dados v${SCHEMA}</b>
+      <span>Onde guarda</span><b>${Store.mode === 'cloud' ? 'Conta Claude (sincroniza sozinho)' : Store.mode === 'idb' ? 'Este aparelho (IndexedDB)' : Store.mode === 'local' ? 'Este aparelho (armazenamento simples)' : 'Só em memória: não guarda!'}</b>
+      <span>Dados</span><b>${kb(tot)} · ${[['turmas', 'turma', 'turmas'], ['aulas', 'aula', 'aulas'], ['aval', 'avaliação', 'avaliações'], ['fotos', 'fotografia', 'fotografias']].map(([k, u, v]) => { const n = Object.keys(S[k]).length; return n + ' ' + (n === 1 ? u : v); }).join(' · ')}</b>
+      ${DIAG.est ? `<span>Espaço do navegador</span><b>${kb(DIAG.est.usage || 0)} usados de ${kb(DIAG.est.quota || 0)}</b>` : ''}
+      ${typeof FS !== 'undefined' && FS.on ? `<span>Aparelho</span><b>${esc(String(FS.dev).slice(-6))} · ${Object.keys(FS.meta).length} alterações registadas · ${FS.conf.length} conflitos</b>` : ''}
+      ${typeof OD !== 'undefined' && OD.t ? `<span>OneDrive</span><b>${OD.ultimo ? 'última cópia ' + esc(fmtDate(OD.ultimo.slice(0, 10), {day:'numeric', month:'short'}) + ' ' + new Date(OD.ultimo).toTimeString().slice(0, 5)) : 'ligado, ainda sem cópia'}${OD.a ? ' · ligação expirada' : ''}</b>` : ''}
+    </div></div>
+    <div class="sec-h"><h2>Verificação dos dados</h2></div><div class="card form">${prob.length ? `<div class="list">${prob.map(x => `<div class="li"><span class="fe-i ${x.fix ? 'nx' : 'opc'}">${x.n}</span><span class="who">${esc(x.txt)}</span></div>`).join('')}</div>${prob.some(x => x.fix) ? '<button class="btn primary" data-a="diag-arrumar">Arrumar (guarda antes uma cópia)</button>' : ''}` : '<p class="small" style="margin:0"><b class="ok-t">Tudo em ordem.</b> Sem registos órfãos, datas inválidas ou registos perto do limite.</p>'}</div>
+    <div class="sec-h"><h2>Maiores registos</h2></div><div class="card"><div class="list">${tam.slice(0, 5).map(x => `<div class="li"><span class="who">${esc(nome(x))}</span><span class="num-t small">${kb(x.z)}${x.z > 200000 ? ' <span class="bad-t">perto do limite</span>' : ''}</span></div>`).join('') || '<p class="hint">Sem dados.</p>'}</div></div>
+    <div class="sec-h"><h2>Recuperação</h2></div><div class="card form"><p class="small" style="margin:0">Repor uma só turma (ou um engano numa turma) a partir de um ficheiro de cópia, sem mexer nas outras.</p><button class="btn" data-a="repor-open">Repor uma turma a partir de uma cópia</button></div>
+    <div class="sec-h"><h2>Erros recentes</h2>${ERRLOG.length ? '<button class="link" data-a="diag-limpar">Limpar</button>' : ''}</div><div class="card">${ERRLOG.length ? `<div class="list">${ERRLOG.slice(-10).reverse().map(e => `<div class="li"><span class="who col"><span class="small">${esc(e.msg)}</span><span class="small muted">${esc(fmtDate(e.t.slice(0, 10), {day:'numeric', month:'short'}) + ' ' + e.t.slice(11, 16))} · ${esc(e.onde)}</span></span></div>`).join('')}</div>` : '<p class="small" style="margin:0">Nenhum erro registado.</p>'}
+      <button class="btn sm" data-a="diag-rel" style="margin-top:8px">Descarregar relatório técnico (sem dados dos alunos)</button></div>`;
+}
+function diagRelatorio() {
+  return JSON.stringify({app:'Caderno EF', versao:VERSAO_APP, schema:SCHEMA, gerado:new Date().toISOString(), modo:Store.mode, navegador:navigator.userAgent,
+    contagens:Object.fromEntries(['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].map(k => [k, Object.keys(S[k]).length])), alunos:Object.values(S.turmas).reduce((s, t) => s + (t.alunos || []).length, 0),
+    verificacao:verificar().map(x => ({tipo:x.k, n:x.n})), erros:ERRLOG, espaco:DIAG.est ? {usado:DIAG.est.usage, quota:DIAG.est.quota} : null,
+    sync:typeof FS !== 'undefined' ? {ativo:FS.on, alteracoes:Object.keys(FS.meta).length, conflitos:FS.conf.length} : null, onedrive:typeof OD !== 'undefined' ? {ligado:!!OD.t, expirado:!!OD.a} : null}, null, 1);
+}
+Object.assign(A, {
+  'diag-arrumar': el => { if (!armed(el, 'Confirmar a arrumação')) return; arrumar(); },
+  'diag-limpar': () => { ERRLOG.length = 0; try { localStorage.removeItem('ef:errlog'); } catch (e) {} render(); },
+  'diag-rel': () => saveFile('caderno-ef-diagnostico-' + today() + '.json', new Blob([diagRelatorio()], {type:'application/json'})),
+  'repor-open': () => sheetRepor(),
+  'repor-go': el => reporTurma(el.dataset.id)
+});
+// Ao abrir: verifica e avisa uma vez por dia se houver problemas que se podem arrumar.
+(function esperar() { if (!CFG || !S || !S.cfg) { setTimeout(esperar, 300); return; }
+  diagEstimar();
+  setTimeout(() => { try { const p = verificar().filter(x => x.fix || x.k === 'tam'); const k = 'ef:verif:' + today();
+    if (p.length && !localStorage.getItem(k)) { localStorage.setItem(k, '1'); toast(`Encontrei ${p.reduce((s, x) => s + x.n, 0)} registos a arrumar: veja Definições › Diagnóstico.`); } } catch (e) {} }, 7000);
+})();
 </script>

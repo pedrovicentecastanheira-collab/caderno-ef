@@ -5,7 +5,7 @@
 // 3) no computador (Chrome ou Edge), ligar o caderno a um ficheiro numa pasta do Google Drive ou do OneDrive:
 //    grava-o sozinho a cada alteração e, ao abrir, junta o que lá estiver de mais recente.
 const SYNC = {h:null, ok:false, t:null, quando:null};
-const syncData = () => { Store.flush(); return {app:'Caderno EF', versao:1, sync:true, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; };
+let syncData = () => { Store.flush(); return {app:'Caderno EF', versao:1, sync:true, exportado:new Date().toISOString(), cfg:S.cfg, turmas:S.turmas, aulas:S.aulas, aval:S.aval, fotos:S.fotos, docs:S.docs, hist:S.hist}; };
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 // Junta uma cópia: em cada turma, aula, avaliação, fotografia, documento e definições fica a versão mais recente.
 function syncMerge(d) {

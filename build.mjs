@@ -2,10 +2,12 @@
 // Gera também artifact/index.html: a mesma app para publicar como página na conta Claude (sem <html>/<head>/<body>,
 // sem manifesto nem service worker, que essa página não usa).
 import {readFileSync, writeFileSync, readdirSync, mkdirSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 const u = p => new URL(p, import.meta.url);
 const dir = d => readdirSync(u('./src/' + d)).filter(f => /\.(css|js)$/.test(f)).sort().map(f => readFileSync(u(`./src/${d}/${f}`), 'utf8').replace(/\n$/, '')).join('\n');
 const tpl = readFileSync(u('./src/index.html'), 'utf8');
-const html = tpl.replace('<!-- @CSS -->', () => dir('css')).replace('<!-- @JS -->', () => dir('js'));
+const js = dir('js'), css = dir('css'), versao = createHash('sha1').update(tpl + css + js).digest('hex').slice(0, 8);
+const html = tpl.replace('<!-- @CSS -->', () => css).replace('<!-- @JS -->', () => js.replace("'@VERSAO@'", `'${versao}'`));
 writeFileSync(u('./app/index.html'), html);
 const head = html.slice(html.indexOf('<head>') + 6, html.indexOf('</head>')), body = html.slice(html.indexOf('<body>') + 6, html.lastIndexOf('</body>'));
 const art = '<meta name="claude:viewport-fit-sides" content="cover">\n' + head
