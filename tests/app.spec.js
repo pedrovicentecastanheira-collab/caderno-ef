@@ -601,3 +601,49 @@ test('privacidade: cópias cifradas, código de acesso, arquivo, exportação se
   await page.evaluate(() => { const t = turma(); return arquivar(t); });
   expect(await page.evaluate(() => Object.keys(S.turmas).length)).toBe(0);
 });
+
+test('visual: mapa de calor, pavilhão, evolução, selos, apresentação, início e cartões com QR', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  // biblioteca de QR falsa (o teste não depende da rede)
+  await page.route('**/qrcode-generator/**', r => r.fulfill({contentType: 'text/javascript', body: 'window.qrcode=function(){return{addData(){},make(){},getModuleCount(){return 21},isDark(y,x){return (x+y)%2==0}}}'}));
+  await demo(page);
+  await page.evaluate(() => { const t = turma(); t.alunos.slice(0, 4).forEach(al => compsOf('3', 'Voleibol').filter(c => c.k === 'I' && contaNivel(c)).slice(0, 2).forEach(c => tickSet(t, 1, al.id, 'Voleibol', id => id === c.id, true))); UI.mapaM = 'Voleibol'; });
+  await go(page, 'avaliar');
+  // mapa de calor
+  await page.click('[data-a="g-lay"][data-k="mapa"]');
+  await expect(page.locator('table.mapa tbody tr').first()).toBeVisible();
+  expect(await page.locator('td.hm.s-dom').count()).toBeGreaterThan(0);
+  expect(await page.locator('td.hm.s-dom').first().evaluate(e => getComputedStyle(e).display)).toBe('table-cell');
+  // modo pavilhão
+  await page.evaluate(() => { UI.pav = true; applyLook(); });
+  expect(await page.evaluate(() => document.body.classList.contains('pav'))).toBe(true);
+  await page.evaluate(() => { UI.pav = false; applyLook(); });
+  // selos no passaporte e radar/semáforo no relatório
+  const r = await page.evaluate(() => { const t = turma(); return [passDoc(t, 1, [t.alunos[3]], 'Voleibol').includes('class="selos"'), relAlunoHtml(t, 1, t.alunos[1]).includes('ra-vis')]; });
+  expect(r).toEqual([true, true]);
+  // linha do tempo do aluno
+  await page.evaluate(() => { UI.atab = 'evol'; });
+  const ev = await page.evaluate(() => { const t = turma(); return vAlunoPage(t, t.alunos[2]).includes('class="evol'); });
+  expect(ev).toBe(true);
+  // cartões de desafio com QR
+  await page.evaluate(async () => { await qrCarregar(); });
+  expect(await page.evaluate(() => { UI.qrOk = true; const t = turma(); return cartoesHtml(t, 1).includes('cdes-q'); })).toBe(true);
+  // início personalizável: esconder e reordenar
+  await go(page, 'inicio');
+  await expect(page.locator('[data-a="ini-pers"]')).toBeVisible();
+  await page.click('[data-a="ini-pers"]');
+  await page.locator('#sheet [data-in="ini-on"][data-k="turmas"]').uncheck();
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  expect(await page.evaluate(() => UI.iniOff)).toContain('turmas');
+  // modo apresentação: cronómetro corre e equipas aparecem
+  await page.evaluate(() => projAbrir('crono'));
+  await page.click('#proj [data-a="pj-dur"][data-s="30"]');
+  await expect(page.locator('#pj-num')).toHaveText('0:30');
+  await page.click('#proj [data-a="pj-go"]'); await page.waitForTimeout(1300);
+  expect(await page.locator('#pj-num').textContent()).not.toBe('0:30');
+  await page.click('#proj [data-a="pj-sec"][data-k="eq"]');
+  await page.click('#proj [data-a="pj-eq"]');
+  expect(await page.locator('#proj .pj-g').count()).toBeGreaterThan(1);
+  await page.click('#proj [data-a="pj-sair"]'); await expect(page.locator('#proj')).toBeHidden();
+  expect(er).toEqual([]);
+});

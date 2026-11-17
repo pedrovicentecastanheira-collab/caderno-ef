@@ -112,7 +112,8 @@ function sheetEx(x) {
     <div class="field"><span class="lbl">Nível</span><div class="seg block">${['I', 'E', 'A'].map(k => `<button data-a="ex-dl" data-k="${k}" class="${x.lv === k ? 'on' : ''}">${k}</button>`).join('')}</div></div></div>
     <div class="field"><label for="ex-dn">Nome</label><input id="ex-dn" type="text" value="${esc(x.nome)}" placeholder="Ex.: Jogo 3x3 com obrigatoriedade de passe"></div>
     <div class="field"><label for="ex-dd">Organização</label><textarea id="ex-dd" placeholder="Espaço, grupos, material e regras.">${esc(x.desc || '')}</textarea></div>
-    <div class="field"><label for="ex-dc">Critérios de êxito</label><textarea id="ex-dc" placeholder="O que o aluno tem de fazer bem.">${esc(x.crit || '')}</textarea></div></div>`;
+    <div class="field"><label for="ex-dc">Critérios de êxito</label><textarea id="ex-dc" placeholder="O que o aluno tem de fazer bem.">${esc(x.crit || '')}</textarea></div>
+    <div class="field"><label for="ex-dl">Ligação a um vídeo ou explicação (opcional)</label><input id="ex-dl" type="url" value="${esc(x.link || '')}" placeholder="https://…"><span class="hint">Aparece como código QR nos cartões de desafio.</span></div></div>`;
   openSheet(isNew ? 'Novo exercício' : 'Editar exercício', body, (isNew ? '' : `<button class="btn danger" data-a="ex-del">Eliminar</button>`) + `<button class="btn primary" data-a="ex-save">Guardar</button>`);
 }
 
@@ -168,7 +169,7 @@ Object.assign(A, {
   'ex-new': () => sheetEx({id:uid(), m:UI.exm || (matsOf(turma(), UI.p)[0] || (MATS[turma().ciclo] || GR)[0]), lv:UI.exl || 'I', nome:'', desc:'', crit:''}),
   'ex-edit': el => { const x = (CFG.exs || []).find(e => e.id === el.dataset.id); if (x) sheetEx(clone(x)); },
   'ex-dl': el => { UI.draft.lv = el.dataset.k; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
-  'ex-save': () => { const x = UI.draft; x.m = $('#ex-dm').value; x.nome = $('#ex-dn').value.trim(); x.desc = $('#ex-dd').value.trim(); x.crit = $('#ex-dc').value.trim();
+  'ex-save': () => { const x = UI.draft; x.m = $('#ex-dm').value; x.nome = $('#ex-dn').value.trim(); x.desc = $('#ex-dd').value.trim(); x.crit = $('#ex-dc').value.trim(); const lk = ($('#ex-dl').value || '').trim(); x.link = /^https?:\/\//.test(lk) ? lk : '';
     if (!x.nome) { toast('Dê um nome ao exercício.', 'bad'); return; }
     CFG.exs = (CFG.exs || []).filter(e => e.id !== x.id).concat([x]); Store.save('cfg', CFG); closeSheet(); render(); toast('Exercício guardado.'); },
   'ex-del': el => { if (!armed(el, 'Toque de novo para eliminar')) return; CFG.exs = (CFG.exs || []).filter(e => e.id !== UI.draft.id); Store.save('cfg', CFG); closeSheet(); render(); toast('Exercício eliminado.'); },
