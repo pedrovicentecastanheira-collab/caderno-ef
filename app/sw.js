@@ -1,9 +1,11 @@
 // Caderno EF — service worker: funciona sem internet.
-const VERSAO = 'caderno-ef-v4';
+const VERSAO = 'caderno-ef-v5';
+// Bibliotecas externas guardadas logo à instalação, para funcionar sem internet desde o primeiro dia.
+const LIBS = ['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'];
 const BASE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192-v2.png', './icons/icon-512-v2.png', './icons/apple-touch-icon-v2.png'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(BASE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSAO).then(c => c.addAll(BASE).then(() => Promise.all(LIBS.map(u => c.add(new Request(u, {mode: 'no-cors'})).catch(() => {})))).then(() => self.skipWaiting())));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSAO).map(k => caches.delete(k)))).then(() => self.clients.claim()));

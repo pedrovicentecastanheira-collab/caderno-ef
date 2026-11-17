@@ -1,4 +1,5 @@
 // Testes de ponta a ponta do Caderno EF (Playwright). Cada teste começa sem dados (contexto novo).
+import {readFileSync} from 'node:fs';
 import {test, expect} from '@playwright/test';
 import {fileURLToPath} from 'node:url';
 
@@ -645,5 +646,97 @@ test('visual: mapa de calor, pavilhão, evolução, selos, apresentação, iníc
   await page.click('#proj [data-a="pj-eq"]');
   expect(await page.locator('#proj .pj-g').count()).toBeGreaterThan(1);
   await page.click('#proj [data-a="pj-sair"]'); await expect(page.locator('#proj')).toBeHidden();
+  expect(er).toEqual([]);
+});
+
+test('ano e escola: pesquisa, notas de voz, exportação para a escola, relatório anual, caderno de um colega e novo ano letivo', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  // pesquisa: Enter abre o primeiro resultado
+  await page.click('#top [data-a="pesq"]'); await page.fill('#pq', 'Carolina');
+  await expect(page.locator('#pq-out .pq-r').first()).toBeVisible(); await page.press('#pq', 'Enter');
+  await expect(page.locator('.apage h1')).toHaveText('Carolina Matos');
+  // notas de voz (gravação simulada) aparecem na ficha e vão no arquivo da turma
+  await page.evaluate(async () => { await vozGuardar(turma().alunos[2].id, new Blob(['som'], {type:'audio/webm'}), 3); });
+  await expect(page.locator('.voz audio')).toHaveCount(1);
+  expect(await page.evaluate(() => Object.values(turmaPacote(turma()).docs).some(x => x.tipo === 'voz'))).toBe(true);
+  // exportação para o programa da escola
+  const lin = await page.evaluate(() => expLinhas([turma()], 1));
+  expect(lin[0]).toEqual(['N.º', 'Nome', 'Classificação (nível ou 0–20)', 'Faltas']); expect(lin.length).toBe(15);
+  await page.evaluate(() => { UI.tab = 'relatorios'; UI.pview = 'rel'; render(); });
+  await page.click('[data-a="ee-open"]');
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#sheet [data-a="ee-go"]')]);
+  expect(dl.suggestedFilename()).toMatch(/\.csv$/);
+  expect(readFileSync(await dl.path(), 'utf8')).toContain('Alice Ferreira;');
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  // relatório anual
+  expect(await page.evaluate(() => { const h = relAnualHtml(turma()); return h.includes('Classificações') && h.includes('Zona Saudável') && h.includes('Assiduidade'); })).toBe(true);
+  // caderno de um colega: só leitura e nada se mistura
+  const copia = await page.evaluate(() => { const d = JSON.parse(JSON.stringify(syncData())); Object.values(d.turmas).forEach(t => { t.nome = 'Turma do colega'; }); d.cfg.geral.prof = 'Colega'; return JSON.stringify(d); });
+  await page.evaluate(txt => consultaAbrir(new File([txt], 'colega.json')), copia);
+  await expect(page.locator('#cons-bar')).toContainText('Colega');
+  expect(await page.evaluate(() => turma().nome)).toBe('Turma do colega');
+  await page.evaluate(() => { const t = turma(); t.nome = 'Mudado na consulta'; Store.save('turmas', t); });
+  await page.click('#cons-bar [data-a="cons-sair"]'); await expect(page.locator('#cons-bar')).toHaveCount(0);
+  expect(await page.evaluate(() => turma().nome)).toBe('Exemplo 7.º X');
+  await page.waitForTimeout(600); await page.reload(); await page.waitForFunction(() => typeof CFG !== 'undefined' && CFG && Object.keys(S.turmas).length);
+  expect(await page.evaluate(() => Object.values(S.turmas).map(t => t.nome))).toEqual(['Exemplo 7.º X']);
+  // novo ano letivo: guarda o ano, passa a turma com o ponto de partida e limpa o resto
+  await page.evaluate(() => { UI.tab = 'defs'; UI.dsec = 'ano'; render(); });
+  await page.click('[data-a="na-open"]');
+  await expect(page.locator('#sheet [data-in="na-nome"]')).toHaveValue('Exemplo 8.º X');
+  await page.click('#sheet [data-a="na-go"]');
+  const [dl2] = await Promise.all([page.waitForEvent('download'), page.click('#sheet [data-a="na-go"]')]);
+  expect(dl2.suggestedFilename()).toBe('caderno-ef-2026-2027.json');
+  await page.waitForFunction(() => CFG.ano === '2027/2028');
+  const r = await page.evaluate(() => { const t = turma(); return [t.nome, t.ano, Object.keys(S.aulas).length, Object.keys(S.aval).length, !!t.alunos[2].ant, t.alunos[2].ant.ano, CFG.per[0].ini.slice(0, 4), Object.keys(S.fotos).length >= 0]; });
+  expect(r).toEqual(['Exemplo 8.º X', 8, 0, 0, true, '2026/2027', '2027', true]);
+  await page.evaluate(() => { UI.tab = 'turma'; UI.tsub = 'alunos'; UI.aluno = turma().alunos[2].id; UI.atab = 'resumo'; render(); });
+  await expect(page.locator('.card.ant')).toContainText('2026/2027');
+  expect(er).toEqual([]);
+});
+
+test('semana, fotografias, comparar turmas, diplomas, arrastar e gestos', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  // horário da semana no Início
+  await page.evaluate(() => { const t = turma(); t.horario = [{d:1, h:'08:30'}, {d:3, h:'10:15'}]; Store.save('turmas', t); UI.tab = 'inicio'; render(); });
+  await expect(page.locator('.sem-b')).toHaveCount(2);
+  // fotografias: «Quem é quem?» e sessão
+  await page.evaluate(() => { const t = turma(); t.alunos.slice(0, 5).forEach(al => { S.fotos[al.id] = {id:al.id, d:'data:image/gif;base64,R0lGODlhAQABAAAAACw='}; }); UI.tab = 'turma'; UI.tsub = 'alunos'; UI.aluno = null; render(); });
+  await page.click('[data-a="qq-open"]'); await expect(page.locator('#sheet .qq .btn')).toHaveCount(4);
+  await page.locator('#sheet .qq .btn').first().click(); await expect(page.locator('#sheet [data-a="qq-next"]')).toBeVisible();
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  await page.click('[data-a="fs-open"]'); await expect(page.locator('#sheet [data-a="fs-cam"]')).toBeVisible(); await page.click('#sheet .sh-h [data-a="sh-close"]');
+  await page.evaluate(() => { UI.fotoG = true; applyLook(); }); expect(await page.evaluate(() => document.body.classList.contains('fotog'))).toBe(true);
+  // diplomas
+  const n = await page.evaluate(() => diplomados(turma(), 1, 'Voleibol', 'I').length); expect(n).toBeGreaterThan(0);
+  await page.evaluate(() => { UI.tab = 'relatorios'; UI.pview = 'rel'; UI.dip = {m:'Voleibol', k:'I'}; render(); });
+  await page.click('[data-a="doc-dipl"]'); await page.click('#sheet [data-a="dip-go"]');
+  await expect(page.locator('#print .dipl')).toHaveCount(n); await page.evaluate(() => A['print-close']());
+  // arrastar no plano do período (rato) e com o teclado
+  await page.evaluate(() => { const t = turma(); t.plano = {1:[{m:'Voleibol', n:8}, {m:'Atletismo', n:6}, {m:'Ginástica de Solo', n:6}]}; Store.save('turmas', t); A['plano-edit'](); });
+  const hs = page.locator('#sheet .drag-h'); await expect(hs).toHaveCount(3);
+  const a = await hs.nth(0).boundingBox(), b = await page.locator('#sheet .pl-ed').nth(1).boundingBox();
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2); await page.mouse.down();
+  await page.mouse.move(a.x + a.width / 2, b.y + b.height - 2, {steps:6}); await page.mouse.up();
+  expect(await page.evaluate(() => UI.draft.map(u => u.m))).toEqual(['Atletismo', 'Voleibol', 'Ginástica de Solo']);
+  await page.locator('#sheet .drag-h').nth(1).focus(); await page.keyboard.press('ArrowDown');
+  expect(await page.evaluate(() => UI.draft.map(u => u.m))).toEqual(['Atletismo', 'Ginástica de Solo', 'Voleibol']);
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  // calendário: mudar uma lição de dia
+  const mv = await page.evaluate(() => { const a = aulasOf(turma().id)[0]; const ok = calMover(a.id, '2026-09-17'); return [ok, S.aulas[a.id].data]; });
+  expect(mv).toEqual([true, '2026-09-17']);
+  expect(await page.evaluate(() => { const xs = aulasOf(turma().id); return calMover(xs[1].id, xs[2].data); })).toBe(false);
+  // gestos: deslizar para a esquerda marca falta; de novo põe presente
+  await page.evaluate(() => { UI.tab = 'turma'; UI.tsub = 'aulas'; render(); A['aula-new'](null, null, '2026-11-02'); });
+  const swipe = (dx) => page.evaluate(dx => { const r = document.querySelector('#sheet .pr'), bx = r.getBoundingClientRect(), o = {bubbles:true, pointerType:'touch', pointerId:1, clientY:bx.top + 10};
+    r.querySelector('.nm').dispatchEvent(new PointerEvent('pointerdown', {...o, clientX:200})); document.dispatchEvent(new PointerEvent('pointermove', {...o, clientX:200 + dx / 2})); document.dispatchEvent(new PointerEvent('pointermove', {...o, clientX:200 + dx})); document.dispatchEvent(new PointerEvent('pointerup', {...o, clientX:200 + dx}));
+    return r.querySelector('.ps button.on').dataset.s; }, dx);
+  expect(await swipe(-120)).toBe('F'); expect(await swipe(-120)).toBe('P'); expect(await swipe(120)).toBe('A');
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  // comparar turmas (duas turmas)
+  await page.evaluate(() => { makeDemo(); UI.tab = 'relatorios'; UI.pview = 'graf'; render(); });
+  await expect(page.locator('table.cmp tbody tr')).toHaveCount(2);
   expect(er).toEqual([]);
 });
