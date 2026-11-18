@@ -147,12 +147,12 @@ function vDispersao(t) {
   const sxx = pts.reduce((s, o) => s + (o.x - mxv) ** 2, 0), syy = pts.reduce((s, o) => s + (o.y - myv) ** 2, 0), sxy = pts.reduce((s, o) => s + (o.x - mxv) * (o.y - myv), 0);
   const r = sxx && syy ? sxy / Math.sqrt(sxx * syy) : 0, c = sxx ? sxy / sxx : 0, a = myv - c * mxv;
   const res = pts.map(o => o.y - (a + c * o.x)), sd = Math.sqrt(res.reduce((s, e) => s + e * e, 0) / n) || 1;
-  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v5)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
+  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v6)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
   const forca = Math.abs(r) >= .7 ? 'forte' : Math.abs(r) >= .4 ? 'moderada' : Math.abs(r) >= .2 ? 'fraca' : 'quase nenhuma';
   const fora = pp.map((o, i) => o.fora ? {al:pts[i].al, acima:res[i] > 0} : null).filter(Boolean);
   h += chScatter(pp, {xl:DVAR[kx][0], yl:DVAR[ky][0], xmax:DVAR[kx][1], ymax:DVAR[ky][1], reg:Math.abs(r) >= .2 ? [a, c] : null, label:`${DVAR[ky][0]} em função de ${DVAR[kx][0]}`})
-    + legend([{name:'Raparigas', color:'var(--v5)'}, {name:'Rapazes', color:'var(--v1)'}])
-    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${nf(Math.round(r * 100) / 100 || 0)}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
+    + legend([{name:'Raparigas', color:'var(--v6)'}, {name:'Rapazes', color:'var(--v1)'}])
+    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${(Math.round(r * 100) / 100 || 0).toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2})}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
     + (fora.length ? `<p class="small" style="margin:4px 0 0"><b>Fora do padrão</b> (contorno escuro): ${fora.map(f => `${esc(f.al.nome)} (${f.acima ? 'acima' : 'abaixo'} do esperado)`).join(', ')}.</p>` : '')
     + tableView(['Aluno', DVAR[ky][0], DVAR[kx][0]], pts.map(o => [o.al.nome, nf(o.y), nf(o.x)]));
   return h + '</div>';

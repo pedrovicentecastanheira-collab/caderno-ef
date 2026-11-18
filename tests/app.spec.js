@@ -780,7 +780,7 @@ test('agenda, observação por grupos, banco de perguntas partilhado e gráfico 
   // gráfico de dispersão
   await page.evaluate(() => { UI.tab = 'relatorios'; UI.pview = 'graf'; UI.dx = 'con'; UI.dy = 'af'; render(); });
   expect(await page.locator('.disp svg circle').count()).toBeGreaterThan(3);
-  await expect(page.locator('.disp')).toContainText('r =');
+  await expect(page.locator('.disp')).toContainText(/r = -?\d,\d\d/);
   await page.selectOption('.disp select[data-k="dx"]', 'ass'); await expect(page.locator('.disp select[data-k="dx"]')).toHaveValue('ass');
   expect(er).toEqual([]);
 });

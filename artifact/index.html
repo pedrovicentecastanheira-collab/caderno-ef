@@ -1048,7 +1048,8 @@ body.cal-mv .cal .cd:not(.off){cursor:copy}
 .ag-i.feito b{text-decoration:line-through;color:var(--muted)}
 .ag-i.atras{background:var(--bad-soft)}
 .ag-i.atras .ag-t span{color:var(--bad)}
-.sem-ag{display:flex;gap:2px;justify-content:center;margin-top:2px}
+.sem-hd{position:relative;padding-bottom:12px!important}
+.sem-ag{position:absolute;left:0;right:0;bottom:2px;display:flex;gap:2px;justify-content:center}
 .sem-ag i{width:6px;height:6px;border-radius:50%}
 .cal .cd.ag{box-shadow:inset 0 -3px 0 #6250d6}
 .lg-ag{background:#6250d6!important;height:3px!important;align-self:flex-end}
@@ -1072,6 +1073,7 @@ body.pav .go-c{width:56px;height:56px}
 .disp-s{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:8px}
 .disp-s label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .disp-s select{font-size:14px}
+@media (max-width:600px){.go-t td.go-n .av{display:none}.go-c{width:38px;height:42px;font-size:18px}.go-col{width:38px}.go-t{border-spacing:2px}.go-t td.go-n{font-size:13px;white-space:normal;max-width:110px;line-height:1.15}}
 </style>
 
 <style>body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--surface)}</style>
@@ -5867,7 +5869,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '0d1a5cf1';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '89c1b0b6';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6810,12 +6812,12 @@ function vDispersao(t) {
   const sxx = pts.reduce((s, o) => s + (o.x - mxv) ** 2, 0), syy = pts.reduce((s, o) => s + (o.y - myv) ** 2, 0), sxy = pts.reduce((s, o) => s + (o.x - mxv) * (o.y - myv), 0);
   const r = sxx && syy ? sxy / Math.sqrt(sxx * syy) : 0, c = sxx ? sxy / sxx : 0, a = myv - c * mxv;
   const res = pts.map(o => o.y - (a + c * o.x)), sd = Math.sqrt(res.reduce((s, e) => s + e * e, 0) / n) || 1;
-  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v5)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
+  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v6)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
   const forca = Math.abs(r) >= .7 ? 'forte' : Math.abs(r) >= .4 ? 'moderada' : Math.abs(r) >= .2 ? 'fraca' : 'quase nenhuma';
   const fora = pp.map((o, i) => o.fora ? {al:pts[i].al, acima:res[i] > 0} : null).filter(Boolean);
   h += chScatter(pp, {xl:DVAR[kx][0], yl:DVAR[ky][0], xmax:DVAR[kx][1], ymax:DVAR[ky][1], reg:Math.abs(r) >= .2 ? [a, c] : null, label:`${DVAR[ky][0]} em função de ${DVAR[kx][0]}`})
-    + legend([{name:'Raparigas', color:'var(--v5)'}, {name:'Rapazes', color:'var(--v1)'}])
-    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${nf(Math.round(r * 100) / 100 || 0)}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
+    + legend([{name:'Raparigas', color:'var(--v6)'}, {name:'Rapazes', color:'var(--v1)'}])
+    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${(Math.round(r * 100) / 100 || 0).toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2})}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
     + (fora.length ? `<p class="small" style="margin:4px 0 0"><b>Fora do padrão</b> (contorno escuro): ${fora.map(f => `${esc(f.al.nome)} (${f.acima ? 'acima' : 'abaixo'} do esperado)`).join(', ')}.</p>` : '')
     + tableView(['Aluno', DVAR[ky][0], DVAR[kx][0]], pts.map(o => [o.al.nome, nf(o.y), nf(o.x)]));
   return h + '</div>';
