@@ -14,6 +14,7 @@ function vInicio() {
   if (cur || next) h += `<div class="card nowc">${cur ? slot(cur, 'Agora') : ''}${next ? slot(next, cur ? 'A seguir' : 'Próxima aula') : ''}${all.length > (cur ? 1 : 0) + (next ? 1 : 0) ? `<p class="hint" style="margin:0">Hoje: ${all.map(x => esc(x.h + ' ' + x.t.nome)).join(' · ')}</p>` : ''}</div>`;
   else h += `<div class="card"><p style="margin:0">${all.length ? 'Já não há mais aulas hoje.' : 'Não há aulas de Educação Física no horário de hoje.'}</p>${Object.values(S.turmas).some(x => (x.horario || []).length) ? '' : '<p class="hint" style="margin:6px 0 0">Defina o horário de cada turma (Mais → turma) para ver aqui a aula de agora e a seguinte.</p>'}</div>`;
   // Turmas: avaliação e assiduidade
+  h += '<!--S:agenda-->' + (typeof vAgendaIni === 'function' ? vAgendaIni() : '');
   h += '<!--S:semana-->' + (typeof vSemanaIni === 'function' ? vSemanaIni() : '');
   h += '<!--S:turmas-->';
   h += `<div class="sec-h"><h2>Turmas · ${esc(perLabel(p))}</h2></div><div class="tgrid2">`;

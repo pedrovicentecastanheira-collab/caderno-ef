@@ -740,3 +740,47 @@ test('semana, fotografias, comparar turmas, diplomas, arrastar e gestos', async 
   await expect(page.locator('table.cmp tbody tr')).toHaveCount(2);
   expect(er).toEqual([]);
 });
+
+test('agenda, observação por grupos, banco de perguntas partilhado e gráfico de dispersão', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message + ' ' + (e.stack || '').split('\n').slice(1, 4).join(' | ')));
+  await demo(page);
+  // agenda: criar, ver no Início, concluir, marcar no calendário e nos lembretes
+  await page.evaluate(() => { UI.tab = 'inicio'; render(); });
+  await page.click('[data-a="ag-novo"]'); await page.fill('#ag-tit', 'Conselho de turma'); await page.click('#sheet [data-a="ag-tipo"][data-k="reuniao"]');
+  const hoje = await page.evaluate(() => today()); await page.fill('#ag-data', hoje); await page.fill('#ag-hora', '23:59');
+  await page.click('#sheet [data-a="ag-save"]');
+  await expect(page.locator('.agenda .ag-i')).toContainText(['Conselho de turma']);
+  expect(await page.evaluate(() => lembList().some(x => x.k.startsWith('ag:') && x.title.includes('Conselho')))).toBe(true);
+  await page.locator('.agenda [data-in="ag-ok"]').first().check();
+  expect(await page.evaluate(() => CFG.agenda[0].feito)).toBe(true);
+  expect(await page.evaluate(d => new RegExp(`class="cd[^"]* ag" style="[^"]*" data-a="cal-dia" data-d="${d}"`).test(vCalendario(turma())), hoje)).toBe(true);
+  // a secção pode ser escondida como as outras
+  await page.evaluate(() => { UI.iniOff = ['agenda']; render(); }); await expect(page.locator('.agenda')).toHaveCount(0);
+  // observação por grupos no modo aula
+  await page.evaluate(() => { const a = aulasOf(turma().id)[3]; UI.maula = a.id; UI.tab = 'turma'; UI.tsub = 'aula'; UI.mstep = 'durante'; render(); });
+  await page.click('[data-a="go-open"]'); await expect(page.locator('#sheet .go-t')).toBeVisible();
+  const c0 = page.locator('#sheet .go-c').first();
+  await c0.click(); await expect(page.locator('#sheet .go-c').first()).toHaveClass(/ok/);
+  await page.locator('#sheet .go-c').first().click(); await expect(page.locator('#sheet .go-c').first()).toHaveClass(/no/);
+  await page.locator('#sheet .go-c').first().click(); await expect(page.locator('#sheet .go-c').first()).not.toHaveClass(/ok|no/);
+  await page.locator('#sheet .go-col').nth(1).click();
+  const nAl = await page.locator('#sheet .go-t tbody tr').count();
+  expect(await page.locator('#sheet .go-t tbody tr td:nth-child(3) .go-c.ok').count()).toBe(nAl);
+  await page.click('#sheet .sh-h [data-a="sh-close"]');
+  // banco de perguntas: pergunta própria entra no questionário, a correção regista-se por pergunta, e vai no pacote do grupo
+  await page.evaluate(() => { CFG.perg = [{id:'uteste', q:'Quantos jogadores tem uma equipa de voleibol em campo?', o:['6', '5', '7', '11'], a:[5, 12], tema:'Voleibol'}]; KI = null; sheetModo(); });
+  await page.click('#sheet [data-a="ki-act"][data-k="quiz"]');
+  await expect(page.locator('#sheet [data-in="ki-q"][data-id="uteste"]')).toHaveCount(1);
+  const r = await page.evaluate(() => { KI.qs = ['uteste', 'q1']; KI.aid = turma().alunos[0].id; KI.r = {uteste:0, q1:1}; kiSave(); const v = avalOf(turma().id, UI.p); return [v.quizQ.uteste, v.quizQ.q1, v.quiz[turma().alunos[0].id].slice(-1)[0].nota]; });
+  expect(r).toEqual([[1, 1], [0, 1], 10]);
+  expect(await page.evaluate(() => pkgBuild().perg.length)).toBe(1);
+  const n = await page.evaluate(() => { CFG.perg = []; qbSync(); pkgApply({perg:[{id:'ux', q:'Pergunta do colega?', o:['Sim', 'Não'], a:[7, 9], autor:'Colega'}]}, {perg:true}); return [CFG.perg.length, QB.some(q => q.id === 'ux')]; });
+  expect(n).toEqual([1, true]);
+  await page.evaluate(() => { const k = $('#kiosk'); if (k) k.remove(); closeSheet(); });
+  // gráfico de dispersão
+  await page.evaluate(() => { UI.tab = 'relatorios'; UI.pview = 'graf'; UI.dx = 'con'; UI.dy = 'af'; render(); });
+  expect(await page.locator('.disp svg circle').count()).toBeGreaterThan(3);
+  await expect(page.locator('.disp')).toContainText('r =');
+  await page.selectOption('.disp select[data-k="dx"]', 'ass'); await expect(page.locator('.disp select[data-k="dx"]')).toHaveValue('ass');
+  expect(er).toEqual([]);
+});
