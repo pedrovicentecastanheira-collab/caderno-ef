@@ -1048,7 +1048,8 @@ body.cal-mv .cal .cd:not(.off){cursor:copy}
 .ag-i.feito b{text-decoration:line-through;color:var(--muted)}
 .ag-i.atras{background:var(--bad-soft)}
 .ag-i.atras .ag-t span{color:var(--bad)}
-.sem-ag{display:flex;gap:2px;justify-content:center;margin-top:2px}
+.sem-hd{position:relative;padding-bottom:12px!important}
+.sem-ag{position:absolute;left:0;right:0;bottom:2px;display:flex;gap:2px;justify-content:center}
 .sem-ag i{width:6px;height:6px;border-radius:50%}
 .cal .cd.ag{box-shadow:inset 0 -3px 0 #6250d6}
 .lg-ag{background:#6250d6!important;height:3px!important;align-self:flex-end}
@@ -1072,6 +1073,7 @@ body.pav .go-c{width:56px;height:56px}
 .disp-s{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:8px}
 .disp-s label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .disp-s select{font-size:14px}
+@media (max-width:600px){.go-t td.go-n .av{display:none}.go-c{width:38px;height:42px;font-size:18px}.go-col{width:38px}.go-t{border-spacing:2px}.go-t td.go-n{font-size:13px;white-space:normal;max-width:110px;line-height:1.15}}
 </style>
 
 <style>body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--surface)}</style>
@@ -5867,7 +5869,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '0d1a5cf1';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '30672499';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6236,8 +6238,8 @@ function sheetNovoAno(open) {
   if (open || !UI.draft || !UI.draft.nano) UI.draft = {nano:true, ts:Object.fromEntries(ts.map(t => [t.id, {on:(anoOf(t) || 0) < 12, nome:nomeSeg(t.nome)}]))};
   const D = UI.draft.ts;
   const body = `<div class="form"><p class="hint" style="margin:0">Fecha <b>${esc(CFG.ano)}</b> e prepara <b>${esc(novo)}</b>. Primeiro, o ano que termina é guardado inteiro num ficheiro${typeof odOn === 'function' && odOn() ? ' (e no OneDrive)' : ''}. Depois, cada turma escolhida passa para o ano seguinte com os mesmos alunos e as fotografias. O nível de cada matéria, a classificação final e os resultados do FITescola ficam como ponto de partida na ficha de cada aluno. As outras turmas ficam só no ficheiro.</p>
-    <div class="list na-l">${ts.map(t => `<div class="li na-r"><label class="cli"><input type="checkbox" data-in="na-on" data-id="${esc(t.id)}"${D[t.id] && D[t.id].on ? ' checked' : ''}> <span><b>${esc(t.nome)}</b> <span class="muted small">${(t.alunos || []).length} alunos</span></span></label>
-      <label class="na-nome"><span class="small muted">passa a</span><input type="text" data-in="na-nome" data-id="${esc(t.id)}" value="${esc((D[t.id] || {}).nome || '')}" aria-label="Novo nome de ${esc(t.nome)}"${D[t.id] && D[t.id].on ? '' : ' disabled'}></label></div>`).join('') || '<p class="muted">Não há turmas.</p>'}</div>
+    <div class="list na-l">${ts.map(t => `<div class="li na-r"><label class="cli"><input type="checkbox" data-in="na-on" data-id="${esc(t.id)}"${D[t.id] && D[t.id].on ? ' checked' : ''}${(anoOf(t) || 0) >= 12 ? ' disabled' : ''}> <span><b>${esc(t.nome)}</b> <span class="muted small">${(t.alunos || []).length} alunos</span></span></label>
+      ${(anoOf(t) || 0) >= 12 ? '<span class="small muted na-nome">termina o secundário: fica só no ficheiro</span>' : `<label class="na-nome"><span class="small muted">passa a</span><input type="text" data-in="na-nome" data-id="${esc(t.id)}" value="${esc((D[t.id] || {}).nome || '')}" aria-label="Novo nome de ${esc(t.nome)}"${D[t.id] && D[t.id].on ? '' : ' disabled'}></label>`}</div>`).join('') || '<p class="muted">Não há turmas.</p>'}</div>
     <p class="hint" style="margin:0">As datas dos períodos e os feriados fixos passam para ${esc(novo)}. As interrupções letivas mudam todos os anos: confirme-as depois em Ano letivo.</p></div>`;
   const foot = `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="na-go">Guardar ${esc(CFG.ano)} e começar ${esc(novo)}</button>`;
   if (open) openSheet('Novo ano letivo', body, foot); else updSheet(body, foot);
@@ -6250,7 +6252,7 @@ async function novoAnoAplicar(D) {
   await saveFile(nome, new Blob([txt], {type:'application/json'}));
   if (typeof odOn === 'function' && odOn()) { try { await _odEnv2(nome, txt); } catch (e) {} }
   const velhas = Object.values(S.turmas), keepDocs = new Set(), novas = [];
-  velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on) return; const a = (anoOf(t) || 0) + 1;
+  velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on || (anoOf(t) || 0) >= 12) return; const a = (anoOf(t) || 0) + 1;
     novas.push({id:uid(), nome:(o.nome || '').trim() || nomeSeg(t.nome), ciclo:anoOf(t) ? cicloDe(a) : t.ciclo, ano:anoOf(t) ? a : null, escala:t.escala, cor:t.cor,
       alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
   const fica = new Set(novas.flatMap(t => t.alunos.map(a => a.id)));
@@ -6341,6 +6343,7 @@ function consultaSair() {
   if (typeof AULAS_V !== 'undefined') AULAS_V++;
   document.body.classList.remove('consulta'); render(); toast('Voltou ao seu caderno.');
 }
+{ const _sm = syncMerge; syncMerge = function (d) { if (CONS) return 0; return _sm(d); }; }
 for (const fn of ['save', 'del']) { const o = Store[fn].bind(Store); Store[fn] = function (...a) { if (CONS) return Promise.resolve(); return o(...a); }; }
 { const _sd = syncData; syncData = function () { if (!CONS) return _sd(); const cur = {}; ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].forEach(k => { cur[k] = S[k]; S[k] = CONS.S[k]; }); const c = CFG; CFG = CONS.CFG; try { return _sd(); } finally { Object.assign(S, cur); CFG = c; } }; }
 const _render57 = render;
@@ -6357,12 +6360,13 @@ const vozesDe = aid => Object.values(S.docs).filter(x => x.tipo === 'voz' && x.a
 function vozHtml(t, al) {
   const vs = vozesDe(al.id), rec = VOZ.rec && VOZ.aid === al.id, ok = !!(navigator.mediaDevices && window.MediaRecorder);
   return `<div class="card voz"><div class="sec-h" style="margin:0"><b>Notas de voz</b>${ok ? `<button class="btn sm${rec ? ' rec' : ' primary'}" data-a="voz-rec" data-id="${esc(al.id)}">${rec ? '■ Parar' : '● Gravar'}</button>` : ''}</div>
-    ${rec ? '<p class="small voz-on" style="margin:6px 0 0"><i></i> A gravar… (até 1 minuto)</p>' : ''}
+    ${rec ? '<p class="small voz-on" style="margin:6px 0 0"><i></i> A gravar… (até 45 segundos)</p>' : ''}
     ${vs.length ? `<div class="voz-l">${vs.map(x => `<div class="voz-r"><span class="small muted">${esc(fmtDate((x.at || '').slice(0, 10), {day:'numeric', month:'short'}))} · ${x.dur || 0} s</span><audio controls preload="none" src="${esc(x.d)}"></audio><button class="icon-btn" data-a="voz-del" data-id="${esc(x.id)}" aria-label="Apagar nota de voz">×</button></div>`).join('')}</div>` : `<p class="small muted" style="margin:6px 0 0">${ok ? 'Grave uma observação rápida no pavilhão, sem escrever. Fica só neste caderno.' : 'Este navegador não permite gravar som.'}</p>`}</div>`;
 }
 const blobURL = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
 async function vozGuardar(aid, blob, dur) {
   const t = turma(), id = uid(), d = await blobURL(blob);
+  if (d.length > 220000) { toast('A nota de voz ficou grande demais para guardar. Grave notas mais curtas (até cerca de 30 segundos).', 'bad'); render(); return; }
   S.docs[id] = {id, tipo:'voz', aid, turmaId:t.id, nome:'nota-de-voz.' + (blob.type.includes('mp4') ? 'm4a' : 'webm'), d, dur:Math.round(dur), at:new Date().toISOString()}; Store.save('docs', S.docs[id]);
   render();
 }
@@ -6370,10 +6374,10 @@ async function vozGravar(aid) {
   if (VOZ.rec) { VOZ.rec.stop(); return; }
   let st; try { st = await navigator.mediaDevices.getUserMedia({audio:true}); } catch (e) { toast('Sem acesso ao microfone. Autorize-o nas definições do navegador.', 'bad'); return; }
   const tipo = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(x => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x));
-  const rec = new MediaRecorder(st, Object.assign({audioBitsPerSecond:24000}, tipo ? {mimeType:tipo} : {})), parts = [];
+  const rec = new MediaRecorder(st, Object.assign({audioBitsPerSecond:16000}, tipo ? {mimeType:tipo} : {})), parts = [];
   rec.ondataavailable = e => e.data.size && parts.push(e.data);
   rec.onstop = () => { clearTimeout(VOZ.tm); st.getTracks().forEach(x => x.stop()); const dur = (Date.now() - VOZ.t0) / 1000; VOZ.rec = null; VOZ.aid = null; if (parts.length) vozGuardar(aid, new Blob(parts, {type:rec.mimeType || 'audio/webm'}), dur); else render(); };
-  VOZ.rec = rec; VOZ.aid = aid; VOZ.t0 = Date.now(); rec.start(); VOZ.tm = setTimeout(() => rec.state === 'recording' && rec.stop(), 60000); render();
+  VOZ.rec = rec; VOZ.aid = aid; VOZ.t0 = Date.now(); rec.start(); VOZ.tm = setTimeout(() => rec.state === 'recording' && rec.stop(), 45000); render();
 }
 { const _tp = turmaPacote; turmaPacote = function (t) { const P = _tp(t); Object.values(S.docs).filter(x => x.tipo === 'voz' && x.turmaId === t.id).forEach(x => { P.docs[x.id] = x; }); return P; }; }
 
@@ -6810,12 +6814,12 @@ function vDispersao(t) {
   const sxx = pts.reduce((s, o) => s + (o.x - mxv) ** 2, 0), syy = pts.reduce((s, o) => s + (o.y - myv) ** 2, 0), sxy = pts.reduce((s, o) => s + (o.x - mxv) * (o.y - myv), 0);
   const r = sxx && syy ? sxy / Math.sqrt(sxx * syy) : 0, c = sxx ? sxy / sxx : 0, a = myv - c * mxv;
   const res = pts.map(o => o.y - (a + c * o.x)), sd = Math.sqrt(res.reduce((s, e) => s + e * e, 0) / n) || 1;
-  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v5)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
+  const pp = pts.map((o, i) => ({x:o.x, y:o.y, id:o.al.id, fora:Math.abs(res[i]) > 1.5 * sd && Math.abs(r) >= .3, cor:o.al.sexo === 'F' ? 'var(--v6)' : o.al.sexo === 'M' ? 'var(--v1)' : 'var(--v7)', tip:`${o.al.nome}: ${DVAR[kx][0]} ${nf(o.x)} · ${DVAR[ky][0]} ${nf(o.y)}`}));
   const forca = Math.abs(r) >= .7 ? 'forte' : Math.abs(r) >= .4 ? 'moderada' : Math.abs(r) >= .2 ? 'fraca' : 'quase nenhuma';
   const fora = pp.map((o, i) => o.fora ? {al:pts[i].al, acima:res[i] > 0} : null).filter(Boolean);
   h += chScatter(pp, {xl:DVAR[kx][0], yl:DVAR[ky][0], xmax:DVAR[kx][1], ymax:DVAR[ky][1], reg:Math.abs(r) >= .2 ? [a, c] : null, label:`${DVAR[ky][0]} em função de ${DVAR[kx][0]}`})
-    + legend([{name:'Raparigas', color:'var(--v5)'}, {name:'Rapazes', color:'var(--v1)'}])
-    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${nf(Math.round(r * 100) / 100 || 0)}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
+    + legend([{name:'Raparigas', color:'var(--v6)'}, {name:'Rapazes', color:'var(--v1)'}])
+    + `<p class="small" style="margin:6px 0 0">${Math.abs(r) < .2 ? '<b>Quase não há relação</b>' : `Relação <b>${forca}${r > 0 ? ' e positiva' : ' e negativa'}</b>`} (r = ${(Math.round(r * 100) / 100 || 0).toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2})}, ${n} alunos).${Math.abs(r) >= .2 ? ` Em média, ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[kx][0].toLowerCase())} anda a par de ${r > 0 ? 'mais' : 'menos'} ${esc(DVAR[ky][0].toLowerCase())}.` : ''} Relação não quer dizer causa.</p>`
     + (fora.length ? `<p class="small" style="margin:4px 0 0"><b>Fora do padrão</b> (contorno escuro): ${fora.map(f => `${esc(f.al.nome)} (${f.acima ? 'acima' : 'abaixo'} do esperado)`).join(', ')}.</p>` : '')
     + tableView(['Aluno', DVAR[ky][0], DVAR[kx][0]], pts.map(o => [o.al.nome, nf(o.y), nf(o.x)]));
   return h + '</div>';

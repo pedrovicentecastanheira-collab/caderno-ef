@@ -11,7 +11,8 @@
 .ag-i.feito b{text-decoration:line-through;color:var(--muted)}
 .ag-i.atras{background:var(--bad-soft)}
 .ag-i.atras .ag-t span{color:var(--bad)}
-.sem-ag{display:flex;gap:2px;justify-content:center;margin-top:2px}
+.sem-hd{position:relative;padding-bottom:12px!important}
+.sem-ag{position:absolute;left:0;right:0;bottom:2px;display:flex;gap:2px;justify-content:center}
 .sem-ag i{width:6px;height:6px;border-radius:50%}
 .cal .cd.ag{box-shadow:inset 0 -3px 0 #6250d6}
 .lg-ag{background:#6250d6!important;height:3px!important;align-self:flex-end}
@@ -35,3 +36,4 @@ body.pav .go-c{width:56px;height:56px}
 .disp-s{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:8px}
 .disp-s label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .disp-s select{font-size:14px}
+@media (max-width:600px){.go-t td.go-n .av{display:none}.go-c{width:38px;height:42px;font-size:18px}.go-col{width:38px}.go-t{border-spacing:2px}.go-t td.go-n{font-size:13px;white-space:normal;max-width:110px;line-height:1.15}}
