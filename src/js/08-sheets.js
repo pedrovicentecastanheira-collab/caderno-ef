@@ -39,7 +39,7 @@ function sheetAluno(al) {
     <div class="grid2" style="grid-template-columns:80px 1fr"><div class="field"><label for="a-num">N.º</label><input type="text" inputmode="numeric" id="a-num" data-in="a-num" value="${esc(al.num ?? '')}"></div>
     <div class="field"><label for="a-nome">Nome</label><input type="text" id="a-nome" data-in="a-nome" value="${esc(al.nome)}" autocomplete="off"></div></div>
     <div class="grid2"><div class="field"><span class="lbl">Sexo</span><div class="seg block">${[['F','Rapariga'],['M','Rapaz']].map(([k, n]) => `<button data-a="a-sexo" data-v="${k}" class="${al.sexo === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
-    <div class="field"><label for="a-nasc">Data de nascimento</label><input type="date" id="a-nasc" data-in="a-nasc" value="${esc(al.nasc || '')}"></div></div>
+    <div class="field"><label for="a-i31">Idade a 31 de dezembro</label><input type="number" min="3" max="25" inputmode="numeric" id="a-i31" data-in="a-i31" value="${esc(idadeDe(al) ?? '')}" placeholder="Ex.: 13"></div></div>
     <div class="field"><label for="a-proc">N.º de processo</label><input type="text" inputmode="numeric" id="a-proc" data-in="a-proc" value="${esc(al.proc || '')}"></div>
     <div class="field"><label for="a-reg">Regime</label><select id="a-reg" data-in="a-reg">${Object.keys(REG).map(k => `<option${al.regime === k ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
     ${dispHtml(al)}
@@ -65,7 +65,7 @@ function sheetTurma(x) {
 }
 
 function sheetPaste() {
-  openSheet('Colar lista de alunos', `<div class="form"><p class="hint">Uma linha por aluno. Pode colar diretamente do Excel. Formato: <b>n.º; nome; sexo (F/M); data de nascimento</b>. Só o nome é obrigatório.</p>
+  openSheet('Colar lista de alunos', `<div class="form"><p class="hint">Uma linha por aluno. Pode colar diretamente do Excel. Formato: <b>n.º; nome; sexo (F/M); idade a 31 de dezembro</b> (também aceita a data de nascimento). Só o nome é obrigatório.</p>
     <textarea id="paste-txt" style="min-height:200px" placeholder="1; Ana Martins; F; 12/03/2013&#10;2; Bruno Costa; M; 2013-07-30&#10;3; Carla Sousa"></textarea></div>`,
     `<button class="btn primary" data-a="paste-go">Adicionar alunos</button>`);
 }

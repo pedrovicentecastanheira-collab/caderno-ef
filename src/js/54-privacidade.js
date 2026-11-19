@@ -133,7 +133,7 @@ function vPrivacidade() {
     <div class="sec-h"><h2>Onde estão os dados</h2></div><div class="card"><ul class="small priv">
       <li><b>Neste aparelho</b>: ${Store.mode === 'cloud' ? 'na versão da conta Claude, os dados ficam na sua área privada da conta (só o professor os vê).' : 'no armazenamento do navegador (IndexedDB). Não vão para nenhum servidor do Caderno EF: não existe servidor.'}</li>
       <li><b>Cópias</b>: só onde as enviar (OneDrive da sua conta Microsoft, ficheiros que guardar ou partilhar). Com a cifra ativa, ilegíveis sem a sua palavra-passe.</li>
-      <li><b>Que dados</b>: nomes, número, sexo, data de nascimento e n.º de processo dos alunos; presenças, avaliações, aptidão física, observações, medidas de suporte, lesões e atestados que registar; fotografias, se as juntar.</li>
+      <li><b>Que dados</b>: nomes, número, sexo, idade e n.º de processo dos alunos; presenças, avaliações, aptidão física, observações, medidas de suporte, lesões e atestados que registar; fotografias, se as juntar.</li>
       <li><b>Quem vê</b>: só o professor. O modo aluno mostra a cada aluno apenas a sua própria informação.</li>
       <li><b>Quanto tempo</b>: até arquivar ou apagar. Recomenda-se arquivar as turmas no fim do ano letivo e apagar os arquivos quando já não forem necessários (regras da escola e RGPD).</li></ul></div>`;
 }

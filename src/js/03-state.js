@@ -75,7 +75,7 @@ function fitTxt(f, o) {
 const fitTrans = v => CFG.fitTransita !== false && v && v.p > 1 && v.p === CFG.nper && v.turmaId;
 function zoneOf(f, al, age, v) {
   const z = zoneRaw(f, al, age, v); if (!fitTrans(v)) return z;
-  const pv = avalOf(v.turmaId, v.p - 1), zp = zoneRaw(f, al, ageAt(al.nasc, refDate(v.p - 1)), pv);
+  const pv = avalOf(v.turmaId, v.p - 1), zp = zoneRaw(f, al, idadeDe(al), pv);
   return zp != null && (z == null || zp > z) ? zp : z;
 }
 function zoneRaw(f, al, age, v) {
@@ -90,7 +90,7 @@ function calc(t, p, al) {
   const lv = {}; new Set([...Object.keys((v.af || {})[al.id] || {}), ...Object.keys(v.ind || {})]).forEach(m => { const x = lvOf(v, al.id, m); if (x) lv[m] = x.l; });
   const ls = Object.values(lv).filter(x => x in LVP);
   const AF = ls.length ? ls.reduce((s, x) => s + LVP[x], 0) / ls.length : null;
-  const age = ageAt(al.nasc, refDate(p)); let pts = 0, any = false; const zones = {};
+  const age = idadeDe(al); let pts = 0, any = false; const zones = {};
   FIT.forEach(f => { const z = zoneOf(f, al, age, v); zones[f.k] = z; if (z != null) { any = true; pts += f.pts[z] || 0; } });
   const APF = any ? Math.max(0, Math.min(20, pts + 5)) : null;
   const cr = (v.con || {})[al.id]; const CON = (cr == null || cr === '' || isNaN(cr)) ? null : (t.escala === '1-5' ? cr * 4 : +cr);

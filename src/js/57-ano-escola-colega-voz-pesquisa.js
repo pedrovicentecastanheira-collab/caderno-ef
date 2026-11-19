@@ -31,7 +31,7 @@ async function novoAnoAplicar(D) {
   const velhas = Object.values(S.turmas), keepDocs = new Set(), novas = [];
   velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on || (anoOf(t) || 0) >= 12) return; const a = (anoOf(t) || 0) + 1;
     novas.push({id:uid(), nome:(o.nome || '').trim() || nomeSeg(t.nome), ciclo:anoOf(t) ? cicloDe(a) : t.ciclo, ano:anoOf(t) ? a : null, escala:t.escala, cor:t.cor,
-      alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
+      alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); if (n.i31 != null && n.i31 !== '') n.i31 = +n.i31 + 1; n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
   const fica = new Set(novas.flatMap(t => t.alunos.map(a => a.id)));
   for (const k of ['aulas', 'aval', 'hist']) for (const id of Object.keys(S[k])) { delete S[k][id]; Store.del(k, id); }
   for (const id of Object.keys(S.fotos)) if (!fica.has(id)) { delete S.fotos[id]; Store.del('fotos', id); }
