@@ -5879,7 +5879,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '89c1b0b6';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '30672499';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6248,8 +6248,8 @@ function sheetNovoAno(open) {
   if (open || !UI.draft || !UI.draft.nano) UI.draft = {nano:true, ts:Object.fromEntries(ts.map(t => [t.id, {on:(anoOf(t) || 0) < 12, nome:nomeSeg(t.nome)}]))};
   const D = UI.draft.ts;
   const body = `<div class="form"><p class="hint" style="margin:0">Fecha <b>${esc(CFG.ano)}</b> e prepara <b>${esc(novo)}</b>. Primeiro, o ano que termina é guardado inteiro num ficheiro${typeof odOn === 'function' && odOn() ? ' (e no OneDrive)' : ''}. Depois, cada turma escolhida passa para o ano seguinte com os mesmos alunos e as fotografias. O nível de cada matéria, a classificação final e os resultados do FITescola ficam como ponto de partida na ficha de cada aluno. As outras turmas ficam só no ficheiro.</p>
-    <div class="list na-l">${ts.map(t => `<div class="li na-r"><label class="cli"><input type="checkbox" data-in="na-on" data-id="${esc(t.id)}"${D[t.id] && D[t.id].on ? ' checked' : ''}> <span><b>${esc(t.nome)}</b> <span class="muted small">${(t.alunos || []).length} alunos</span></span></label>
-      <label class="na-nome"><span class="small muted">passa a</span><input type="text" data-in="na-nome" data-id="${esc(t.id)}" value="${esc((D[t.id] || {}).nome || '')}" aria-label="Novo nome de ${esc(t.nome)}"${D[t.id] && D[t.id].on ? '' : ' disabled'}></label></div>`).join('') || '<p class="muted">Não há turmas.</p>'}</div>
+    <div class="list na-l">${ts.map(t => `<div class="li na-r"><label class="cli"><input type="checkbox" data-in="na-on" data-id="${esc(t.id)}"${D[t.id] && D[t.id].on ? ' checked' : ''}${(anoOf(t) || 0) >= 12 ? ' disabled' : ''}> <span><b>${esc(t.nome)}</b> <span class="muted small">${(t.alunos || []).length} alunos</span></span></label>
+      ${(anoOf(t) || 0) >= 12 ? '<span class="small muted na-nome">termina o secundário: fica só no ficheiro</span>' : `<label class="na-nome"><span class="small muted">passa a</span><input type="text" data-in="na-nome" data-id="${esc(t.id)}" value="${esc((D[t.id] || {}).nome || '')}" aria-label="Novo nome de ${esc(t.nome)}"${D[t.id] && D[t.id].on ? '' : ' disabled'}></label>`}</div>`).join('') || '<p class="muted">Não há turmas.</p>'}</div>
     <p class="hint" style="margin:0">As datas dos períodos e os feriados fixos passam para ${esc(novo)}. As interrupções letivas mudam todos os anos: confirme-as depois em Ano letivo.</p></div>`;
   const foot = `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="na-go">Guardar ${esc(CFG.ano)} e começar ${esc(novo)}</button>`;
   if (open) openSheet('Novo ano letivo', body, foot); else updSheet(body, foot);
@@ -6262,7 +6262,7 @@ async function novoAnoAplicar(D) {
   await saveFile(nome, new Blob([txt], {type:'application/json'}));
   if (typeof odOn === 'function' && odOn()) { try { await _odEnv2(nome, txt); } catch (e) {} }
   const velhas = Object.values(S.turmas), keepDocs = new Set(), novas = [];
-  velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on) return; const a = (anoOf(t) || 0) + 1;
+  velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on || (anoOf(t) || 0) >= 12) return; const a = (anoOf(t) || 0) + 1;
     novas.push({id:uid(), nome:(o.nome || '').trim() || nomeSeg(t.nome), ciclo:anoOf(t) ? cicloDe(a) : t.ciclo, ano:anoOf(t) ? a : null, escala:t.escala, cor:t.cor,
       alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
   const fica = new Set(novas.flatMap(t => t.alunos.map(a => a.id)));
@@ -6353,6 +6353,7 @@ function consultaSair() {
   if (typeof AULAS_V !== 'undefined') AULAS_V++;
   document.body.classList.remove('consulta'); render(); toast('Voltou ao seu caderno.');
 }
+{ const _sm = syncMerge; syncMerge = function (d) { if (CONS) return 0; return _sm(d); }; }
 for (const fn of ['save', 'del']) { const o = Store[fn].bind(Store); Store[fn] = function (...a) { if (CONS) return Promise.resolve(); return o(...a); }; }
 { const _sd = syncData; syncData = function () { if (!CONS) return _sd(); const cur = {}; ['turmas', 'aulas', 'aval', 'fotos', 'docs', 'hist'].forEach(k => { cur[k] = S[k]; S[k] = CONS.S[k]; }); const c = CFG; CFG = CONS.CFG; try { return _sd(); } finally { Object.assign(S, cur); CFG = c; } }; }
 const _render57 = render;
@@ -6369,12 +6370,13 @@ const vozesDe = aid => Object.values(S.docs).filter(x => x.tipo === 'voz' && x.a
 function vozHtml(t, al) {
   const vs = vozesDe(al.id), rec = VOZ.rec && VOZ.aid === al.id, ok = !!(navigator.mediaDevices && window.MediaRecorder);
   return `<div class="card voz"><div class="sec-h" style="margin:0"><b>Notas de voz</b>${ok ? `<button class="btn sm${rec ? ' rec' : ' primary'}" data-a="voz-rec" data-id="${esc(al.id)}">${rec ? '■ Parar' : '● Gravar'}</button>` : ''}</div>
-    ${rec ? '<p class="small voz-on" style="margin:6px 0 0"><i></i> A gravar… (até 1 minuto)</p>' : ''}
+    ${rec ? '<p class="small voz-on" style="margin:6px 0 0"><i></i> A gravar… (até 45 segundos)</p>' : ''}
     ${vs.length ? `<div class="voz-l">${vs.map(x => `<div class="voz-r"><span class="small muted">${esc(fmtDate((x.at || '').slice(0, 10), {day:'numeric', month:'short'}))} · ${x.dur || 0} s</span><audio controls preload="none" src="${esc(x.d)}"></audio><button class="icon-btn" data-a="voz-del" data-id="${esc(x.id)}" aria-label="Apagar nota de voz">×</button></div>`).join('')}</div>` : `<p class="small muted" style="margin:6px 0 0">${ok ? 'Grave uma observação rápida no pavilhão, sem escrever. Fica só neste caderno.' : 'Este navegador não permite gravar som.'}</p>`}</div>`;
 }
 const blobURL = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
 async function vozGuardar(aid, blob, dur) {
   const t = turma(), id = uid(), d = await blobURL(blob);
+  if (d.length > 220000) { toast('A nota de voz ficou grande demais para guardar. Grave notas mais curtas (até cerca de 30 segundos).', 'bad'); render(); return; }
   S.docs[id] = {id, tipo:'voz', aid, turmaId:t.id, nome:'nota-de-voz.' + (blob.type.includes('mp4') ? 'm4a' : 'webm'), d, dur:Math.round(dur), at:new Date().toISOString()}; Store.save('docs', S.docs[id]);
   render();
 }
@@ -6382,10 +6384,10 @@ async function vozGravar(aid) {
   if (VOZ.rec) { VOZ.rec.stop(); return; }
   let st; try { st = await navigator.mediaDevices.getUserMedia({audio:true}); } catch (e) { toast('Sem acesso ao microfone. Autorize-o nas definições do navegador.', 'bad'); return; }
   const tipo = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(x => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x));
-  const rec = new MediaRecorder(st, Object.assign({audioBitsPerSecond:24000}, tipo ? {mimeType:tipo} : {})), parts = [];
+  const rec = new MediaRecorder(st, Object.assign({audioBitsPerSecond:16000}, tipo ? {mimeType:tipo} : {})), parts = [];
   rec.ondataavailable = e => e.data.size && parts.push(e.data);
   rec.onstop = () => { clearTimeout(VOZ.tm); st.getTracks().forEach(x => x.stop()); const dur = (Date.now() - VOZ.t0) / 1000; VOZ.rec = null; VOZ.aid = null; if (parts.length) vozGuardar(aid, new Blob(parts, {type:rec.mimeType || 'audio/webm'}), dur); else render(); };
-  VOZ.rec = rec; VOZ.aid = aid; VOZ.t0 = Date.now(); rec.start(); VOZ.tm = setTimeout(() => rec.state === 'recording' && rec.stop(), 60000); render();
+  VOZ.rec = rec; VOZ.aid = aid; VOZ.t0 = Date.now(); rec.start(); VOZ.tm = setTimeout(() => rec.state === 'recording' && rec.stop(), 45000); render();
 }
 { const _tp = turmaPacote; turmaPacote = function (t) { const P = _tp(t); Object.values(S.docs).filter(x => x.tipo === 'voz' && x.turmaId === t.id).forEach(x => { P.docs[x.id] = x; }); return P; }; }
 

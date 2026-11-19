@@ -784,3 +784,18 @@ test('agenda, observação por grupos, banco de perguntas partilhado e gráfico 
   await page.selectOption('.disp select[data-k="dx"]', 'ass'); await expect(page.locator('.disp select[data-k="dx"]')).toHaveValue('ass');
   expect(er).toEqual([]);
 });
+
+test('verificação a fundo: 12.º ano não passa, nota de voz grande demais, consulta não junta sincronizações', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  const r = await page.evaluate(async () => {
+    const t0 = {id:uid(), nome:'12.º Z', ciclo:'S', ano:12, escala:'0-20', alunos:[]}; S.turmas[t0.id] = t0;
+    UI.draft = null; sheetNovoAno(true); const caixa = document.querySelector(`#sheet [data-in="na-on"][data-id="${t0.id}"]`), dis = caixa.disabled, on = UI.draft.ts[t0.id].on; closeSheet();
+    const n0 = Object.keys(S.docs).length; await vozGuardar(turma().alunos[0].id, new Blob([new Uint8Array(200000)], {type:'audio/webm'}), 40); const voz = Object.keys(S.docs).length - n0;
+    const d = JSON.parse(JSON.stringify(syncData())); await consultaAbrir(new File([JSON.stringify(d)], 'c.json'));
+    const outra = JSON.parse(JSON.stringify(d)); Object.values(outra.turmas)[0]._u = Date.now() + 1e6; const juntou = syncMerge(outra); consultaSair();
+    return [dis, on, voz, juntou];
+  });
+  expect(r).toEqual([true, false, 0, 0]);
+  expect(er).toEqual([]);
+});
