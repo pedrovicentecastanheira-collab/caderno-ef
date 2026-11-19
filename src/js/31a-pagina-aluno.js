@@ -3,7 +3,7 @@
 const WIDE = () => window.innerWidth >= 1024;
 const ATABS = [['resumo', 'Resumo'], ['comp', 'Competências'], ['fit', 'FITescola'], ['ass', 'Assiduidade'], ['hist', 'Histórico']];
 function vAlunoPage(t, al, split) {
-  const p = UI.p, r = calc(t, p, al), nv = nivel(t, r.FIN), tab = UI.atab || 'resumo', v = avalOf(t.id, p), age = ageAt(al.nasc, today()), dp = dispOn(al, today());
+  const p = UI.p, r = calc(t, p, al), nv = nivel(t, r.FIN), tab = UI.atab || 'resumo', v = avalOf(t.id, p), age = idadeDe(al), dp = dispOn(al, today());
   const keep = CHW; if (split) CHW = 620;
   let h = `<div class="apage">${split ? '' : `<button class="link ap-back" data-a="ap-back">‹ ${UI.backTab ? 'Voltar' : 'Alunos'}</button>`}
     <div class="ap-id">${avatar(al, 'lg')}<div class="ap-nm"><h1>${esc(al.nome)}</h1>
@@ -30,7 +30,7 @@ function vAlunoPage(t, al, split) {
     h += ms.length ? ms.map(m => { const l = r.lv[m], sm = l ? lvSummary(t.ciclo, m, l, tksOf(v, al.id, m)) : ''; return `<div class="card acomp"><div class="ac-h">${subIcon(m, anoOf(t))}<b>${esc(m)}</b>${l ? `<span class="lvpill ${GLV[l]}">${l}</span><span class="muted small">${esc(LVN[l])}</span>` : '<span class="muted small">sem nível</span>'}<span class="sp"></span><button class="link" data-a="ap-comp" data-m="${esc(m)}">Assinalar competências</button></div>${desafioHtml(t, p, al, m, true)}${sm ? `<div class="dom" style="max-height:none">${sm}</div>` : ''}${evList(t, v, al, m)}${typeof autoCompHtml === 'function' ? autoCompHtml(t, p, al, m) : ''}</div>`; }).join('') : emptyCard('Sem matérias neste período', 'As matérias aparecem quando são registadas nas aulas ou avaliadas.');
   } else if (tab === 'fit') {
     const fv = (v.fit || {})[al.id] || {};
-    h += `<div class="card"><div class="tbl-wrap"><table><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), x = fv[f.k]; return `<tr><td class="l">${esc(f.n)}</td><td>${esc(fitTxt(f, fv))}</td><td>${z != null ? `<span class="zone z${z}">${esc(ZN[z])}</span>` : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('')}</tbody></table></div>${!al.sexo || !al.nasc ? '<p class="hint">Indique o sexo e a data de nascimento (Editar dados) para calcular as zonas.</p>' : ''}</div>`;
+    h += `<div class="card"><div class="tbl-wrap"><table><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), x = fv[f.k]; return `<tr><td class="l">${esc(f.n)}</td><td>${esc(fitTxt(f, fv))}</td><td>${z != null ? `<span class="zone z${z}">${esc(ZN[z])}</span>` : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('')}</tbody></table></div>${!al.sexo || !temIdade(al) ? '<p class="hint">Indique o sexo e a data de nascimento (Editar dados) para calcular as zonas.</p>' : ''}</div>`;
     const pf = pfitHtml(t, al); if (pf) h += pf; else if (foraZS(t, p, al).length && r.apfOn) h += `<div class="card"><b>Fora da Zona Saudável</b> <span class="small muted">${esc(foraZS(t, p, al).map(k => FIT.find(f => f.k === k).n).join(', '))}</span><div class="btn-row" style="margin-top:8px"><button class="btn sm primary" data-a="pfit-new" data-id="${esc(al.id)}">Criar plano individual</button></div></div>`;
     const fe = chFitEvo(t, al); if (fe) h += fig('Ao longo do ano', 'Resultado por período e linha da Zona Saudável', fe);
   } else if (tab === 'ass') {
@@ -68,7 +68,7 @@ function vWizard() {
     <div class="field"><label for="w-ano">Ano letivo</label><input id="w-ano" type="text" data-in="cfg-ano" value="${esc(CFG.ano)}"></div>
     ${CFG.per.slice(0, CFG.nper).map((x, i) => `<div class="grid2"><div class="field"><label>${perLabel(i + 1, true)}: início</label><input type="date" data-in="per" data-i="${i}" data-k="ini" value="${esc(x.ini)}"></div><div class="field"><label>fim</label><input type="date" data-in="per" data-i="${i}" data-k="fim" value="${esc(x.fim)}"></div></div>`).join('')}
     <button class="btn primary" data-a="wiz" data-s="2">Continuar</button></div>`;
-  else if (st === 2) h += `<h1>A primeira turma</h1><p>Importe a lista exportada do programa da escola (GIAE, Inovar…) com n.º, nome, sexo e data de nascimento. Também pode começar com uma turma vazia ou experimentar com uma turma de exemplo.</p>
+  else if (st === 2) h += `<h1>A primeira turma</h1><p>Importe a lista exportada do programa da escola (GIAE, Inovar…) com n.º, nome, sexo e idade a 31 de dezembro (ou data de nascimento). Também pode começar com uma turma vazia ou experimentar com uma turma de exemplo.</p>
     <div class="btn-row"><button class="btn primary" data-a="xls-import">Importar do Excel</button><button class="btn" data-a="turma-new">Criar turma vazia</button><button class="btn" data-a="demo">Turma de exemplo</button></div><button class="link" data-a="wiz" data-s="1">‹ Voltar</button>`;
   return h + `<p class="note">${esc(storageNote())}</p></div>`;
 }

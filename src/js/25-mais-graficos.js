@@ -28,7 +28,7 @@ function chFitEvo(t, al, small) {
   FIT.filter(f => !f.bool).forEach(f => {
     const vals = ps.map(i => { const x = ((avalOf(t.id, i).fit || {})[al.id] || {})[f.k]; return x == null || x === '' ? null : +x; });
     if (vals.filter(x => x != null).length < 1) return;
-    const ref = fitRef(f.k, al.sexo, ageAt(al.nasc, refDate(UI.p))), max = Math.max(...vals.filter(x => x != null), ref ? ref.zs : 0) * 1.15 || 1;
+    const ref = fitRef(f.k, al.sexo, idadeDe(al)), max = Math.max(...vals.filter(x => x != null), ref ? ref.zs : 0) * 1.15 || 1;
     const keep = CHW; CHW = small || Math.min(330, chartW());
     out.push(`<div class="sm"><div class="small"><b>${esc(f.n)}</b> <span class="muted">${esc(f.u)}${ref ? ` · ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}` : ''}</span></div>${chLine(ps.map(i => perLabel(i)), [{name:f.n, color:'var(--v3)', vals}], {h:140, max:Math.ceil(max), ref:ref ? ref.zs : -1, label:f.n + ' ao longo do ano'})}</div>`);
     CHW = keep;

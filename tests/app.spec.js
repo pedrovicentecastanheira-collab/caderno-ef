@@ -799,3 +799,26 @@ test('verificação a fundo: 12.º ano não passa, nota de voz grande demais, co
   expect(r).toEqual([true, false, 0, 0]);
   expect(er).toEqual([]);
 });
+
+test('idade a 31 de dezembro em vez da data de nascimento', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  const r = await page.evaluate(() => {
+    const out = {};
+    // quem nasceu a 30/12/2013 tem 13 anos a 31/12/2026, mesmo antes de fazer anos
+    out.nasc = idadeDe({nasc:'2013-12-30'});
+    out.i31 = idadeDe({i31:12, nasc:'2013-12-30'});
+    out.cols = guessCols(['N.º', 'Nome', 'Nacionalidade', 'Idade a 31/12']).i31;
+    return out;
+  });
+  expect(r).toEqual({nasc:13, i31:12, cols:3});
+  // o formulário do aluno pede a idade e as zonas do FITescola usam-na
+  await page.evaluate(() => { UI.tab = 'turma'; UI.tsub = 'alunos'; UI.aluno = null; render(); const al = turma().alunos[0]; sheetAluno(clone(al)); });
+  await expect(page.locator('#a-i31')).toBeVisible(); await expect(page.locator('#a-nasc')).toHaveCount(0);
+  await page.fill('#a-i31', '15'); await page.click('#sheet [data-a="aluno-save"]');
+  expect(await page.evaluate(() => { const al = turma().alunos[0]; return [al.i31, calc(turma(), 1, al).age]; })).toEqual([15, 15]);
+  // no novo ano letivo a idade sobe um ano
+  const ant = await page.evaluate(async () => { const d = {}; Object.values(S.turmas).forEach(t => { d[t.id] = {on:true, nome:'Seguinte'}; }); const a = turma().alunos[0].id; await novoAnoAplicar(d); return turma().alunos.find(x => x.id === a).i31; });
+  expect(ant).toBe(16);
+  expect(er).toEqual([]);
+});

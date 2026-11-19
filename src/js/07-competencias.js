@@ -155,9 +155,9 @@ function gShow(c, col, al) {
   if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l] + (isMan(c.v, al.id, col.m) ? ' man' : ''), auto:d.auto} : {txt:'', cls:''}; }
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
-    const age = ageAt(al.nasc, refDate(c.p)), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
+    const age = idadeDe(al), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
     if (x == null && fitTrans(c.v)) { const po = ((avalOf(c.t.id, c.p - 1).fit || {})[al.id]) || {}, px = col.side ? fitLado(po, col.f, col.side) : po[col.f.k];
-      if (px != null && px !== '') { const pa = ageAt(al.nasc, refDate(c.p - 1)), pz = col.side ? (hasAuto(col.f, al, pa) ? autoZone(col.f, al, pa, px) : null) : z, pzc = pz != null ? 'z' + pz : '';
+      if (px != null && px !== '') { const pa = idadeDe(al), pz = col.side ? (hasAuto(col.f, al, pa) ? autoZone(col.f, al, pa, px) : null) : z, pzc = pz != null ? 'z' + pz : '';
         return {txt:col.f.bool ? (px === 'S' ? 'Sim' : 'Não') : String(px).replace('.', ','), cls:pzc + ' trans', auto:true}; } }
     if (col.f.bool) return {txt:x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '', cls:zc};
     return x != null ? {txt:String(x).replace('.', ','), cls:zc} : z != null ? {txt:['Fora', 'ZS', 'ZA'][z], cls:zc, auto:true} : {txt:'', cls:''};
@@ -291,7 +291,7 @@ function gEditor() {
     if (col.type !== 'reg') h += `<label class="pin"><input type="checkbox" data-in="g-pin"${PIN ? ' checked' : ''}> Pincel: repetir o valor a cada toque${PIN && PIN.val != null ? ` (<b>${esc(PIN.label)}</b>)` : ''}</label>`;
   } else {
     let info = '';
-    if (col.f) { const age = ageAt(al.nasc, refDate(c.p)), r = fitRef(col.f.k, al.sexo, age); info = !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento para calcular a zona.' : r ? `${al.sexo === 'F' ? 'Rapariga' : 'Rapaz'}, ${age} anos: ZS ${col.f.dir > 0 ? '≥' : '≤'} ${String(r.zs).replace('.', ',')}${r.za != null ? ' · ZA ' + (col.f.dir > 0 ? '≥ ' : '≤ ') + String(r.za).replace('.', ',') : ''}` : `Sem tabela de referência para ${age ?? '?'} anos: escolha a zona na vista Aluno a aluno.`; }
+    if (col.f) { const age = idadeDe(al), r = fitRef(col.f.k, al.sexo, age); info = !al.sexo || !temIdade(al) ? 'Indique o sexo e a idade a 31 de dezembro para calcular a zona.' : r ? `${al.sexo === 'F' ? 'Rapariga' : 'Rapaz'}, ${age} anos: ZS ${col.f.dir > 0 ? '≥' : '≤'} ${String(r.zs).replace('.', ',')}${r.za != null ? ' · ZA ' + (col.f.dir > 0 ? '≥ ' : '≤ ') + String(r.za).replace('.', ',') : ''}` : `Sem tabela de referência para ${age ?? '?'} anos: escolha a zona na vista Aluno a aluno.`; }
     else if (col.k === 'con' && c.t.escala === '1-5') info = 'Escala 1-5: convertida para 0-20 (×4) nos cálculos.';
     h += `<div class="ged-num"><input id="ged-num" type="text" inputmode="decimal" enterkeyhint="next" data-in="g-num" value="${esc(cur ?? '')}" placeholder="${esc(col.unit || '')}" aria-label="${esc(col.title)} de ${esc(al.nome)}"><button class="btn primary" data-a="g-move" data-d="1">Seguinte ↓</button><button class="btn" data-a="g-set" data-v="" aria-label="Apagar">⌫</button></div>${info ? `<p class="hint">${esc(info)}</p>` : ''}`;
   }

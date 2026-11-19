@@ -22,7 +22,7 @@ function pfitCriar(t, al) {
 }
 function pfitHtml(t, al, print) {
   const P = pfitOf(t, al); if (!P) return '';
-  const age = ageAt(al.nasc, refDate(UI.p)), last = k => { for (let p = CFG.nper; p >= P.p; p--) { const x = fitVal(t, p, al.id, k); if (x != null && x !== '') return {x, p}; } return null; };
+  const age = idadeDe(al), last = k => { for (let p = CFG.nper; p >= P.p; p--) { const x = fitVal(t, p, al.id, k); if (x != null && x !== '') return {x, p}; } return null; };
   return `<div class="${print ? 'pfit-p' : 'card pfit'}"><div class="pfit-h"><b>Plano individual de aptidão física</b><span class="small muted">desde ${esc(fmtDate(P.d, {day:'numeric', month:'short'}))} · novo teste a ${esc(fmtDate(P.rt, {day:'numeric', month:'long'}))}</span></div>
     ${P.ks.map(k => { const f = FIT.find(x => x.k === k), pl = FITP[k], ref = f.bool ? null : fitRef(k, al.sexo, age), l = last(k), b = P.base[k];
       const meta = f.bool ? 'conseguir realizar o teste' : ref ? `${f.dir > 0 ? 'pelo menos' : 'no máximo'} ${String(ref.zs).replace('.', ',')} ${f.u}` : 'entrar na Zona Saudável';

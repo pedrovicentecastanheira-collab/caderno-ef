@@ -48,7 +48,7 @@ const A = {
   'a-sexo': el => { UI.draft.sexo = el.dataset.v; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
   'aluno-save': () => {
     const t = turma(), al = UI.draft;
-    al.nome = $('#a-nome').value.trim(); al.num = parseNum($('#a-num').value); al.nasc = $('#a-nasc').value; al.regime = $('#a-reg').value; al.obs = $('#a-obs').value.trim(); al.proc = $('#a-proc').value.trim();
+    al.nome = $('#a-nome').value.trim(); al.num = parseNum($('#a-num').value); al.i31 = parseIdade($('#a-i31').value); al.regime = $('#a-reg').value; al.obs = $('#a-obs').value.trim(); al.proc = $('#a-proc').value.trim();
     if (!al.nome) { toast('Escreva o nome do aluno.', 'bad'); $('#a-nome').focus(); return; }
     t.alunos = t.alunos || []; const i = t.alunos.findIndex(x => x.id === al.id); i >= 0 ? t.alunos[i] = al : t.alunos.push(al);
     if (DFOTO) { S.fotos[al.id] = {id: al.id, d: DFOTO}; Store.save('fotos', S.fotos[al.id]); }
@@ -62,16 +62,17 @@ const A = {
     $('#paste-txt').value.split(/\r?\n/).forEach(line => {
       const parts = line.split(/\t|;/).map(s => s.trim()).filter((s, i, arr) => s !== '' || i < arr.length - 1);
       if (!parts.length || !parts.join('')) return;
-      let num = null, nome = '', sexo = '', nasc = '';
+      let num = null, nome = '', sexo = '', nasc = '', i31 = null;
       parts.forEach(p => {
         if (/^\d{1,3}$/.test(p) && num == null && !nome) num = +p;
         else if (/^[FM]$/i.test(p)) sexo = p.toUpperCase();
         else if (/^\d{4}-\d{2}-\d{2}$/.test(p)) nasc = p;
         else if (/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{4}$/.test(p)) { const [d, m, y] = p.split(/[\/.-]/); nasc = y + '-' + pad(m) + '-' + pad(d); }
+        else if (/^\d{1,2}$/.test(p) && nome && parseIdade(p) != null) i31 = parseIdade(p);
         else if (!nome) nome = p;
       });
       if (!nome) return; if (num == null) num = ++n; else n = Math.max(n, num);
-      t.alunos.push({id: uid(), num, nome, sexo, nasc, regime: 'Normal', obs: ''}); added++;
+      t.alunos.push({id: uid(), num, nome, sexo, nasc, i31, regime: 'Normal', obs: ''}); added++;
     });
     if (!added) { toast('Não encontrei nomes. Uma linha por aluno.', 'bad'); return; }
     Store.save('turmas', t); closeSheet(); render(); toast(added + ' alunos adicionados.');
@@ -268,7 +269,7 @@ const A = {
   'xls-model': () => {
     if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['N.º', 'Nome', 'Sexo', 'Data de nascimento', 'N.º de processo', 'Turma'], [1, 'Ana Martins', 'F', '12/03/2013', '12345', '7.º B'], [2, 'Bruno Costa', 'M', '30/07/2013', '12346', '7.º B']]), 'Alunos');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['N.º', 'Nome', 'Sexo', 'Idade a 31 de dezembro', 'N.º de processo', 'Turma'], [1, 'Ana Martins', 'F', 13, '12345', '7.º B'], [2, 'Bruno Costa', 'M', 12, '12346', '7.º B']]), 'Alunos');
     saveFile('Modelo_alunos_Caderno_EF.xlsx', new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
   },
   'imp-go': () => {
@@ -281,8 +282,8 @@ const A = {
       t.alunos = t.alunos || []; let n = Math.max(0, ...t.alunos.map(a => +a.num || 0));
       g.list.forEach(x => {
         const ex = findAluno(t, x);
-        if (ex) { if (x.num != null) ex.num = x.num; if (x.proc) ex.proc = x.proc; if (x.sexo) ex.sexo = x.sexo; if (x.nasc) ex.nasc = x.nasc; nUpd++; }
-        else { const num = x.num != null ? x.num : ++n; n = Math.max(n, num); t.alunos.push({id: uid(), num, proc: x.proc, nome: x.nome, sexo: x.sexo, nasc: x.nasc, regime: 'Normal', obs: ''}); nNew++; }
+        if (ex) { if (x.num != null) ex.num = x.num; if (x.proc) ex.proc = x.proc; if (x.sexo) ex.sexo = x.sexo; if (x.nasc) ex.nasc = x.nasc; if (x.i31 != null) ex.i31 = x.i31; nUpd++; }
+        else { const num = x.num != null ? x.num : ++n; n = Math.max(n, num); t.alunos.push({id: uid(), num, proc: x.proc, nome: x.nome, sexo: x.sexo, nasc: x.nasc, i31: x.i31, regime: 'Normal', obs: ''}); nNew++; }
       });
       Store.save('turmas', t); first = first || t;
     });
@@ -309,7 +310,7 @@ function compSet(match, on) {
 }
 let DOCI = null;
 // Guarda no rascunho o que já foi escrito na ficha, antes de a redesenhar.
-function alunoDraft() { const d = UI.draft; d.nome = $('#a-nome').value; d.num = parseNum($('#a-num').value); d.nasc = $('#a-nasc').value; d.regime = $('#a-reg').value; d.obs = $('#a-obs').value; d.proc = $('#a-proc').value; return d; }
+function alunoDraft() { const d = UI.draft; d.nome = $('#a-nome').value; d.num = parseNum($('#a-num').value); d.i31 = parseIdade($('#a-i31').value); d.regime = $('#a-reg').value; d.obs = $('#a-obs').value; d.proc = $('#a-proc').value; return d; }
 function relObs(aid) { const ro = $('#a-relobs'); if (!ro || !UI.draft || UI.draft.id !== aid) return; const v = avalOf(turma().id, UI.p), x = ro.value.trim(); v.obs = v.obs || {}; if (x) v.obs[aid] = x; else delete v.obs[aid]; touchAval(v); }
 function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; const m = /^(.+)_([de])$/.exec(k), fb = m && FIT.find(x => x.k === m[1] && x.bi); if (fb) fitSetLado(v.fit[aid], fb, m[2], val); else v.fit[aid][k] = val; touchAval(v); return v; }
 function updAV(aid) { const t = turma(); const al = (t.alunos || []).find(x => x.id === aid); const el = document.getElementById('avn-' + aid); if (al && el) el.textContent = f1(calc(t, UI.p, al).AV); }
@@ -352,7 +353,7 @@ document.addEventListener('input', e => {
   if (k === 'fit') {
     const aid = el.dataset.aid; const val = parseNum(el.value); fitSet(aid, UI.fit + (el.dataset.side ? '_' + el.dataset.side : ''), val);
     const t = turma(), al = t.alunos.find(x => x.id === aid), f = FIT.find(x => x.k === UI.fit);
-    const z = zoneOf(f, al, ageAt(al.nasc, refDate(UI.p)), avalOf(t.id, UI.p)); const ze = document.getElementById('z-' + aid);
+    const z = zoneOf(f, al, idadeDe(al), avalOf(t.id, UI.p)); const ze = document.getElementById('z-' + aid);
     if (ze) { ze.className = 'zone ' + (z != null ? 'z' + z : ''); ze.textContent = z != null ? ZN[z] : 'Sem zona'; }
   } else if (k === 'con') {
     const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; let val = parseNum(el.value);

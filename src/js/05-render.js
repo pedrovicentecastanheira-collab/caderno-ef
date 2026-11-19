@@ -102,11 +102,11 @@ function vAlunos(t) {
   const als = alunosOf(t);
   let h = `<div class="stack"><div class="btn-row"><button class="btn primary" data-a="xls-import">Importar Excel</button><button class="btn" data-a="fotos-import">Fotografias</button><button class="btn" data-a="aluno-new">+ Aluno</button><button class="btn" data-a="alunos-paste">Colar lista</button></div>`;
   h += `<div class="sec-h"><h2>${esc(t.nome)}</h2><span class="muted small">${esc(CICLOS[t.ciclo])} · ${als.length} alunos</span></div>`;
-  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e data de nascimento. Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
+  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e idade a 31 de dezembro (ou data de nascimento). Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
   h += '<div class="list">';
   als.forEach(al => {
-    const c = counts(t, UI.p, al.id); const age = ageAt(al.nasc, today());
-    const meta = [al.sexo === 'F' ? 'Rapariga' : al.sexo === 'M' ? 'Rapaz' : 'Sexo por indicar', age != null ? age + ' anos' : 'sem data de nasc.'].join(' · ');
+    const c = counts(t, UI.p, al.id); const age = idadeDe(al);
+    const meta = [al.sexo === 'F' ? 'Rapariga' : al.sexo === 'M' ? 'Rapaz' : 'Sexo por indicar', age != null ? age + ' anos' : 'sem idade'].join(' · ');
     h += `<button class="li${UI.aluno === al.id && WIDE() ? ' on' : ''}" data-a="aluno-edit" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">${esc(meta)}</div></span><span class="end">${(x => x ? `<span class="tag reg">${esc(x.replace('Dispensa ', 'Disp. '))}</span>` : '')((d => d && d.tipo !== 'Apenas registo' ? d.tipo : regAt(al) !== 'Normal' ? regAt(al) : '')(dispOn(al, today())))}${c.F ? `<span class="tag F">${c.F}F</span>` : ''}</span></button>`;
   });
   return h + '</div></div>';
@@ -140,7 +140,7 @@ function vAvaliar(t) {
     h += `<p class="hint">${f.bi ? 'Registe o lado direito (D) e o esquerdo (E): a zona é a do lado mais fraco. ' : ''}${f.bool ? 'Sim = toca as mãos atrás das costas.' : `Resultado em ${esc(f.u)}. A zona calcula-se pela idade no fim do período (ou hoje) e pelo sexo, com as tabelas em Mais → Tabelas FITescola. Sem referência, escolha a zona à mão.`} Pontos: ${f.pts.map((p, i) => ZN[i] + ' ' + p).join(' · ')}.</p>`;
     h += '<div class="list">';
     als.forEach(al => {
-      const off = (REG[regAt(al)] || REG.Normal).apf === 0; const age = ageAt(al.nasc, refDate(UI.p));
+      const off = (REG[regAt(al)] || REG.Normal).apf === 0; const age = idadeDe(al);
       const r = (v.fit || {})[al.id] || {}; const z = zoneOf(f, al, age, v); const auto = hasAuto(f, al, age);
       const ref = f.bool ? null : fitRef(f.k, al.sexo, age);
       let ctl;
@@ -148,7 +148,7 @@ function vAvaliar(t) {
       else if (f.bool) ctl = `<div class="zman">${[['S','Sim'],['N','Não']].map(([k, n]) => `<button data-a="fit-bool" data-aid="${esc(al.id)}" data-v="${k}" class="${r[f.k] === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
       else ctl = `<input type="text" inputmode="decimal" id="fit-${esc(al.id)}" data-in="fit" data-aid="${esc(al.id)}" value="${esc(r[f.k] ?? '')}" placeholder="${esc(f.u)}" aria-label="${esc(f.n)} de ${esc(al.nome)}">`;
       const man = (!auto || (r[f.k] == null || r[f.k] === '')) && !f.bool ? `<div class="zman" aria-label="Zona manual">${f.pts.map((_, i) => `<button data-a="fit-z" data-aid="${esc(al.id)}" data-z="${i}" class="${r[f.k + '_z'] != null && +r[f.k + '_z'] === i && !(auto && r[f.k] != null && r[f.k] !== '') ? 'on' : ''}">${['Fora','ZS','ZA'][i]}</button>`).join('')}</div>` : '';
-      const why = f.bool ? '' : !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento' : !ref ? 'Sem referência para ' + (age ?? '?') + ' anos' : `ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}${ref.za != null ? ' · ZA ' + (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.za).replace('.', ',') : ''}`;
+      const why = f.bool ? '' : !al.sexo || !temIdade(al) ? 'Indique o sexo e a idade a 31 de dezembro' : !ref ? 'Sem referência para ' + (age ?? '?') + ' anos' : `ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}${ref.za != null ? ' · ZA ' + (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.za).replace('.', ',') : ''}`;
       h += `<div class="ev ${off ? 'off' : ''}"><div class="ev-h"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="hint">${al.sexo || '?'} · ${age ?? '?'} anos</span></div>` +
         (off ? '<span class="hint">Dispensa total</span>' : `<div class="fit-in">${ctl}<span class="zone ${z != null ? 'z' + z : ''}" id="z-${esc(al.id)}">${z != null ? ZN[z] : 'Sem zona'}</span>${man}</div>${why ? `<span class="hint">${esc(why)}</span>` : ''}`) + '</div>';
     });

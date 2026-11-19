@@ -1165,6 +1165,12 @@ const today = () => isoOf(new Date());
 const fmtDate = (iso, o) => { try { return new Date(iso + 'T12:00:00').toLocaleDateString('pt-PT', o || {weekday:'short', day:'numeric', month:'short'}); } catch (e) { return iso; } };
 const f1 = v => v == null ? '—' : (Math.round(v * 10) / 10).toLocaleString('pt-PT');
 const parseNum = s => { if (s == null) return null; s = String(s).trim().replace(',', '.'); if (s === '') return null; const v = Number(s); return isNaN(v) ? null : v; };
+// Idade usada em toda a app: a idade a 31 de dezembro do ano em que começa o ano letivo (a das tabelas do FITescola).
+// Vem do campo "idade a 31 de dezembro" (al.i31) ou, para alunos registados com data de nascimento, é calculada a partir dela.
+const anoRef = () => { const m = /(\d{4})/.exec((typeof CFG !== 'undefined' && CFG && CFG.ano) || ''); return m ? +m[1] : (typeof CFG !== 'undefined' && CFG && CFG.per && CFG.per[0] && CFG.per[0].ini ? +CFG.per[0].ini.slice(0, 4) : new Date().getFullYear()); };
+function idadeDe(al) { if (!al) return null; if (al.i31 != null && al.i31 !== '' && !isNaN(+al.i31)) return +al.i31; return al.nasc ? ageAt(al.nasc, anoRef() + '-12-31') : null; }
+const temIdade = al => idadeDe(al) != null;
+const parseIdade = v => { const n = parseInt(String(v ?? '').trim(), 10); return n >= 3 && n <= 30 ? n : null; };
 function ageAt(nasc, ref) { if (!nasc) return null; const b = new Date(nasc + 'T12:00:00'), r = new Date(ref + 'T12:00:00'); if (isNaN(b)) return null; let a = r.getFullYear() - b.getFullYear(); const m = r.getMonth() - b.getMonth(); if (m < 0 || (m === 0 && r.getDate() < b.getDate())) a--; return a; }
 function lastBackup() { try { return localStorage.getItem('ef:lastBackup'); } catch (e) { return null; } }
 const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -1376,7 +1382,7 @@ function fitTxt(f, o) {
 const fitTrans = v => CFG.fitTransita !== false && v && v.p > 1 && v.p === CFG.nper && v.turmaId;
 function zoneOf(f, al, age, v) {
   const z = zoneRaw(f, al, age, v); if (!fitTrans(v)) return z;
-  const pv = avalOf(v.turmaId, v.p - 1), zp = zoneRaw(f, al, ageAt(al.nasc, refDate(v.p - 1)), pv);
+  const pv = avalOf(v.turmaId, v.p - 1), zp = zoneRaw(f, al, idadeDe(al), pv);
   return zp != null && (z == null || zp > z) ? zp : z;
 }
 function zoneRaw(f, al, age, v) {
@@ -1391,7 +1397,7 @@ function calc(t, p, al) {
   const lv = {}; new Set([...Object.keys((v.af || {})[al.id] || {}), ...Object.keys(v.ind || {})]).forEach(m => { const x = lvOf(v, al.id, m); if (x) lv[m] = x.l; });
   const ls = Object.values(lv).filter(x => x in LVP);
   const AF = ls.length ? ls.reduce((s, x) => s + LVP[x], 0) / ls.length : null;
-  const age = ageAt(al.nasc, refDate(p)); let pts = 0, any = false; const zones = {};
+  const age = idadeDe(al); let pts = 0, any = false; const zones = {};
   FIT.forEach(f => { const z = zoneOf(f, al, age, v); zones[f.k] = z; if (z != null) { any = true; pts += f.pts[z] || 0; } });
   const APF = any ? Math.max(0, Math.min(20, pts + 5)) : null;
   const cr = (v.con || {})[al.id]; const CON = (cr == null || cr === '' || isNaN(cr)) ? null : (t.escala === '1-5' ? cr * 4 : +cr);
@@ -1532,11 +1538,11 @@ function vAlunos(t) {
   const als = alunosOf(t);
   let h = `<div class="stack"><div class="btn-row"><button class="btn primary" data-a="xls-import">Importar Excel</button><button class="btn" data-a="fotos-import">Fotografias</button><button class="btn" data-a="aluno-new">+ Aluno</button><button class="btn" data-a="alunos-paste">Colar lista</button></div>`;
   h += `<div class="sec-h"><h2>${esc(t.nome)}</h2><span class="muted small">${esc(CICLOS[t.ciclo])} · ${als.length} alunos</span></div>`;
-  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e data de nascimento. Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
+  if (!als.length) return h + `<div class="card empty">${ART}<h3>Sem alunos</h3><p>Importe a lista do Excel exportada do programa da escola (GIAE, Inovar…): n.º, nome, sexo e idade a 31 de dezembro (ou data de nascimento). Depois, junte as fotografias de uma vez.</p><button class="link" data-a="xls-model">Descarregar modelo de Excel</button></div></div>`;
   h += '<div class="list">';
   als.forEach(al => {
-    const c = counts(t, UI.p, al.id); const age = ageAt(al.nasc, today());
-    const meta = [al.sexo === 'F' ? 'Rapariga' : al.sexo === 'M' ? 'Rapaz' : 'Sexo por indicar', age != null ? age + ' anos' : 'sem data de nasc.'].join(' · ');
+    const c = counts(t, UI.p, al.id); const age = idadeDe(al);
+    const meta = [al.sexo === 'F' ? 'Rapariga' : al.sexo === 'M' ? 'Rapaz' : 'Sexo por indicar', age != null ? age + ' anos' : 'sem idade'].join(' · ');
     h += `<button class="li${UI.aluno === al.id && WIDE() ? ' on' : ''}" data-a="aluno-edit" data-id="${esc(al.id)}"><span class="n">${esc(al.num ?? '')}</span>${avatar(al)}<span class="who"><div class="nm">${esc(al.nome)}</div><div class="meta">${esc(meta)}</div></span><span class="end">${(x => x ? `<span class="tag reg">${esc(x.replace('Dispensa ', 'Disp. '))}</span>` : '')((d => d && d.tipo !== 'Apenas registo' ? d.tipo : regAt(al) !== 'Normal' ? regAt(al) : '')(dispOn(al, today())))}${c.F ? `<span class="tag F">${c.F}F</span>` : ''}</span></button>`;
   });
   return h + '</div></div>';
@@ -1570,7 +1576,7 @@ function vAvaliar(t) {
     h += `<p class="hint">${f.bi ? 'Registe o lado direito (D) e o esquerdo (E): a zona é a do lado mais fraco. ' : ''}${f.bool ? 'Sim = toca as mãos atrás das costas.' : `Resultado em ${esc(f.u)}. A zona calcula-se pela idade no fim do período (ou hoje) e pelo sexo, com as tabelas em Mais → Tabelas FITescola. Sem referência, escolha a zona à mão.`} Pontos: ${f.pts.map((p, i) => ZN[i] + ' ' + p).join(' · ')}.</p>`;
     h += '<div class="list">';
     als.forEach(al => {
-      const off = (REG[regAt(al)] || REG.Normal).apf === 0; const age = ageAt(al.nasc, refDate(UI.p));
+      const off = (REG[regAt(al)] || REG.Normal).apf === 0; const age = idadeDe(al);
       const r = (v.fit || {})[al.id] || {}; const z = zoneOf(f, al, age, v); const auto = hasAuto(f, al, age);
       const ref = f.bool ? null : fitRef(f.k, al.sexo, age);
       let ctl;
@@ -1578,7 +1584,7 @@ function vAvaliar(t) {
       else if (f.bool) ctl = `<div class="zman">${[['S','Sim'],['N','Não']].map(([k, n]) => `<button data-a="fit-bool" data-aid="${esc(al.id)}" data-v="${k}" class="${r[f.k] === k ? 'on' : ''}">${n}</button>`).join('')}</div>`;
       else ctl = `<input type="text" inputmode="decimal" id="fit-${esc(al.id)}" data-in="fit" data-aid="${esc(al.id)}" value="${esc(r[f.k] ?? '')}" placeholder="${esc(f.u)}" aria-label="${esc(f.n)} de ${esc(al.nome)}">`;
       const man = (!auto || (r[f.k] == null || r[f.k] === '')) && !f.bool ? `<div class="zman" aria-label="Zona manual">${f.pts.map((_, i) => `<button data-a="fit-z" data-aid="${esc(al.id)}" data-z="${i}" class="${r[f.k + '_z'] != null && +r[f.k + '_z'] === i && !(auto && r[f.k] != null && r[f.k] !== '') ? 'on' : ''}">${['Fora','ZS','ZA'][i]}</button>`).join('')}</div>` : '';
-      const why = f.bool ? '' : !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento' : !ref ? 'Sem referência para ' + (age ?? '?') + ' anos' : `ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}${ref.za != null ? ' · ZA ' + (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.za).replace('.', ',') : ''}`;
+      const why = f.bool ? '' : !al.sexo || !temIdade(al) ? 'Indique o sexo e a idade a 31 de dezembro' : !ref ? 'Sem referência para ' + (age ?? '?') + ' anos' : `ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}${ref.za != null ? ' · ZA ' + (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.za).replace('.', ',') : ''}`;
       h += `<div class="ev ${off ? 'off' : ''}"><div class="ev-h"><span class="n">${esc(al.num ?? '')}</span>${avatar(al, 'sm')}<span class="nm">${esc(al.nome)}</span><span class="hint">${al.sexo || '?'} · ${age ?? '?'} anos</span></div>` +
         (off ? '<span class="hint">Dispensa total</span>' : `<div class="fit-in">${ctl}<span class="zone ${z != null ? 'z' + z : ''}" id="z-${esc(al.id)}">${z != null ? ZN[z] : 'Sem zona'}</span>${man}</div>${why ? `<span class="hint">${esc(why)}</span>` : ''}`) + '</div>';
     });
@@ -1818,9 +1824,9 @@ function gShow(c, col, al) {
   if (col.k.startsWith('m:')) { const d = lvOf(c.v, al.id, col.m); return d ? {txt:d.l, cls:GLV[d.l] + (isMan(c.v, al.id, col.m) ? ' man' : ''), auto:d.auto} : {txt:'', cls:''}; }
   if (col.type === 'lvl') return x ? {txt:x, cls:GLV[x]} : {txt:'', cls:''};
   if (col.f) {
-    const age = ageAt(al.nasc, refDate(c.p)), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
+    const age = idadeDe(al), z = col.side ? (x != null && hasAuto(col.f, al, age) ? autoZone(col.f, al, age, x) : null) : zoneOf(col.f, al, age, c.v), zc = z != null ? 'z' + z : '';
     if (x == null && fitTrans(c.v)) { const po = ((avalOf(c.t.id, c.p - 1).fit || {})[al.id]) || {}, px = col.side ? fitLado(po, col.f, col.side) : po[col.f.k];
-      if (px != null && px !== '') { const pa = ageAt(al.nasc, refDate(c.p - 1)), pz = col.side ? (hasAuto(col.f, al, pa) ? autoZone(col.f, al, pa, px) : null) : z, pzc = pz != null ? 'z' + pz : '';
+      if (px != null && px !== '') { const pa = idadeDe(al), pz = col.side ? (hasAuto(col.f, al, pa) ? autoZone(col.f, al, pa, px) : null) : z, pzc = pz != null ? 'z' + pz : '';
         return {txt:col.f.bool ? (px === 'S' ? 'Sim' : 'Não') : String(px).replace('.', ','), cls:pzc + ' trans', auto:true}; } }
     if (col.f.bool) return {txt:x === 'S' ? 'Sim' : x === 'N' ? 'Não' : '', cls:zc};
     return x != null ? {txt:String(x).replace('.', ','), cls:zc} : z != null ? {txt:['Fora', 'ZS', 'ZA'][z], cls:zc, auto:true} : {txt:'', cls:''};
@@ -1954,7 +1960,7 @@ function gEditor() {
     if (col.type !== 'reg') h += `<label class="pin"><input type="checkbox" data-in="g-pin"${PIN ? ' checked' : ''}> Pincel: repetir o valor a cada toque${PIN && PIN.val != null ? ` (<b>${esc(PIN.label)}</b>)` : ''}</label>`;
   } else {
     let info = '';
-    if (col.f) { const age = ageAt(al.nasc, refDate(c.p)), r = fitRef(col.f.k, al.sexo, age); info = !al.sexo || !al.nasc ? 'Indique sexo e data de nascimento para calcular a zona.' : r ? `${al.sexo === 'F' ? 'Rapariga' : 'Rapaz'}, ${age} anos: ZS ${col.f.dir > 0 ? '≥' : '≤'} ${String(r.zs).replace('.', ',')}${r.za != null ? ' · ZA ' + (col.f.dir > 0 ? '≥ ' : '≤ ') + String(r.za).replace('.', ',') : ''}` : `Sem tabela de referência para ${age ?? '?'} anos: escolha a zona na vista Aluno a aluno.`; }
+    if (col.f) { const age = idadeDe(al), r = fitRef(col.f.k, al.sexo, age); info = !al.sexo || !temIdade(al) ? 'Indique o sexo e a idade a 31 de dezembro para calcular a zona.' : r ? `${al.sexo === 'F' ? 'Rapariga' : 'Rapaz'}, ${age} anos: ZS ${col.f.dir > 0 ? '≥' : '≤'} ${String(r.zs).replace('.', ',')}${r.za != null ? ' · ZA ' + (col.f.dir > 0 ? '≥ ' : '≤ ') + String(r.za).replace('.', ',') : ''}` : `Sem tabela de referência para ${age ?? '?'} anos: escolha a zona na vista Aluno a aluno.`; }
     else if (col.k === 'con' && c.t.escala === '1-5') info = 'Escala 1-5: convertida para 0-20 (×4) nos cálculos.';
     h += `<div class="ged-num"><input id="ged-num" type="text" inputmode="decimal" enterkeyhint="next" data-in="g-num" value="${esc(cur ?? '')}" placeholder="${esc(col.unit || '')}" aria-label="${esc(col.title)} de ${esc(al.nome)}"><button class="btn primary" data-a="g-move" data-d="1">Seguinte ↓</button><button class="btn" data-a="g-set" data-v="" aria-label="Apagar">⌫</button></div>${info ? `<p class="hint">${esc(info)}</p>` : ''}`;
   }
@@ -2132,7 +2138,7 @@ function sheetAluno(al) {
     <div class="grid2" style="grid-template-columns:80px 1fr"><div class="field"><label for="a-num">N.º</label><input type="text" inputmode="numeric" id="a-num" data-in="a-num" value="${esc(al.num ?? '')}"></div>
     <div class="field"><label for="a-nome">Nome</label><input type="text" id="a-nome" data-in="a-nome" value="${esc(al.nome)}" autocomplete="off"></div></div>
     <div class="grid2"><div class="field"><span class="lbl">Sexo</span><div class="seg block">${[['F','Rapariga'],['M','Rapaz']].map(([k, n]) => `<button data-a="a-sexo" data-v="${k}" class="${al.sexo === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
-    <div class="field"><label for="a-nasc">Data de nascimento</label><input type="date" id="a-nasc" data-in="a-nasc" value="${esc(al.nasc || '')}"></div></div>
+    <div class="field"><label for="a-i31">Idade a 31 de dezembro</label><input type="number" min="3" max="25" inputmode="numeric" id="a-i31" data-in="a-i31" value="${esc(idadeDe(al) ?? '')}" placeholder="Ex.: 13"></div></div>
     <div class="field"><label for="a-proc">N.º de processo</label><input type="text" inputmode="numeric" id="a-proc" data-in="a-proc" value="${esc(al.proc || '')}"></div>
     <div class="field"><label for="a-reg">Regime</label><select id="a-reg" data-in="a-reg">${Object.keys(REG).map(k => `<option${al.regime === k ? ' selected' : ''}>${k}</option>`).join('')}</select></div>
     ${dispHtml(al)}
@@ -2158,7 +2164,7 @@ function sheetTurma(x) {
 }
 
 function sheetPaste() {
-  openSheet('Colar lista de alunos', `<div class="form"><p class="hint">Uma linha por aluno. Pode colar diretamente do Excel. Formato: <b>n.º; nome; sexo (F/M); data de nascimento</b>. Só o nome é obrigatório.</p>
+  openSheet('Colar lista de alunos', `<div class="form"><p class="hint">Uma linha por aluno. Pode colar diretamente do Excel. Formato: <b>n.º; nome; sexo (F/M); idade a 31 de dezembro</b> (também aceita a data de nascimento). Só o nome é obrigatório.</p>
     <textarea id="paste-txt" style="min-height:200px" placeholder="1; Ana Martins; F; 12/03/2013&#10;2; Bruno Costa; M; 2013-07-30&#10;3; Carla Sousa"></textarea></div>`,
     `<button class="btn primary" data-a="paste-go">Adicionar alunos</button>`);
 }
@@ -2228,7 +2234,7 @@ const A = {
   'a-sexo': el => { UI.draft.sexo = el.dataset.v; el.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); },
   'aluno-save': () => {
     const t = turma(), al = UI.draft;
-    al.nome = $('#a-nome').value.trim(); al.num = parseNum($('#a-num').value); al.nasc = $('#a-nasc').value; al.regime = $('#a-reg').value; al.obs = $('#a-obs').value.trim(); al.proc = $('#a-proc').value.trim();
+    al.nome = $('#a-nome').value.trim(); al.num = parseNum($('#a-num').value); al.i31 = parseIdade($('#a-i31').value); al.regime = $('#a-reg').value; al.obs = $('#a-obs').value.trim(); al.proc = $('#a-proc').value.trim();
     if (!al.nome) { toast('Escreva o nome do aluno.', 'bad'); $('#a-nome').focus(); return; }
     t.alunos = t.alunos || []; const i = t.alunos.findIndex(x => x.id === al.id); i >= 0 ? t.alunos[i] = al : t.alunos.push(al);
     if (DFOTO) { S.fotos[al.id] = {id: al.id, d: DFOTO}; Store.save('fotos', S.fotos[al.id]); }
@@ -2242,16 +2248,17 @@ const A = {
     $('#paste-txt').value.split(/\r?\n/).forEach(line => {
       const parts = line.split(/\t|;/).map(s => s.trim()).filter((s, i, arr) => s !== '' || i < arr.length - 1);
       if (!parts.length || !parts.join('')) return;
-      let num = null, nome = '', sexo = '', nasc = '';
+      let num = null, nome = '', sexo = '', nasc = '', i31 = null;
       parts.forEach(p => {
         if (/^\d{1,3}$/.test(p) && num == null && !nome) num = +p;
         else if (/^[FM]$/i.test(p)) sexo = p.toUpperCase();
         else if (/^\d{4}-\d{2}-\d{2}$/.test(p)) nasc = p;
         else if (/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{4}$/.test(p)) { const [d, m, y] = p.split(/[\/.-]/); nasc = y + '-' + pad(m) + '-' + pad(d); }
+        else if (/^\d{1,2}$/.test(p) && nome && parseIdade(p) != null) i31 = parseIdade(p);
         else if (!nome) nome = p;
       });
       if (!nome) return; if (num == null) num = ++n; else n = Math.max(n, num);
-      t.alunos.push({id: uid(), num, nome, sexo, nasc, regime: 'Normal', obs: ''}); added++;
+      t.alunos.push({id: uid(), num, nome, sexo, nasc, i31, regime: 'Normal', obs: ''}); added++;
     });
     if (!added) { toast('Não encontrei nomes. Uma linha por aluno.', 'bad'); return; }
     Store.save('turmas', t); closeSheet(); render(); toast(added + ' alunos adicionados.');
@@ -2448,7 +2455,7 @@ const A = {
   'xls-model': () => {
     if (!window.XLSX) { toast('A biblioteca do Excel ainda está a carregar. Tente daqui a pouco.', 'bad'); return; }
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['N.º', 'Nome', 'Sexo', 'Data de nascimento', 'N.º de processo', 'Turma'], [1, 'Ana Martins', 'F', '12/03/2013', '12345', '7.º B'], [2, 'Bruno Costa', 'M', '30/07/2013', '12346', '7.º B']]), 'Alunos');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['N.º', 'Nome', 'Sexo', 'Idade a 31 de dezembro', 'N.º de processo', 'Turma'], [1, 'Ana Martins', 'F', 13, '12345', '7.º B'], [2, 'Bruno Costa', 'M', 12, '12346', '7.º B']]), 'Alunos');
     saveFile('Modelo_alunos_Caderno_EF.xlsx', new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
   },
   'imp-go': () => {
@@ -2461,8 +2468,8 @@ const A = {
       t.alunos = t.alunos || []; let n = Math.max(0, ...t.alunos.map(a => +a.num || 0));
       g.list.forEach(x => {
         const ex = findAluno(t, x);
-        if (ex) { if (x.num != null) ex.num = x.num; if (x.proc) ex.proc = x.proc; if (x.sexo) ex.sexo = x.sexo; if (x.nasc) ex.nasc = x.nasc; nUpd++; }
-        else { const num = x.num != null ? x.num : ++n; n = Math.max(n, num); t.alunos.push({id: uid(), num, proc: x.proc, nome: x.nome, sexo: x.sexo, nasc: x.nasc, regime: 'Normal', obs: ''}); nNew++; }
+        if (ex) { if (x.num != null) ex.num = x.num; if (x.proc) ex.proc = x.proc; if (x.sexo) ex.sexo = x.sexo; if (x.nasc) ex.nasc = x.nasc; if (x.i31 != null) ex.i31 = x.i31; nUpd++; }
+        else { const num = x.num != null ? x.num : ++n; n = Math.max(n, num); t.alunos.push({id: uid(), num, proc: x.proc, nome: x.nome, sexo: x.sexo, nasc: x.nasc, i31: x.i31, regime: 'Normal', obs: ''}); nNew++; }
       });
       Store.save('turmas', t); first = first || t;
     });
@@ -2489,7 +2496,7 @@ function compSet(match, on) {
 }
 let DOCI = null;
 // Guarda no rascunho o que já foi escrito na ficha, antes de a redesenhar.
-function alunoDraft() { const d = UI.draft; d.nome = $('#a-nome').value; d.num = parseNum($('#a-num').value); d.nasc = $('#a-nasc').value; d.regime = $('#a-reg').value; d.obs = $('#a-obs').value; d.proc = $('#a-proc').value; return d; }
+function alunoDraft() { const d = UI.draft; d.nome = $('#a-nome').value; d.num = parseNum($('#a-num').value); d.i31 = parseIdade($('#a-i31').value); d.regime = $('#a-reg').value; d.obs = $('#a-obs').value; d.proc = $('#a-proc').value; return d; }
 function relObs(aid) { const ro = $('#a-relobs'); if (!ro || !UI.draft || UI.draft.id !== aid) return; const v = avalOf(turma().id, UI.p), x = ro.value.trim(); v.obs = v.obs || {}; if (x) v.obs[aid] = x; else delete v.obs[aid]; touchAval(v); }
 function fitSet(aid, k, val) { const t = turma(), v = avalOf(t.id, UI.p); v.fit = v.fit || {}; v.fit[aid] = v.fit[aid] || {}; const m = /^(.+)_([de])$/.exec(k), fb = m && FIT.find(x => x.k === m[1] && x.bi); if (fb) fitSetLado(v.fit[aid], fb, m[2], val); else v.fit[aid][k] = val; touchAval(v); return v; }
 function updAV(aid) { const t = turma(); const al = (t.alunos || []).find(x => x.id === aid); const el = document.getElementById('avn-' + aid); if (al && el) el.textContent = f1(calc(t, UI.p, al).AV); }
@@ -2532,7 +2539,7 @@ document.addEventListener('input', e => {
   if (k === 'fit') {
     const aid = el.dataset.aid; const val = parseNum(el.value); fitSet(aid, UI.fit + (el.dataset.side ? '_' + el.dataset.side : ''), val);
     const t = turma(), al = t.alunos.find(x => x.id === aid), f = FIT.find(x => x.k === UI.fit);
-    const z = zoneOf(f, al, ageAt(al.nasc, refDate(UI.p)), avalOf(t.id, UI.p)); const ze = document.getElementById('z-' + aid);
+    const z = zoneOf(f, al, idadeDe(al), avalOf(t.id, UI.p)); const ze = document.getElementById('z-' + aid);
     if (ze) { ze.className = 'zone ' + (z != null ? 'z' + z : ''); ze.textContent = z != null ? ZN[z] : 'Sem zona'; }
   } else if (k === 'con') {
     const t = turma(), v = avalOf(t.id, UI.p), aid = el.dataset.aid; let val = parseNum(el.value);
@@ -2711,7 +2718,7 @@ function exportXlsx() {
 }
 
 /* ---------- import students from Excel ---------- */
-const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['nasc','Data de nascimento'], ['turma','Turma']];
+const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['i31','Idade a 31 de dezembro'], ['nasc','Data de nascimento'], ['turma','Turma']];
 const keyOf = s => norm(s).replace(/[^a-z0-9]/g, '');
 const NOME_RE = /^(nome|nomecompleto|nomedoaluno|nomealuno|aluno|alunos)$/;
 function guessCiclo(nome) { const m = /\d{1,2}/.exec(String(nome || '')); const n = m ? +m[0] : 7; return n <= 4 ? '1' : n <= 6 ? '2' : n <= 9 ? '3' : 'S'; }
@@ -2722,6 +2729,7 @@ function guessCols(head) {
   m.nome = pick(x => NOME_RE.test(x)); if (m.nome < 0) m.nome = pick(x => /nome/.test(x) && !/encarreg|enc|pai|mae|utilizador|abrev|curto/.test(x));
   m.num = pick(x => /^(n|no|nr|num|numero)(de)?(o)?(aluno|naturma|turma)?$/.test(x));
   m.sexo = pick(x => /sexo|genero/.test(x));
+  m.i31 = pick(x => /^idade/.test(x));
   m.nasc = pick(x => /nasc/.test(x));
   m.turma = pick(x => /turma/.test(x));
   return m;
@@ -2762,7 +2770,7 @@ function impRows() {
     if (!nome || !/\p{L}/u.test(nome) || NOME_RE.test(keyOf(nome))) return;
     if (nome === nome.toUpperCase()) nome = titleCase(nome);
     const n = parseNum(get(r, 'num'));
-    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), turma: impStr(get(r, 'turma'))});
+    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), i31: parseIdade(get(r, 'i31')), turma: impStr(get(r, 'turma'))});
   });
   return out;
 }
@@ -2809,7 +2817,7 @@ function sheetImport(update) {
       <div class="field"><label for="imp-ciclo">Ciclo</label><select id="imp-ciclo" data-in="imp-ciclo">${Object.entries(CICLOS).map(([k, n]) => opt(k, n, I.newCiclo === k)).join('')}</select></div></div>` : ''}
     ${I.dest !== '__split' && I.cols.turma >= 0 && ts.length > 1 ? `<div class="field"><label for="imp-filter">Linhas a importar</label><select id="imp-filter" data-in="imp-filter">${opt('', 'Todas as turmas do ficheiro', !I.filter)}${ts.map(x => opt(x, 'Só a turma ' + x, I.filter === x)).join('')}</select></div>` : ''}
     <div class="note ${tot ? '' : 'warn'}">${tot ? `<b>${tot} alunos</b>: ${nNew} novos${nUpd ? `, ${nUpd} já existem e são atualizados` : ''}${plan.length > 1 ? `, em ${plan.length} turmas (${plan.map(g => esc(g.nome) + (g.t ? '' : ' nova')).join(', ')})` : ''}.` : 'Não encontrei alunos. Escolha a coluna do nome.'}</div>
-    ${prev.length ? `<div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Nome</th><th>Sexo</th><th>Nascimento</th>${plan.length > 1 ? '<th>Turma</th>' : ''}</tr></thead><tbody>${prev.map(({x, g}) => `<tr><td>${esc(x.num ?? '')}</td><td class="l nm">${esc(x.nome)}</td><td>${esc(x.sexo || '—')}</td><td>${x.nasc ? esc(fmtDate(x.nasc, {day:'numeric', month:'short', year:'numeric'})) : '—'}</td>${plan.length > 1 ? `<td>${esc(g.nome)}</td>` : ''}</tr>`).join('')}</tbody></table></div>${tot > prev.length ? `<p class="hint">… e mais ${tot - prev.length}.</p>` : ''}` : ''}
+    ${prev.length ? `<div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Nome</th><th>Sexo</th><th>Idade a 31/12</th>${plan.length > 1 ? '<th>Turma</th>' : ''}</tr></thead><tbody>${prev.map(({x, g}) => `<tr><td>${esc(x.num ?? '')}</td><td class="l nm">${esc(x.nome)}</td><td>${esc(x.sexo || '—')}</td><td>${esc(idadeDe(x) ?? '—')}</td>${plan.length > 1 ? `<td>${esc(g.nome)}</td>` : ''}</tr>`).join('')}</tbody></table></div>${tot > prev.length ? `<p class="hint">… e mais ${tot - prev.length}.</p>` : ''}` : ''}
     <p class="hint">Um aluno que já esteja na turma (mesmo n.º de processo ou mesmo nome) é atualizado, não duplicado. O regime, as observações, as presenças e as avaliações mantêm-se.</p>
   </div>`;
   const foot = `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="imp-go"${tot ? '' : ' disabled'}>Importar ${tot || ''} alunos</button>`;
@@ -3156,7 +3164,7 @@ function alertsOf(t, p) {
   if (typeof OD !== 'undefined' && OD.t && OD.a) out.unshift({k:'warn', txt:'A ligação ao OneDrive expirou: toque para voltar a ligar e continuar a guardar as cópias.', a:'od'});
   const np = rows.filter(x => x.r.EST === 'Não apto'); if (np.length) out.push({k:'bad', txt:`Previsão de Não apto: ${np.map(x => x.al.nome.split(' ')[0]).join(', ')}.`, a:'pauta'});
   if (p > 1) { const dn = als.filter(al => { const a = calc(t, p - 1, al).zones.vaivem, b = calc(t, p, al).zones.vaivem; return a != null && b != null && b < a; }); if (dn.length) out.push({k:'warn', txt:`Vaivém: ${dn.length} ${dn.length === 1 ? 'aluno desceu' : 'alunos desceram'} de zona face ao período anterior (${dn.map(a => a.nome.split(' ')[0]).join(', ')}).`, a:'fit'}); }
-  const sd = als.filter(al => !al.sexo || !al.nasc).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou data de nascimento: necessários para as zonas do FITescola.`, a:'alunos'});
+  const sd = als.filter(al => !al.sexo || !temIdade(al)).length; if (sd) out.push({k:'info', txt:`${sd} ${sd === 1 ? 'aluno sem' : 'alunos sem'} sexo ou idade a 31 de dezembro: necessários para as zonas do FITescola.`, a:'alunos'});
   return out;
 }
 
@@ -3329,7 +3337,7 @@ function chFitEvo(t, al, small) {
   FIT.filter(f => !f.bool).forEach(f => {
     const vals = ps.map(i => { const x = ((avalOf(t.id, i).fit || {})[al.id] || {})[f.k]; return x == null || x === '' ? null : +x; });
     if (vals.filter(x => x != null).length < 1) return;
-    const ref = fitRef(f.k, al.sexo, ageAt(al.nasc, refDate(UI.p))), max = Math.max(...vals.filter(x => x != null), ref ? ref.zs : 0) * 1.15 || 1;
+    const ref = fitRef(f.k, al.sexo, idadeDe(al)), max = Math.max(...vals.filter(x => x != null), ref ? ref.zs : 0) * 1.15 || 1;
     const keep = CHW; CHW = small || Math.min(330, chartW());
     out.push(`<div class="sm"><div class="small"><b>${esc(f.n)}</b> <span class="muted">${esc(f.u)}${ref ? ` · ZS ${f.dir > 0 ? '≥' : '≤'} ${String(ref.zs).replace('.', ',')}` : ''}</span></div>${chLine(ps.map(i => perLabel(i)), [{name:f.n, color:'var(--v3)', vals}], {h:140, max:Math.ceil(max), ref:ref ? ref.zs : -1, label:f.n + ' ao longo do ano'})}</div>`);
     CHW = keep;
@@ -3607,7 +3615,7 @@ function retrato(t, p, al) {
 const WIDE = () => window.innerWidth >= 1024;
 const ATABS = [['resumo', 'Resumo'], ['comp', 'Competências'], ['fit', 'FITescola'], ['ass', 'Assiduidade'], ['hist', 'Histórico']];
 function vAlunoPage(t, al, split) {
-  const p = UI.p, r = calc(t, p, al), nv = nivel(t, r.FIN), tab = UI.atab || 'resumo', v = avalOf(t.id, p), age = ageAt(al.nasc, today()), dp = dispOn(al, today());
+  const p = UI.p, r = calc(t, p, al), nv = nivel(t, r.FIN), tab = UI.atab || 'resumo', v = avalOf(t.id, p), age = idadeDe(al), dp = dispOn(al, today());
   const keep = CHW; if (split) CHW = 620;
   let h = `<div class="apage">${split ? '' : `<button class="link ap-back" data-a="ap-back">‹ ${UI.backTab ? 'Voltar' : 'Alunos'}</button>`}
     <div class="ap-id">${avatar(al, 'lg')}<div class="ap-nm"><h1>${esc(al.nome)}</h1>
@@ -3634,7 +3642,7 @@ function vAlunoPage(t, al, split) {
     h += ms.length ? ms.map(m => { const l = r.lv[m], sm = l ? lvSummary(t.ciclo, m, l, tksOf(v, al.id, m)) : ''; return `<div class="card acomp"><div class="ac-h">${subIcon(m, anoOf(t))}<b>${esc(m)}</b>${l ? `<span class="lvpill ${GLV[l]}">${l}</span><span class="muted small">${esc(LVN[l])}</span>` : '<span class="muted small">sem nível</span>'}<span class="sp"></span><button class="link" data-a="ap-comp" data-m="${esc(m)}">Assinalar competências</button></div>${desafioHtml(t, p, al, m, true)}${sm ? `<div class="dom" style="max-height:none">${sm}</div>` : ''}${evList(t, v, al, m)}${typeof autoCompHtml === 'function' ? autoCompHtml(t, p, al, m) : ''}</div>`; }).join('') : emptyCard('Sem matérias neste período', 'As matérias aparecem quando são registadas nas aulas ou avaliadas.');
   } else if (tab === 'fit') {
     const fv = (v.fit || {})[al.id] || {};
-    h += `<div class="card"><div class="tbl-wrap"><table><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), x = fv[f.k]; return `<tr><td class="l">${esc(f.n)}</td><td>${esc(fitTxt(f, fv))}</td><td>${z != null ? `<span class="zone z${z}">${esc(ZN[z])}</span>` : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('')}</tbody></table></div>${!al.sexo || !al.nasc ? '<p class="hint">Indique o sexo e a data de nascimento (Editar dados) para calcular as zonas.</p>' : ''}</div>`;
+    h += `<div class="card"><div class="tbl-wrap"><table><thead><tr><th class="l">Teste</th><th>Resultado</th><th>Zona</th><th>Zona Saudável</th></tr></thead><tbody>${FIT.map(f => { const z = r.zones[f.k], ref = f.bool ? null : fitRef(f.k, al.sexo, r.age), x = fv[f.k]; return `<tr><td class="l">${esc(f.n)}</td><td>${esc(fitTxt(f, fv))}</td><td>${z != null ? `<span class="zone z${z}">${esc(ZN[z])}</span>` : '—'}</td><td>${ref ? (f.dir > 0 ? '≥ ' : '≤ ') + String(ref.zs).replace('.', ',') : f.bool ? 'Sim' : '—'}</td></tr>`; }).join('')}</tbody></table></div>${!al.sexo || !temIdade(al) ? '<p class="hint">Indique o sexo e a data de nascimento (Editar dados) para calcular as zonas.</p>' : ''}</div>`;
     const pf = pfitHtml(t, al); if (pf) h += pf; else if (foraZS(t, p, al).length && r.apfOn) h += `<div class="card"><b>Fora da Zona Saudável</b> <span class="small muted">${esc(foraZS(t, p, al).map(k => FIT.find(f => f.k === k).n).join(', '))}</span><div class="btn-row" style="margin-top:8px"><button class="btn sm primary" data-a="pfit-new" data-id="${esc(al.id)}">Criar plano individual</button></div></div>`;
     const fe = chFitEvo(t, al); if (fe) h += fig('Ao longo do ano', 'Resultado por período e linha da Zona Saudável', fe);
   } else if (tab === 'ass') {
@@ -3672,7 +3680,7 @@ function vWizard() {
     <div class="field"><label for="w-ano">Ano letivo</label><input id="w-ano" type="text" data-in="cfg-ano" value="${esc(CFG.ano)}"></div>
     ${CFG.per.slice(0, CFG.nper).map((x, i) => `<div class="grid2"><div class="field"><label>${perLabel(i + 1, true)}: início</label><input type="date" data-in="per" data-i="${i}" data-k="ini" value="${esc(x.ini)}"></div><div class="field"><label>fim</label><input type="date" data-in="per" data-i="${i}" data-k="fim" value="${esc(x.fim)}"></div></div>`).join('')}
     <button class="btn primary" data-a="wiz" data-s="2">Continuar</button></div>`;
-  else if (st === 2) h += `<h1>A primeira turma</h1><p>Importe a lista exportada do programa da escola (GIAE, Inovar…) com n.º, nome, sexo e data de nascimento. Também pode começar com uma turma vazia ou experimentar com uma turma de exemplo.</p>
+  else if (st === 2) h += `<h1>A primeira turma</h1><p>Importe a lista exportada do programa da escola (GIAE, Inovar…) com n.º, nome, sexo e idade a 31 de dezembro (ou data de nascimento). Também pode começar com uma turma vazia ou experimentar com uma turma de exemplo.</p>
     <div class="btn-row"><button class="btn primary" data-a="xls-import">Importar do Excel</button><button class="btn" data-a="turma-new">Criar turma vazia</button><button class="btn" data-a="demo">Turma de exemplo</button></div><button class="link" data-a="wiz" data-s="1">‹ Voltar</button>`;
   return h + `<p class="note">${esc(storageNote())}</p></div>`;
 }
@@ -4770,7 +4778,7 @@ function pfitCriar(t, al) {
 }
 function pfitHtml(t, al, print) {
   const P = pfitOf(t, al); if (!P) return '';
-  const age = ageAt(al.nasc, refDate(UI.p)), last = k => { for (let p = CFG.nper; p >= P.p; p--) { const x = fitVal(t, p, al.id, k); if (x != null && x !== '') return {x, p}; } return null; };
+  const age = idadeDe(al), last = k => { for (let p = CFG.nper; p >= P.p; p--) { const x = fitVal(t, p, al.id, k); if (x != null && x !== '') return {x, p}; } return null; };
   return `<div class="${print ? 'pfit-p' : 'card pfit'}"><div class="pfit-h"><b>Plano individual de aptidão física</b><span class="small muted">desde ${esc(fmtDate(P.d, {day:'numeric', month:'short'}))} · novo teste a ${esc(fmtDate(P.rt, {day:'numeric', month:'long'}))}</span></div>
     ${P.ks.map(k => { const f = FIT.find(x => x.k === k), pl = FITP[k], ref = f.bool ? null : fitRef(k, al.sexo, age), l = last(k), b = P.base[k];
       const meta = f.bool ? 'conseguir realizar o teste' : ref ? `${f.dir > 0 ? 'pelo menos' : 'no máximo'} ${String(ref.zs).replace('.', ',')} ${f.u}` : 'entrar na Zona Saudável';
@@ -5845,7 +5853,7 @@ function vPrivacidade() {
     <div class="sec-h"><h2>Onde estão os dados</h2></div><div class="card"><ul class="small priv">
       <li><b>Neste aparelho</b>: ${Store.mode === 'cloud' ? 'na versão da conta Claude, os dados ficam na sua área privada da conta (só o professor os vê).' : 'no armazenamento do navegador (IndexedDB). Não vão para nenhum servidor do Caderno EF: não existe servidor.'}</li>
       <li><b>Cópias</b>: só onde as enviar (OneDrive da sua conta Microsoft, ficheiros que guardar ou partilhar). Com a cifra ativa, ilegíveis sem a sua palavra-passe.</li>
-      <li><b>Que dados</b>: nomes, número, sexo, data de nascimento e n.º de processo dos alunos; presenças, avaliações, aptidão física, observações, medidas de suporte, lesões e atestados que registar; fotografias, se as juntar.</li>
+      <li><b>Que dados</b>: nomes, número, sexo, idade e n.º de processo dos alunos; presenças, avaliações, aptidão física, observações, medidas de suporte, lesões e atestados que registar; fotografias, se as juntar.</li>
       <li><b>Quem vê</b>: só o professor. O modo aluno mostra a cada aluno apenas a sua própria informação.</li>
       <li><b>Quanto tempo</b>: até arquivar ou apagar. Recomenda-se arquivar as turmas no fim do ano letivo e apagar os arquivos quando já não forem necessários (regras da escola e RGPD).</li></ul></div>`;
 }
@@ -5879,7 +5887,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '30672499';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = 'c0717976';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6264,7 +6272,7 @@ async function novoAnoAplicar(D) {
   const velhas = Object.values(S.turmas), keepDocs = new Set(), novas = [];
   velhas.forEach(t => { const o = D[t.id]; if (!o || !o.on || (anoOf(t) || 0) >= 12) return; const a = (anoOf(t) || 0) + 1;
     novas.push({id:uid(), nome:(o.nome || '').trim() || nomeSeg(t.nome), ciclo:anoOf(t) ? cicloDe(a) : t.ciclo, ano:anoOf(t) ? a : null, escala:t.escala, cor:t.cor,
-      alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
+      alunos:(t.alunos || []).map(al => { const n = clone(al); n.ant = anteriorDe(t, al); if (n.i31 != null && n.i31 !== '') n.i31 = +n.i31 + 1; n.disp = (n.disp || []).filter(d => !d.fim || d.fim >= today()); n.disp.forEach(d => d.doc && keepDocs.add(d.doc)); return n; })}); });
   const fica = new Set(novas.flatMap(t => t.alunos.map(a => a.id)));
   for (const k of ['aulas', 'aval', 'hist']) for (const id of Object.keys(S[k])) { delete S[k][id]; Store.del(k, id); }
   for (const id of Object.keys(S.fotos)) if (!fica.has(id)) { delete S.fotos[id]; Store.del('fotos', id); }

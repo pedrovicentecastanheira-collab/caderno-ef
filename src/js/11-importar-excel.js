@@ -1,5 +1,5 @@
 /* ---------- import students from Excel ---------- */
-const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['nasc','Data de nascimento'], ['turma','Turma']];
+const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['i31','Idade a 31 de dezembro'], ['nasc','Data de nascimento'], ['turma','Turma']];
 const keyOf = s => norm(s).replace(/[^a-z0-9]/g, '');
 const NOME_RE = /^(nome|nomecompleto|nomedoaluno|nomealuno|aluno|alunos)$/;
 function guessCiclo(nome) { const m = /\d{1,2}/.exec(String(nome || '')); const n = m ? +m[0] : 7; return n <= 4 ? '1' : n <= 6 ? '2' : n <= 9 ? '3' : 'S'; }
@@ -10,6 +10,7 @@ function guessCols(head) {
   m.nome = pick(x => NOME_RE.test(x)); if (m.nome < 0) m.nome = pick(x => /nome/.test(x) && !/encarreg|enc|pai|mae|utilizador|abrev|curto/.test(x));
   m.num = pick(x => /^(n|no|nr|num|numero)(de)?(o)?(aluno|naturma|turma)?$/.test(x));
   m.sexo = pick(x => /sexo|genero/.test(x));
+  m.i31 = pick(x => /^idade/.test(x));
   m.nasc = pick(x => /nasc/.test(x));
   m.turma = pick(x => /turma/.test(x));
   return m;
@@ -50,7 +51,7 @@ function impRows() {
     if (!nome || !/\p{L}/u.test(nome) || NOME_RE.test(keyOf(nome))) return;
     if (nome === nome.toUpperCase()) nome = titleCase(nome);
     const n = parseNum(get(r, 'num'));
-    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), turma: impStr(get(r, 'turma'))});
+    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), i31: parseIdade(get(r, 'i31')), turma: impStr(get(r, 'turma'))});
   });
   return out;
 }
@@ -97,7 +98,7 @@ function sheetImport(update) {
       <div class="field"><label for="imp-ciclo">Ciclo</label><select id="imp-ciclo" data-in="imp-ciclo">${Object.entries(CICLOS).map(([k, n]) => opt(k, n, I.newCiclo === k)).join('')}</select></div></div>` : ''}
     ${I.dest !== '__split' && I.cols.turma >= 0 && ts.length > 1 ? `<div class="field"><label for="imp-filter">Linhas a importar</label><select id="imp-filter" data-in="imp-filter">${opt('', 'Todas as turmas do ficheiro', !I.filter)}${ts.map(x => opt(x, 'Só a turma ' + x, I.filter === x)).join('')}</select></div>` : ''}
     <div class="note ${tot ? '' : 'warn'}">${tot ? `<b>${tot} alunos</b>: ${nNew} novos${nUpd ? `, ${nUpd} já existem e são atualizados` : ''}${plan.length > 1 ? `, em ${plan.length} turmas (${plan.map(g => esc(g.nome) + (g.t ? '' : ' nova')).join(', ')})` : ''}.` : 'Não encontrei alunos. Escolha a coluna do nome.'}</div>
-    ${prev.length ? `<div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Nome</th><th>Sexo</th><th>Nascimento</th>${plan.length > 1 ? '<th>Turma</th>' : ''}</tr></thead><tbody>${prev.map(({x, g}) => `<tr><td>${esc(x.num ?? '')}</td><td class="l nm">${esc(x.nome)}</td><td>${esc(x.sexo || '—')}</td><td>${x.nasc ? esc(fmtDate(x.nasc, {day:'numeric', month:'short', year:'numeric'})) : '—'}</td>${plan.length > 1 ? `<td>${esc(g.nome)}</td>` : ''}</tr>`).join('')}</tbody></table></div>${tot > prev.length ? `<p class="hint">… e mais ${tot - prev.length}.</p>` : ''}` : ''}
+    ${prev.length ? `<div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Nome</th><th>Sexo</th><th>Idade a 31/12</th>${plan.length > 1 ? '<th>Turma</th>' : ''}</tr></thead><tbody>${prev.map(({x, g}) => `<tr><td>${esc(x.num ?? '')}</td><td class="l nm">${esc(x.nome)}</td><td>${esc(x.sexo || '—')}</td><td>${esc(idadeDe(x) ?? '—')}</td>${plan.length > 1 ? `<td>${esc(g.nome)}</td>` : ''}</tr>`).join('')}</tbody></table></div>${tot > prev.length ? `<p class="hint">… e mais ${tot - prev.length}.</p>` : ''}` : ''}
     <p class="hint">Um aluno que já esteja na turma (mesmo n.º de processo ou mesmo nome) é atualizado, não duplicado. O regime, as observações, as presenças e as avaliações mantêm-se.</p>
   </div>`;
   const foot = `<button class="btn" data-a="sh-close">Cancelar</button><button class="btn primary" data-a="imp-go"${tot ? '' : ' disabled'}>Importar ${tot || ''} alunos</button>`;
