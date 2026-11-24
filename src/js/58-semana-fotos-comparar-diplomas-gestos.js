@@ -13,7 +13,7 @@ function vSemanaIni() {
   const lo = Math.floor(Math.min(...sl.map(x => minDe(x.h))) / 60) * 60, hi = Math.ceil((Math.max(...sl.map(x => minDe(x.h))) + dur) / 60) * 60, k = 0.8, H = (hi - lo) * k;
   const agora = new Date(), mAgora = agora.getHours() * 60 + agora.getMinutes(), td = today();
   let h = `<div class="sec-h"><h2>Esta semana</h2><span class="small muted">${esc(fmtDate(isoDe(seg), {day:'numeric', month:'short'}))} a ${esc(fmtDate(isoDe(new Date(seg.getTime() + (ds.length - 1) * 864e5)), {day:'numeric', month:'short'}))}</span></div>
-    <div class="card semw"><div class="sem" style="--n:${ds.length}"><div class="sem-hd"></div>${ds.map(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)); return `<div class="sem-hd${iso === td ? ' hoje' : ''}"><b>${DIAS[d]}</b><span>${+iso.slice(8)}</span></div>`; }).join('')}
+    <div class="card semw"><div class="semg" style="--n:${ds.length}"><div class="sem-hd"></div>${ds.map(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)); return `<div class="sem-hd${iso === td ? ' hoje' : ''}"><b>${DIAS[d]}</b><span>${+iso.slice(8)}</span></div>`; }).join('')}
     <div class="sem-hs" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span style="top:${i * 60 * k}px">${pad((lo / 60) + i)}h</span>`).join('')}</div>`;
   ds.forEach(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)), off = semAulas(iso);
     h += `<div class="sem-c${iso === td ? ' hoje' : ''}${off ? ' off' : ''}" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span class="sem-l" style="top:${i * 60 * k}px"></span>`).join('')}`;

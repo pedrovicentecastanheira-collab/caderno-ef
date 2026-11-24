@@ -974,7 +974,7 @@ body.offline::after{content:"Sem internet · tudo fica guardado neste aparelho";
 
 /* horário da semana */
 .semw{padding:10px 8px 12px}
-.sem{display:grid;grid-template-columns:30px repeat(var(--n),minmax(0,1fr));column-gap:4px}
+.semg{display:grid;grid-template-columns:30px repeat(var(--n),minmax(0,1fr));column-gap:4px}
 .sem-hd{text-align:center;font-size:12px;color:var(--muted);padding-bottom:6px;display:flex;flex-direction:column;line-height:1.1}
 .sem-hd b{font-weight:700;color:var(--ink)}
 .sem-hd.hoje b,.sem-hd.hoje span{color:var(--accent)}
@@ -5922,7 +5922,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '1c44ab3d';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '85f7a468';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6540,7 +6540,7 @@ function vSemanaIni() {
   const lo = Math.floor(Math.min(...sl.map(x => minDe(x.h))) / 60) * 60, hi = Math.ceil((Math.max(...sl.map(x => minDe(x.h))) + dur) / 60) * 60, k = 0.8, H = (hi - lo) * k;
   const agora = new Date(), mAgora = agora.getHours() * 60 + agora.getMinutes(), td = today();
   let h = `<div class="sec-h"><h2>Esta semana</h2><span class="small muted">${esc(fmtDate(isoDe(seg), {day:'numeric', month:'short'}))} a ${esc(fmtDate(isoDe(new Date(seg.getTime() + (ds.length - 1) * 864e5)), {day:'numeric', month:'short'}))}</span></div>
-    <div class="card semw"><div class="sem" style="--n:${ds.length}"><div class="sem-hd"></div>${ds.map(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)); return `<div class="sem-hd${iso === td ? ' hoje' : ''}"><b>${DIAS[d]}</b><span>${+iso.slice(8)}</span></div>`; }).join('')}
+    <div class="card semw"><div class="semg" style="--n:${ds.length}"><div class="sem-hd"></div>${ds.map(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)); return `<div class="sem-hd${iso === td ? ' hoje' : ''}"><b>${DIAS[d]}</b><span>${+iso.slice(8)}</span></div>`; }).join('')}
     <div class="sem-hs" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span style="top:${i * 60 * k}px">${pad((lo / 60) + i)}h</span>`).join('')}</div>`;
   ds.forEach(d => { const iso = isoDe(new Date(seg.getTime() + (d - 1) * 864e5)), off = semAulas(iso);
     h += `<div class="sem-c${iso === td ? ' hoje' : ''}${off ? ' off' : ''}" style="height:${H}px">${Array.from({length:(hi - lo) / 60}, (_, i) => `<span class="sem-l" style="top:${i * 60 * k}px"></span>`).join('')}`;
