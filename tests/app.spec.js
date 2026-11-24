@@ -372,6 +372,7 @@ test('sincronizar: receber junta a versão mais recente de cada registo', async 
   await demo(page);
   const res = await page.evaluate(() => {
     const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0], b = Object.values(d.aulas)[1];
+    delete d.sync2; delete d.meta; delete d.tomb; delete d.dev;         // cópia de uma versão antiga, sem registo campo a campo
     a.sumario = 'Mudado no outro aparelho.'; a._u = Date.now() + 1000;   // mais recente: entra
     b.sumario = 'Versão antiga.'; b._u = 1;                               // mais antiga: não entra
     const n = syncMerge(d); return [n, S.aulas[a.id].sumario, S.aulas[b.id].sumario !== 'Versão antiga.'];
@@ -820,5 +821,30 @@ test('idade a 31 de dezembro em vez da data de nascimento', async ({page}) => {
   // no novo ano letivo a idade sobe um ano
   const ant = await page.evaluate(async () => { const d = {}; Object.values(S.turmas).forEach(t => { d[t.id] = {on:true, nome:'Seguinte'}; }); const a = turma().alunos[0].id; await novoAnoAplicar(d); return turma().alunos.find(x => x.id === a).i31; });
   expect(ant).toBe(16);
+  expect(er).toEqual([]);
+});
+
+test('rúbricas: usar, avaliar pelos descritores, nota pesada, Conhecimentos, autoavaliação, editor e partilha', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  await page.evaluate(() => { UI.tab = 'avaliar'; UI.avMode = 'grelha'; UI.glay = 'rub'; render(); });
+  await page.click('.chips [data-a="rb-usar"]'); await page.click('#sheet [data-a="rb-add"][data-id="rb:arb"]');
+  await expect(page.locator('.rb-t tbody tr')).toHaveCount(14);
+  // avaliar um aluno nos 3 critérios (passa ao aluno seguinte a cada escolha)
+  for (let i = 0; i < 3; i++) { await page.locator('.rb-t tbody tr').first().locator('.rb-c').nth(i).click(); await page.click('#sheet [data-a="rb-set"][data-l="3"]'); await page.click('#sheet .sh-h [data-a="sh-close"]'); }
+  expect(await page.locator('.rb-t tbody tr').first().locator('.rb-n').textContent()).toBe('19');
+  // conta como Conhecimentos
+  await page.check('[data-in="rb-con"]');
+  expect(await page.evaluate(() => { const t = turma(); return avalOf(t.id, 1).con[t.alunos[0].id]; })).toBe(19);
+  // nota pesada: 40% MB(19) + 30% I(7) + 30% B(15) = 14,2
+  expect(await page.evaluate(() => rubNota(rubById('rb:arb'), {'rb:arb:0':3, 'rb:arb:1':0, 'rb:arb:2':2}).v)).toBe(14.2);
+  // autoavaliação no modo aluno
+  const au = await page.evaluate(() => { KI = null; UI.tab = 'turma'; render(); sheetModo(); KI.act = 'rub'; sheetModo(); A['ki-go'](); KI.aid = turma().alunos[0].id; KI.r = {'rb:arb:0':1, 'rb:arb:1':1, 'rb:arb:2':1}; kiSave(); return avalOf(turma().id, 1).rubAuto['rb:arb'][turma().alunos[0].id]['rb:arb:0']; });
+  expect(au).toBe(1); await page.evaluate(() => { const k = $('#kiosk'); if (k) k.remove(); document.body.classList.remove('locked'); });
+  // editor: duplicar um modelo e guardar
+  const n = await page.evaluate(() => { A['rb-dup']({dataset:{id:'rb:oral'}}); $('#rb-nome').value = 'Apresentação do trabalho de grupo'; A['rb-save'](); return [(CFG.rub || []).length, CFG.rub[0].crit.length, pkgBuild().rub.length]; });
+  expect(n).toEqual([1, 4, 1]);
+  // ficha do aluno e relatório mostram os descritores escolhidos
+  expect(await page.evaluate(() => { const t = turma(); return relHtml(t, 1, t.alunos[0]).includes('Conhece e aplica todas as regras'); })).toBe(true);
   expect(er).toEqual([]);
 });
