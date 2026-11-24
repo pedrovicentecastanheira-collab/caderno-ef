@@ -5912,7 +5912,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = '060d3cc7';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '1c44ab3d';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -6923,17 +6923,25 @@ const RUBB = [
 const rubAll = () => RUBB.concat(CFG.rub || []);
 const rubById = id => rubAll().find(r => r.id === id);
 const nivAbr = n => n.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+// Abreviaturas de todos os níveis de uma rúbrica, sem repetições (se as iniciais coincidirem, usa o número do nível).
+function nivAbrs(R) { const a = R.niv.map(n => nivAbr(n.n || '?')); if (new Set(a).size === a.length) return a; const b = R.niv.map(n => String(n.n || '?').replace(/\s+/g, '').slice(0, 3)); return new Set(b).size === b.length ? b : R.niv.map((_, j) => String(j + 1)); }
+// Um nível guardado só conta se ainda existir na rúbrica (pode ter sido retirado no editor).
+const nivOk = (R, l) => l != null && l >= 0 && !!R.niv[l];
 function rubNota(R, sel) {
   sel = sel || {}; let s = 0, w = 0, n = 0;
-  R.crit.forEach(c => { const l = sel[c.id]; if (l == null || !R.niv[l]) return; s += c.p * R.niv[l].v; w += c.p; n++; });
+  R.crit.forEach(c => { const l = sel[c.id]; if (!nivOk(R, l)) return; s += c.p * R.niv[l].v; w += c.p; n++; });
   return {v:w ? Math.round(s / w * 10) / 10 : null, completo:n === R.crit.length && n > 0, n};
 }
 const rubSel = (v, rid, aid) => ((v.rub || {})[rid] || {})[aid] || {};
 const rubAut = (v, rid, aid) => ((v.rubAuto || {})[rid] || {})[aid] || null;
 function rubCon(t, v, rid, aid) {
-  if (v.rubCon !== rid) return; const R = rubById(rid), r = rubNota(R, rubSel(v, rid, aid)); if (!r.completo) return;
-  v.con = v.con || {}; v.con[aid] = t.escala === '1-5' ? Math.round(r.v / 4 * 10) / 10 : r.v;
+  // Guarda a nota de Conhecimentos que existia antes (v.rubConPrev) para a repor se a rúbrica ficar incompleta ou deixar de contar.
+  if (v.rubCon !== rid) return; const R = rubById(rid); if (!R) return; const r = rubNota(R, rubSel(v, rid, aid)), P = v.rubConPrev = v.rubConPrev || {};
+  v.con = v.con || {};
+  if (r.completo) { if (!(aid in P)) P[aid] = v.con[aid] ?? null; v.con[aid] = t.escala === '1-5' ? Math.round(r.v / 4 * 10) / 10 : r.v; }
+  else if (aid in P) { if (P[aid] == null) delete v.con[aid]; else v.con[aid] = P[aid]; delete P[aid]; }
 }
+function rubConRepor(v) { const P = v.rubConPrev || {}; v.con = v.con || {}; Object.keys(P).forEach(aid => { if (P[aid] == null) delete v.con[aid]; else v.con[aid] = P[aid]; }); v.rubConPrev = {}; v.rubCon = null; }
 
 /* Avaliar › Rúbricas: mais uma vista da grelha (como o Mapa) */
 GICO.rub = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v16M15 4v16"/></svg>';
@@ -6944,24 +6952,24 @@ function vRubricas(t) {
   if (!us.includes(UI.rubSel)) UI.rubSel = us[0] || null;
   let h = `<div class="chips">${us.map(id => `<button class="chip ${id === UI.rubSel ? 'on' : ''}" data-a="rb-sel" data-id="${esc(id)}">${esc(rubById(id).nome)}</button>`).join('')}<button class="chip add" data-a="rb-usar">+ Usar rúbrica</button><button class="chip" data-a="rb-lib">Biblioteca</button></div>`;
   if (!UI.rubSel) return h + `<div class="card empty">${ART}<h3>Sem rúbricas neste período</h3><p>Use uma rúbrica para avaliar trabalhos, apresentações, coreografias, arbitragem ou o que quiser, com descritores claros para cada nível. Há modelos prontos e pode criar os seus.</p><button class="btn primary" data-a="rb-usar">Escolher uma rúbrica</button></div>`;
-  const R = rubById(UI.rubSel), als = alunosOf(t), con = v.rubCon === R.id;
+  const R = rubById(UI.rubSel), als = alunosOf(t), con = v.rubCon === R.id, AB = nivAbrs(R);
   h += `<div class="rb-bar"><button class="btn sm" data-a="rb-ver">Ver descritores</button><button class="btn sm" data-a="rb-print">Imprimir</button><label class="cli small"><input type="checkbox" data-in="rb-con"${con ? ' checked' : ''}> Conta como nota de Conhecimentos</label><span class="sp"></span><button class="btn sm danger" data-a="rb-tirar">Retirar deste período</button></div>`;
   if (con) h += `<p class="hint" style="margin:0">Quando um aluno tiver todos os critérios avaliados, a nota desta rúbrica passa a ser a sua nota de Conhecimentos.</p>`;
   h += `<div class="tbl-wrap"><table class="rb-t"><thead><tr><th class="l">Aluno</th>${R.crit.map(c => `<th title="${esc(c.n)}"><span class="rb-cn">${esc(c.n)}</span><span class="muted">${c.p}%</span></th>`).join('')}<th>Nota</th></tr></thead><tbody>`;
   als.forEach(al => { const sel = rubSel(v, R.id, al.id), au = rubAut(v, R.id, al.id), r = rubNota(R, sel);
-    h += `<tr><td class="l nm">${esc(al.num ?? '')} ${esc(nome2(al.nome))}</td>${R.crit.map(c => { const l = sel[c.id], a = au ? au[c.id] : null;
-      return `<td><button class="rb-c ${l != null ? 'l' + Math.round(l / Math.max(1, R.niv.length - 1) * 3) : ''}" data-a="rb-c" data-aid="${esc(al.id)}" data-c="${esc(c.id)}" aria-label="${esc(al.nome)}: ${esc(c.n)}">${l != null ? esc(nivAbr(R.niv[l].n)) : '·'}${a != null && a !== l ? `<i class="rb-au" title="O aluno escolheu ${esc(R.niv[a].n)}">${esc(nivAbr(R.niv[a].n))}</i>` : ''}</button></td>`; }).join('')}
+    h += `<tr><td class="l nm">${esc(al.num ?? '')} ${esc(nome2(al.nome))}</td>${R.crit.map(c => { const l = nivOk(R, sel[c.id]) ? sel[c.id] : null, a = au && nivOk(R, au[c.id]) ? au[c.id] : null;
+      return `<td><button class="rb-c ${l != null ? 'l' + Math.round(l / Math.max(1, R.niv.length - 1) * 3) : ''}" data-a="rb-c" data-aid="${esc(al.id)}" data-c="${esc(c.id)}" aria-label="${esc(al.nome)}: ${esc(c.n)}${l != null ? ', ' + esc(R.niv[l].n) : ''}">${l != null ? esc(AB[l]) : '·'}${a != null && a !== l ? `<i class="rb-au" title="O aluno escolheu ${esc(R.niv[a].n)}">${esc(AB[a])}</i>` : ''}</button></td>`; }).join('')}
       <td class="rb-n ${r.v != null && r.v < 10 ? 'low' : ''}">${r.v == null ? '—' : f1(r.v)}${r.v != null && !r.completo ? '<span class="muted">*</span>' : ''}</td></tr>`; });
   h += `</tbody></table></div><p class="hint">Toque numa célula para escolher o nível pelos descritores; passa logo ao aluno seguinte. * = faltam critérios. As letras pequenas mostram o que o aluno escolheu na autoavaliação (Turma › Aulas › Modo aluno › Rúbrica), quando é diferente.</p>`;
   return h;
 }
 let RBC = null;
 function sheetRbCell(aid, cid) {
-  RBC = {aid, cid}; const t = turma(), v = avalOf(t.id, UI.p), R = rubById(UI.rubSel), c = R.crit.find(x => x.id === cid), als = alunosOf(t), al = als.find(x => x.id === aid);
-  if (!c || !al) return; const l = rubSel(v, R.id, aid)[cid], au = rubAut(v, R.id, aid), i = als.indexOf(al);
+  RBC = {aid, cid}; const t = turma(), v = avalOf(t.id, UI.p), R = rubById(UI.rubSel); if (!R) { closeSheet(); render(); return; } const c = R.crit.find(x => x.id === cid), als = alunosOf(t), al = als.find(x => x.id === aid);
+  if (!c || !al) return; const l0 = rubSel(v, R.id, aid)[cid], l = nivOk(R, l0) ? l0 : null, au = rubAut(v, R.id, aid), i = als.indexOf(al);
   const body = `<div class="form rb-cell"><div class="obs-nav"><button class="icon-btn" data-a="rb-mv" data-d="-1" aria-label="Aluno anterior"${i ? '' : ' disabled'}>‹</button>${avatar(al, 'sm')}<b style="flex:1">${esc(al.nome)}</b><button class="icon-btn" data-a="rb-mv" data-d="1" aria-label="Aluno seguinte"${i < als.length - 1 ? '' : ' disabled'}>›</button></div>
     <div class="chips">${R.crit.map(x => `<button class="chip ${x.id === cid ? 'on' : ''}" data-a="rb-crit" data-c="${esc(x.id)}">${esc(x.n)}</button>`).join('')}</div>
-    ${au && au[cid] != null ? `<p class="small" style="margin:0">Na autoavaliação escolheu: <b>${esc(R.niv[au[cid]].n)}</b></p>` : ''}
+    ${au && nivOk(R, au[cid]) ? `<p class="small" style="margin:0">Na autoavaliação escolheu: <b>${esc(R.niv[au[cid]].n)}</b></p>` : ''}
     <div class="rb-ops">${R.niv.map((n, j) => `<button class="rb-op l${Math.round(j / Math.max(1, R.niv.length - 1) * 3)}${l === j ? ' on' : ''}" data-a="rb-set" data-l="${j}"><b>${esc(n.n)} <span class="muted">${n.v}</span></b><span>${esc(c.d[j] || '')}</span></button>`).join('')}</div>
     ${l != null ? '<button class="link" data-a="rb-set" data-l="-1">Limpar</button>' : ''}</div>`;
   const foot = `<button class="btn primary" data-a="sh-close">Feito</button>`;
@@ -6992,7 +7000,7 @@ function sheetRubEd(R) {
   if ($('#sheet').hidden) openSheet(novo ? 'Nova rúbrica' : 'Editar rúbrica', body, foot); else updSheet(body, foot);
 }
 function rubLer() {
-  const R = UI.draft; R.nome = ($('#rb-nome') || {}).value || R.nome;
+  const R = UI.draft, nm = $('#rb-nome'); if (nm) R.nome = nm.value;
   document.querySelectorAll('#sheet [data-rb]').forEach(el => { const k = el.dataset.rb, i = +el.dataset.i, j = +el.dataset.j;
     if (k === 'niv-n') R.niv[j].n = el.value.trim() || R.niv[j].n; else if (k === 'niv-v') R.niv[j].v = Math.max(0, Math.min(20, parseNum(el.value) ?? R.niv[j].v));
     else if (k === 'c-n') R.crit[i].n = el.value.trim(); else if (k === 'c-p') R.crit[i].p = Math.max(1, Math.min(100, parseInt(el.value, 10) || 1)); else if (k === 'c-d') R.crit[i].d[j] = el.value.trim(); });
@@ -7001,14 +7009,14 @@ function rubLer() {
 function rubDocHtml(t, R, comNotas) {
   const v = avalOf(t.id, UI.p);
   let h = `<section class="rel rb-doc">${docHead('Rúbrica · ' + R.nome, t.nome + ' · ' + perLabel(UI.p, true))}<table class="rel-t rb-dt"><thead><tr><th class="l">Critério</th>${R.niv.map(n => `<th>${esc(n.n)} <span class="muted">(${n.v})</span></th>`).join('')}</tr></thead><tbody>${R.crit.map(c => `<tr><td class="l"><b>${esc(c.n)}</b><br><span class="muted">${c.p}%</span></td>${R.niv.map((n, j) => `<td class="l">${esc(c.d[j] || '')}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-  if (comNotas) h += `<h2>Resultados</h2><table class="rel-t"><thead><tr><th>N.º</th><th class="l">Aluno</th>${R.crit.map(c => `<th>${esc(c.n)}</th>`).join('')}<th>Nota</th></tr></thead><tbody>${alunosOf(t).map(al => { const s = rubSel(v, R.id, al.id), r = rubNota(R, s); return `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td>${R.crit.map(c => `<td>${s[c.id] != null ? esc(R.niv[s[c.id]].n) : '—'}</td>`).join('')}<td><b>${r.v == null ? '—' : f1(r.v)}</b></td></tr>`; }).join('')}</tbody></table>`;
+  if (comNotas) h += `<h2>Resultados</h2><table class="rel-t"><thead><tr><th>N.º</th><th class="l">Aluno</th>${R.crit.map(c => `<th>${esc(c.n)}</th>`).join('')}<th>Nota</th></tr></thead><tbody>${alunosOf(t).map(al => { const s = rubSel(v, R.id, al.id), r = rubNota(R, s); return `<tr><td>${esc(al.num ?? '')}</td><td class="l">${esc(al.nome)}</td>${R.crit.map(c => `<td>${nivOk(R, s[c.id]) ? esc(R.niv[s[c.id]].n) : '—'}</td>`).join('')}<td><b>${r.v == null ? '—' : f1(r.v)}</b></td></tr>`; }).join('')}</tbody></table>`;
   return h + '</section>';
 }
 // Ficha do aluno e relatório individual: o que escolheu o professor, com os descritores
 function rubAlunoHtml(t, p, al, rel) {
-  const v = avalOf(t.id, p), us = (v.rubUse || []).map(rubById).filter(Boolean).filter(R => Object.keys(rubSel(v, R.id, al.id)).length); if (!us.length) return '';
+  const v = avalOf(t.id, p), us = (v.rubUse || []).map(rubById).filter(Boolean).filter(R => R.crit.some(c => nivOk(R, rubSel(v, R.id, al.id)[c.id]))); if (!us.length) return '';
   const blocos = us.map(R => { const s = rubSel(v, R.id, al.id), r = rubNota(R, s);
-    return `<div class="rb-al"><b>${esc(R.nome)}</b> <span class="pill">${r.v == null ? '—' : f1(r.v)}${r.completo ? '' : ' (incompleta)'}</span><ul>${R.crit.filter(c => s[c.id] != null).map(c => `<li><b>${esc(c.n)}:</b> ${esc(R.niv[s[c.id]].n)} — ${esc(c.d[s[c.id]] || '')}</li>`).join('')}</ul></div>`; }).join('');
+    return `<div class="rb-al"><b>${esc(R.nome)}</b> <span class="pill">${r.v == null ? '—' : f1(r.v)}${r.completo ? '' : ' (incompleta)'}</span><ul>${R.crit.filter(c => nivOk(R, s[c.id])).map(c => `<li><b>${esc(c.n)}:</b> ${esc(R.niv[s[c.id]].n)} — ${esc(c.d[s[c.id]] || '')}</li>`).join('')}</ul></div>`; }).join('');
   return rel ? `<h2>Rúbricas</h2>${blocos}` : `<div class="card"><b>Rúbricas · ${esc(perLabel(p, true))}</b>${blocos}</div>`;
 }
 { const _ap = vAlunoPage; vAlunoPage = function (t, al, split) { let h = _ap(t, al, split); if ((UI.atab || 'resumo') !== 'resumo') return h; const x = rubAlunoHtml(t, UI.p, al); if (!x) return h; const i = h.lastIndexOf('</div>'); return h.slice(0, i) + x + h.slice(i); }; }
@@ -7024,6 +7032,7 @@ KIN.rub = 'Rúbrica';
 { const _kr = kiRender; kiRender = function () {
   if (!(KI && KI.act === 'rub' && KI.aid && !KI.fim)) return _kr();
   const t = S.turmas[KI.t], R = rubById(KI.rub), al = alunosOf(t).find(x => x.id === KI.aid), el = kiEl();
+  if (!R || !al) { KI.aid = null; KI.r = {}; toast('Esta rúbrica já não existe. Escolha outra no modo aluno.', 'bad'); return _kr(); }
   let h = `<header class="ki-h"><div><span class="eyebrow">Modo aluno · Rúbrica</span><b>${esc(R.nome)}</b></div><button class="btn" data-a="ki-exit">Sair (professor)</button></header><div class="ki-b">
     <h1 class="ki-t">${esc(al.nome.split(' ')[0])}, em que nível te vês?</h1><p class="ki-s">Lê as frases de cada critério e escolhe a que descreve melhor o teu trabalho.</p>`;
   h += R.crit.map(c => `<div class="ki-c"><p><b>${esc(c.n)}</b></p><div class="ki-op rb-kop">${R.niv.map((n, j) => `<button class="${KI.r[c.id] === j ? 'on' : ''}" data-a="ki-r" data-id="${esc(c.id)}" data-v="${j}"><b>${esc(n.n)}</b><br>${esc(c.d[j] || '')}</button>`).join('')}</div></div>`).join('');
@@ -7041,8 +7050,10 @@ PKG_PARTES.push(['rub', 'Rúbricas']);
 { const _r = pkgResumo; pkgResumo = function (k, P) { if (k === 'rub') return (P.rub || []).length ? P.rub.map(R => R.nome).join(', ') : null; return _r(k, P); }; }
 { const _a = pkgApply; pkgApply = function (P, sel) {
   if (sel.rub && Array.isArray(P.rub)) { const L = CFG.rub = CFG.rub || [];
-    P.rub.forEach(R => { if (!R || !R.nome || !Array.isArray(R.crit) || !Array.isArray(R.niv) || L.some(x => x.id === R.id || norm(x.nome) === norm(R.nome))) return;
-      L.push({id:R.id || 'rb' + uid(), nome:String(R.nome), autor:R.autor || '', niv:R.niv.slice(0, 5).map(n => ({n:String(n.n), v:+n.v || 0})), crit:R.crit.map(c => ({id:c.id || uid(), n:String(c.n), p:+c.p || 1, d:(c.d || []).map(String)}))}); }); }
+    P.rub.forEach(R => { if (!R || !R.nome || !Array.isArray(R.crit) || !Array.isArray(R.niv)) return;
+      const niv = R.niv.filter(n => n && n.n).slice(0, 5).map(n => ({n:String(n.n), v:Math.max(0, Math.min(20, +n.v || 0))})), crit = R.crit.filter(c => c && c.n);
+      if (niv.length < 2 || !crit.length || L.some(x => x.id === R.id || norm(x.nome) === norm(R.nome)) || RUBB.some(x => x.id === R.id)) return;
+      L.push({id:R.id || 'rb' + uid(), nome:String(R.nome), autor:R.autor || '', niv, crit:crit.map(c => ({id:c.id || uid(), n:String(c.n), p:Math.max(1, +c.p || 1), d:niv.map((_, j) => String((c.d || [])[j] ?? ''))}))}); }); }
   return _a(P, sel); }; }
 
 Object.assign(A, {
@@ -7050,7 +7061,7 @@ Object.assign(A, {
   'rb-usar': () => sheetRubLib('usar'),
   'rb-lib': () => sheetRubLib('lib'),
   'rb-add': el => { const t = turma(), v = avalOf(t.id, UI.p); v.rubUse = v.rubUse || []; if (!v.rubUse.includes(el.dataset.id)) v.rubUse.push(el.dataset.id); UI.rubSel = el.dataset.id; touchAval(v); closeSheet(); render(); },
-  'rb-tirar': el => { if (!armed(el, 'Retirar? As avaliações ficam guardadas')) return; const t = turma(), v = avalOf(t.id, UI.p); v.rubUse = (v.rubUse || []).filter(x => x !== UI.rubSel); if (v.rubCon === UI.rubSel) v.rubCon = null; touchAval(v); UI.rubSel = null; render(); },
+  'rb-tirar': el => { if (!armed(el, 'Retirar? As avaliações ficam guardadas')) return; const t = turma(), v = avalOf(t.id, UI.p); v.rubUse = (v.rubUse || []).filter(x => x !== UI.rubSel); if (v.rubCon === UI.rubSel) rubConRepor(v); touchAval(v); UI.rubSel = null; render(); },
   'rb-ver': () => { const R = rubById(UI.rubSel); openSheet(R.nome, `<div class="tbl-wrap">${rubDocHtml(turma(), R, false).replace(/<section[^>]*>|<\/section>|<header[\s\S]*?<\/header>/g, '')}</div>`, ''); },
   'rb-print': () => printDoc('Rúbrica', rubDocHtml(turma(), rubById(UI.rubSel), true)),
   'rb-c': el => sheetRbCell(el.dataset.aid, el.dataset.c),
@@ -7066,9 +7077,18 @@ Object.assign(A, {
   'rb-cadd': () => { const R = rubLer(); R.crit.push({id:uid(), n:'', p:20, d:[]}); sheetRubEd(R); const b = $('#sheet .sh-b'); if (b) b.scrollTop = b.scrollHeight; },
   'rb-cdel': el => { const R = rubLer(); if (R.crit.length > 1) R.crit.splice(+el.dataset.i, 1); sheetRubEd(R); },
   'rb-save': () => { const R = rubLer(); R.crit = R.crit.filter(c => c.n); if (!R.nome.trim() || !R.crit.length) { toast('Indique o nome e pelo menos um critério.', 'bad'); sheetRubEd(R); return; }
-    const L = CFG.rub = CFG.rub || [], i = L.findIndex(x => x.id === R.id); if (i >= 0) L[i] = R; else L.push(R); Store.save('cfg', CFG); toast('Rúbrica guardada.'); sheetRubLib('lib'); render(); },
-  'rb-del': el => { if (!armed(el, 'Apagar a rúbrica?')) return; CFG.rub = (CFG.rub || []).filter(x => x.id !== UI.draft.id); Store.save('cfg', CFG); sheetRubLib('lib'); render(); },
+    const L = CFG.rub = CFG.rub || [], i = L.findIndex(x => x.id === R.id); if (i >= 0) L[i] = R; else L.push(R); Store.save('cfg', CFG);
+    const max = R.niv.length - 1; Object.values(S.aval).forEach(v => { let ch = false; ['rub', 'rubAuto'].forEach(k => Object.values((v[k] || {})[R.id] || {}).forEach(o => Object.keys(o).forEach(c => { if (o[c] > max) { o[c] = max; ch = true; } })));
+      if (ch) { const t = S.turmas[v.turmaId]; if (t) Object.keys((v.rub || {})[R.id] || {}).forEach(aid => rubCon(t, v, R.id, aid)); touchAval(v); } });
+    toast('Rúbrica guardada.'); sheetRubLib('lib'); render(); },
+  'rb-del': el => { if (!armed(el, 'Apagar a rúbrica?')) return; const id = UI.draft.id; Object.values(S.aval).forEach(v => { if (v.rubCon === id) { rubConRepor(v); touchAval(v); } }); CFG.rub = (CFG.rub || []).filter(x => x.id !== id); Store.save('cfg', CFG); sheetRubLib('lib'); render(); },
   'ki-rub': el => { KI.rub = el.dataset.id; sheetModo(); }
 });
-document.addEventListener('change', e => { const el = e.target; if (el.dataset && el.dataset.in === 'rb-con') { const t = turma(), v = avalOf(t.id, UI.p); v.rubCon = el.checked ? UI.rubSel : null; if (el.checked) alunosOf(t).forEach(al => rubCon(t, v, UI.rubSel, al.id)); touchAval(v); render(); } });
+document.addEventListener('change', e => { const el = e.target; if (!(el.dataset && el.dataset.in === 'rb-con')) return;
+  const t = turma(), v = avalOf(t.id, UI.p); rubConRepor(v);
+  if (el.checked) { v.rubCon = UI.rubSel; v.con = v.con || {}; const antes = Object.assign({}, v.con); alunosOf(t).forEach(al => rubCon(t, v, UI.rubSel, al.id));
+    const n = alunosOf(t).filter(al => antes[al.id] != null && antes[al.id] !== v.con[al.id]).length;
+    if (n) toast(`${n} ${n === 1 ? 'nota de Conhecimentos foi substituída' : 'notas de Conhecimentos foram substituídas'} pela da rúbrica. Desligar esta opção repõe as anteriores.`); }
+  else toast('As notas de Conhecimentos anteriores foram repostas.');
+  touchAval(v); render(); });
 </script>

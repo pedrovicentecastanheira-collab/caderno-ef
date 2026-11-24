@@ -378,6 +378,15 @@ test('sincronizar: receber junta a versão mais recente de cada registo', async 
     const n = syncMerge(d); return [n, S.aulas[a.id].sumario, S.aulas[b.id].sumario !== 'Versão antiga.'];
   });
   expect(res).toEqual([1, 'Mudado no outro aparelho.', true]);
+  // cópia no formato atual (com o registo campo a campo) vinda de outro aparelho: entra o campo mais recente
+  await page.waitForFunction(() => typeof FS !== 'undefined' && FS.on);   // o registo campo a campo liga-se pouco depois do arranque
+  const res2 = await page.evaluate(() => {
+    const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[2];
+    d.sync2 = true; d.dev = 'outro-aparelho'; d.meta = d.meta || {};
+    a.sumario = 'Mudado no outro aparelho, campo a campo.'; d.meta[fsKey('aulas', a.id) + FS_SEP + 'sumario'] = Date.now() + 5000;
+    const n = syncMerge(d); return [n > 0, S.aulas[a.id].sumario];
+  });
+  expect(res2).toEqual([true, 'Mudado no outro aparelho, campo a campo.']);
   await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
   await expect(page.locator('.sync-st')).toBeVisible();
 });
@@ -846,5 +855,44 @@ test('rúbricas: usar, avaliar pelos descritores, nota pesada, Conhecimentos, au
   expect(n).toEqual([1, 4, 1]);
   // ficha do aluno e relatório mostram os descritores escolhidos
   expect(await page.evaluate(() => { const t = turma(); return relHtml(t, 1, t.alunos[0]).includes('Conhece e aplica todas as regras'); })).toBe(true);
+  expect(er).toEqual([]);
+});
+
+test('rúbricas: níveis retirados, Conhecimentos repostos, rúbrica apagada, importação validada, nome e abreviaturas', async ({page}) => {
+  const er = []; page.on('pageerror', e => er.push(e.message));
+  await demo(page);
+  const r = await page.evaluate(() => {
+    const t = turma(), v = avalOf(t.id, 1), a0 = t.alunos[0].id, a1 = t.alunos[1].id, out = {};
+    // rúbrica própria com 4 níveis, em uso e a contar para Conhecimentos
+    const R = {id:'rbX', nome:'Teste', niv:NIV4(), crit:[{id:'c1', n:'A', p:50, d:['1', '2', '3', '4']}, {id:'c2', n:'B', p:50, d:['1', '2', '3', '4']}]};
+    CFG.rub = [R]; v.rubUse = ['rbX']; v.con = {[a0]:12, [a1]:8}; v.rub = {rbX:{[a0]:{c1:3, c2:3}, [a1]:{c1:3}}}; UI.rubSel = 'rbX';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.dataset.in = 'rb-con'; cb.checked = true; document.body.appendChild(cb); cb.dispatchEvent(new Event('change', {bubbles:true}));
+    out.ligado = [v.con[a0], v.con[a1]];                          // só o aluno completo muda
+    // limpar um critério repõe a nota anterior
+    RBC = {aid:a0, cid:'c2'}; A['rb-set']({dataset:{l:'-1'}}); closeSheet(); out.limpo = v.con[a0];
+    v.rub.rbX[a0].c2 = 3; rubCon(t, v, 'rbX', a0); out.completo = v.con[a0];
+    // desligar repõe
+    cb.checked = false; cb.dispatchEvent(new Event('change', {bubbles:true})); out.desligado = v.con[a0]; cb.remove();
+    // retirar um nível com notas guardadas no último nível: não rebenta e passa ao novo último
+    UI.draft = clone(R); UI.draft.niv.pop(); UI.draft.crit.forEach(c => { c.d = c.d.slice(0, 3); }); sheetRubEd(UI.draft); A['rb-save'](); closeSheet();
+    out.nivel = v.rub.rbX[a0].c1;
+    UI.tab = 'avaliar'; UI.avMode = 'grelha'; UI.glay = 'rub'; render(); out.vista = !!document.querySelector('.rb-t');
+    out.ficha = rubAlunoHtml(t, 1, t.alunos[0]).includes('Bom');
+    // nome apagado não é guardado em silêncio
+    sheetRubEd(clone(CFG.rub[0])); $('#rb-nome').value = ''; A['rb-save'](); out.nome = CFG.rub[0].nome; closeSheet();
+    // importação: rejeita rúbricas sem níveis e acerta os descritores ao número de níveis
+    pkgApply({rub:[{id:'m1', nome:'Sem níveis', niv:[], crit:[{n:'x'}]}, {id:'m2', nome:'Boa', niv:[{n:'Não', v:5}, {n:'Sim', v:18}], crit:[{n:'Faz', p:1, d:['não faz']}]}]}, {rub:true});
+    out.imp = CFG.rub.map(x => x.nome); out.d = CFG.rub.find(x => x.id === 'm2').crit[0].d;
+    // abreviaturas sem repetições
+    out.ab = nivAbrs({niv:[{n:'Bom'}, {n:'Bastante bom'}, {n:'Bem'}]});
+    // rúbrica apagada: o modo aluno volta à lista em vez de ficar em branco
+    KI = {t:t.id, act:'rub', rub:'nao-existe', aid:a0, r:{}, done:[]}; kiRender(); out.kiosk = !!document.querySelector('#kiosk [data-a="ki-al"]');
+    const k = $('#kiosk'); if (k) k.remove(); document.body.classList.remove('locked');
+    return out;
+  });
+  expect(r.ligado).toEqual([19, 8]); expect(r.limpo).toBe(12); expect(r.completo).toBe(19); expect(r.desligado).toBe(12);
+  expect(r.nivel).toBe(2); expect(r.vista).toBe(true); expect(r.ficha).toBe(true); expect(r.nome).toBe('Teste');
+  expect(r.imp).toEqual(['Teste', 'Boa']); expect(r.d).toEqual(['não faz', '']);
+  expect(new Set(r.ab).size).toBe(3); expect(r.kiosk).toBe(true);
   expect(er).toEqual([]);
 });
