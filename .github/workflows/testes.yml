@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       - name: app/index.html corresponde a src/
         run: node build.mjs && git diff --exit-code app/index.html
+      - name: Sem conflitos de nomes entre módulos
+        run: node tools/verificar-colisoes.mjs
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
         env:
