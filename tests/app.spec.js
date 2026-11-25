@@ -176,6 +176,37 @@ test('importar turmas do Excel', async ({page}) => {
   expect(await page.evaluate(() => Object.values(S.turmas).map(t => t.nome + ':' + t.alunos.length + ':' + t.ano).sort())).toEqual(['7B:2:7', '8A:1:8']);
 });
 
+test('importar turmas com códigos sem ano (A1, E1): o ano escolhe-se ou vem da coluna Ano', async ({page}) => {
+  await page.goto('/'); await page.waitForFunction(() => window.XLSX && typeof CFG !== 'undefined' && CFG);
+  const enviar = rows => page.evaluate(rows => {
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Alunos');
+    const dt = new DataTransfer(); dt.items.add(new File([XLSX.write(wb, {bookType: 'xlsx', type: 'array'})], 'turmas.xlsx'));
+    const i = document.getElementById('file-xls'); i.files = dt.files; i.dispatchEvent(new Event('change'));
+  }, rows);
+  // sem coluna Ano: as turmas ficam por definir e não se importam sem escolher
+  await enviar([['Nº', 'Nome do Aluno', 'Sexo', 'Turma'], [1, 'ANA SILVA', 'F', 'A1'], [2, 'RUI COSTA', 'M', 'A1'], [1, 'EVA PIRES', 'F', 'E1']]);
+  await expect(page.locator('#sheet select[data-in="imp-ano"]')).toHaveCount(2);
+  await expect(page.locator('#sheet select[data-in="imp-ano"].falta')).toHaveCount(2);
+  await page.click('[data-a="imp-go"]');
+  expect(await page.evaluate(() => Object.keys(S.turmas).length)).toBe(0);
+  await page.selectOption('#sheet select[data-in="imp-ano"][data-k="A1"]', '7');
+  await page.selectOption('#sheet select[data-in="imp-ano"][data-k="E1"]', '10');
+  await page.click('[data-a="imp-go"]');
+  expect(await page.evaluate(() => Object.values(S.turmas).map(t => [t.nome, t.ano, t.ciclo, t.alunos.length].join(':')).sort())).toEqual(['A1:7:3:2', 'E1:10:S:1']);
+  // com coluna Ano: vem preenchido
+  await page.evaluate(() => { Object.keys(S.turmas).forEach(id => { delete S.turmas[id]; Store.del('turmas', id); }); render(); });
+  await enviar([['Nº', 'Nome', 'Ano', 'Turma'], [1, 'Ana Silva', '8', 'B2'], [2, 'Rui Costa', '8.º', 'B2']]);
+  await expect(page.locator('#sheet select[data-in="imp-ano"]')).toHaveValue('8');
+  await page.click('[data-a="imp-go"]');
+  expect(await page.evaluate(() => Object.values(S.turmas).map(t => [t.nome, t.ano, t.ciclo].join(':')))).toEqual(['B2:8:3']);
+  // turma importada antes desta correção (A1 ficou como 1.º ano): aparece um aviso, e confirmar no formulário tira-o
+  const r = await page.evaluate(() => { const t = {id:'velha', nome:'A1', ciclo:'1', ano:1, escala:'0-20', alunos:[{id:'x1', num:1, nome:'Ana', regime:'Normal'}]}; S.turmas.velha = t; UI.turma = 'velha';
+    const antes = alertsOf(t, 1).some(x => x.a === 'turma-ano'); A['alert-go']({dataset:{k:'turma-ano'}}); const aberto = !!document.querySelector('#t-ano');
+    document.querySelector('#t-ano').value = '7'; document.querySelector('#t-ciclo').value = '3'; A['turma-save']();
+    return [antes, aberto, S.turmas.velha.ano, alertsOf(S.turmas.velha, 1).some(x => x.a === 'turma-ano')]; });
+  expect(r).toEqual([true, true, 7, false]);
+});
+
 test('dados antigos do localStorage passam para o IndexedDB e são migrados', async ({page}) => {
   await page.goto('/');
   await page.evaluate(() => {

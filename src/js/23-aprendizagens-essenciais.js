@@ -33,7 +33,9 @@ const AE = {
 };
 const aeTop = A => A.top || 'Elevado';
 const afTxt = ([e, i]) => (e ? `nível ELEMENTAR em ${e} ${e === 1 ? 'matéria' : 'matérias'} e ` : '') + `nível INTRODUÇÃO em ${i} ${i === 1 ? 'matéria' : 'matérias'}, de diferentes subdomínios`;
-function guessAno(nome) { const m = /(\d{1,2})/.exec(String(nome || '')); const n = m ? +m[1] : 0; return n >= 1 && n <= 12 ? n : null; }
+// O ano só se tira do nome quando o nome começa por ele ("7.º B", "7B", "10 A") ou o traz com "º"/"ano" ("Turma 8.º C", "5.º ano").
+// Nomes como "A1" ou "E1" (códigos de turma) não dizem o ano: devolve null e a importação pergunta.
+function guessAno(nome) { const s = String(nome || '').trim(), m = /^(\d{1,2})\s*(?:\.?\s*[ºo°ª]|\s*ano)?(?![\d])/i.exec(s) || /(?:^|\D)(\d{1,2})\s*\.?\s*[ºª°](?!\d)/.exec(s) || /(\d{1,2})\s*\.?\s*º?\s*ano\b/i.exec(s); const n = m ? +m[1] : 0; return n >= 1 && n <= 12 ? n : null; }
 const anoOf = t => +t.ano || guessAno(t.nome);
 function aeSelect(lv, ano) {
   const A = AE[ano], cand = Object.entries(lv).filter(([, l]) => l in LVP).map(([m, l]) => ({m, l, s:subOf(m, ano), p:LVP[l]})).sort((a, b) => b.p - a.p), sel = [];

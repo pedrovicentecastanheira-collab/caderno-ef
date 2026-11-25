@@ -1,8 +1,9 @@
 /* ---------- import students from Excel ---------- */
-const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['i31','Idade a 31 de dezembro'], ['nasc','Data de nascimento'], ['turma','Turma']];
+const IMPF = [['nome','Nome *'], ['num','N.º'], ['proc','N.º de processo'], ['sexo','Sexo'], ['i31','Idade a 31 de dezembro'], ['nasc','Data de nascimento'], ['turma','Turma'], ['ano','Ano de escolaridade']];
 const keyOf = s => norm(s).replace(/[^a-z0-9]/g, '');
 const NOME_RE = /^(nome|nomecompleto|nomedoaluno|nomealuno|aluno|alunos)$/;
-function guessCiclo(nome) { const m = /\d{1,2}/.exec(String(nome || '')); const n = m ? +m[0] : 7; return n <= 4 ? '1' : n <= 6 ? '2' : n <= 9 ? '3' : 'S'; }
+const cicloDoAno = n => n <= 4 ? '1' : n <= 6 ? '2' : n <= 9 ? '3' : 'S';
+function guessCiclo(nome) { const n = guessAno(nome); return cicloDoAno(n || 7); }
 function guessCols(head) {
   const k = head.map(keyOf), used = new Set(), m = {};
   const pick = test => { const i = k.findIndex((x, j) => x && !used.has(j) && test(x)); if (i >= 0) used.add(i); return i; };
@@ -13,6 +14,7 @@ function guessCols(head) {
   m.i31 = pick(x => /^idade/.test(x));
   m.nasc = pick(x => /nasc/.test(x));
   m.turma = pick(x => /turma/.test(x));
+  m.ano = pick(x => /^ano(de)?(escolaridade|escolar|curricular)?$/.test(x) || /^(anoesc|anoescolaridade)$/.test(x));
   return m;
 }
 function impLoadSheet(name) {
@@ -25,7 +27,7 @@ function impLoadSheet(name) {
   if (hr >= 0) { I.head = letters.map((l, i) => String(rows[hr][i] ?? '').trim() || l); I.data = rows.slice(hr + 1); I.cols = guessCols(I.head); }
   else {
     // sem cabeçalho: o nome é a coluna com mais textos de duas ou mais palavras; o n.º, a de inteiros pequenos
-    I.head = letters; I.data = rows; I.cols = {num:-1, proc:-1, nome:-1, sexo:-1, nasc:-1, turma:-1};
+    I.head = letters; I.data = rows; I.cols = {num:-1, proc:-1, nome:-1, sexo:-1, nasc:-1, turma:-1, ano:-1, i31:-1};
     const score = f => letters.map((_, i) => rows.slice(0, 40).filter(r => f(r[i])).length);
     const best = arr => { const mx = Math.max(0, ...arr); return mx ? arr.indexOf(mx) : -1; };
     I.cols.nome = best(score(x => typeof x === 'string' && /\p{L}+\s+\p{L}+/u.test(x)));
@@ -51,21 +53,23 @@ function impRows() {
     if (!nome || !/\p{L}/u.test(nome) || NOME_RE.test(keyOf(nome))) return;
     if (nome === nome.toUpperCase()) nome = titleCase(nome);
     const n = parseNum(get(r, 'num'));
-    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), i31: parseIdade(get(r, 'i31')), turma: impStr(get(r, 'turma'))});
+    out.push({num: n != null && Number.isInteger(n) ? n : null, proc: impStr(get(r, 'proc')), nome, sexo: impSexo(get(r, 'sexo')), nasc: impDate(get(r, 'nasc')), i31: parseIdade(get(r, 'i31')), turma: impStr(get(r, 'turma')), ano: guessAno(impStr(get(r, 'ano')))});
   });
   return out;
 }
 function impTurmas() { return [...new Set(impRows().map(x => x.turma).filter(Boolean))]; }
 function findAluno(t, x) { return ((t && t.alunos) || []).find(a => (x.proc && a.proc && String(a.proc) === x.proc) || norm(a.nome) === norm(x.nome)); }
+function impAnoProposto(nome, l) { const c = {}; l.forEach(x => { if (x.ano) c[x.ano] = (c[x.ano] || 0) + 1; }); const k = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; return k ? +k : guessAno(nome); }
+const impAno = (nome, l) => { const a = (IMP.anos || {})[nome]; return a !== undefined ? a : impAnoProposto(nome, l); };
 function impPlan() {
   const I = IMP; let list = impRows();
   const grp = (t, nome, ciclo, l) => { const nUpd = l.filter(x => findAluno(t, x)).length; return {t, nome, ciclo, list:l, nNew:l.length - nUpd, nUpd}; };
   if (I.dest === '__split') {
     const g = new Map(); list.forEach(x => { const k = x.turma || 'Sem turma'; if (!g.has(k)) g.set(k, []); g.get(k).push(x); });
-    return [...g].map(([nome, l]) => { const t = Object.values(S.turmas).find(y => norm(y.nome) === norm(nome)); return grp(t, nome, t ? t.ciclo : guessCiclo(nome), l); });
+    return [...g].map(([nome, l]) => { const t = Object.values(S.turmas).find(y => norm(y.nome) === norm(nome)); const a = t ? null : impAno(nome, l); return Object.assign(grp(t, nome, t ? t.ciclo : (a ? cicloDoAno(a) : guessCiclo(nome)), l), {ano:a}); });
   }
   if (I.filter) list = list.filter(x => norm(x.turma) === norm(I.filter));
-  if (I.dest === '__new') return [grp(null, I.newName, I.newCiclo, list)];
+  if (I.dest === '__new') { const a = impAno('__new', list); return [Object.assign(grp(null, I.newName, a ? cicloDoAno(a) : I.newCiclo, list), {ano:a})]; }
   const t = S.turmas[I.dest]; return [grp(t, t.nome, t.ciclo, list)];
 }
 function impDefaults() {
@@ -94,8 +98,11 @@ function sheetImport(update) {
       ${opt('__new', 'Nova turma…', I.dest === '__new')}
       ${I.cols.turma >= 0 && ts.length ? opt('__split', 'Uma turma por cada valor da coluna Turma (' + ts.length + ')', I.dest === '__split') : ''}
     </select></div>
-    ${I.dest === '__new' ? `<div class="grid2"><div class="field"><label for="imp-tname">Nome da nova turma</label><input type="text" id="imp-tname" data-in="imp-tname" value="${esc(I.newName)}" placeholder="Ex.: 7.º B"></div>
-      <div class="field"><label for="imp-ciclo">Ciclo</label><select id="imp-ciclo" data-in="imp-ciclo">${Object.entries(CICLOS).map(([k, n]) => opt(k, n, I.newCiclo === k)).join('')}</select></div></div>` : ''}
+    ${I.dest === '__new' ? `<div class="field"><label for="imp-tname">Nome da nova turma</label><input type="text" id="imp-tname" data-in="imp-tname" value="${esc(I.newName)}" placeholder="Ex.: 7.º B"></div>` : ''}
+    ${(() => { const novas = plan.filter(g => !g.t && g.list.length); if (!novas.length) return '';
+      const anoSel = g => { const k = I.dest === '__new' ? '__new' : g.nome; return `<select data-in="imp-ano" data-k="${esc(k)}" aria-label="Ano de escolaridade de ${esc(g.nome)}"${g.ano ? '' : ' class="falta"'}>${opt('', 'Escolher…', !g.ano)}${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => opt(n, n + '.º ano', g.ano === n)).join('')}</select>`; };
+      return `<div class="field"><span class="lbl">Ano de escolaridade ${novas.length > 1 ? 'de cada turma nova' : 'da turma nova'}</span><p class="hint" style="margin:0 0 6px">Define o ciclo, as Aprendizagens Essenciais, as matérias e as tabelas do FITescola. ${novas.some(g => !g.ano) ? '<b>Escolha o ano das turmas assinaladas</b> (o nome não o indica).' : 'Confirme.'}</p>
+        <div class="imp-anos">${novas.map(g => `<label><span>${esc(I.dest === '__new' ? (I.newName || 'Nova turma') : g.nome)} <span class="muted small">${g.list.length} alunos</span></span>${anoSel(g)}</label>`).join('')}</div></div>`; })()}
     ${I.dest !== '__split' && I.cols.turma >= 0 && ts.length > 1 ? `<div class="field"><label for="imp-filter">Linhas a importar</label><select id="imp-filter" data-in="imp-filter">${opt('', 'Todas as turmas do ficheiro', !I.filter)}${ts.map(x => opt(x, 'Só a turma ' + x, I.filter === x)).join('')}</select></div>` : ''}
     <div class="note ${tot ? '' : 'warn'}">${tot ? `<b>${tot} alunos</b>: ${nNew} novos${nUpd ? `, ${nUpd} já existem e são atualizados` : ''}${plan.length > 1 ? `, em ${plan.length} turmas (${plan.map(g => esc(g.nome) + (g.t ? '' : ' nova')).join(', ')})` : ''}.` : 'Não encontrei alunos. Escolha a coluna do nome.'}</div>
     ${prev.length ? `<div class="tbl-wrap"><table><thead><tr><th>N.º</th><th class="l">Nome</th><th>Sexo</th><th>Idade a 31/12</th>${plan.length > 1 ? '<th>Turma</th>' : ''}</tr></thead><tbody>${prev.map(({x, g}) => `<tr><td>${esc(x.num ?? '')}</td><td class="l nm">${esc(x.nome)}</td><td>${esc(x.sexo || '—')}</td><td>${esc(idadeDe(x) ?? '—')}</td>${plan.length > 1 ? `<td>${esc(g.nome)}</td>` : ''}</tr>`).join('')}</tbody></table></div>${tot > prev.length ? `<p class="hint">… e mais ${tot - prev.length}.</p>` : ''}` : ''}

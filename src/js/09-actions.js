@@ -275,10 +275,11 @@ const A = {
   'imp-go': () => {
     const plan = impPlan(); if (!plan.some(g => g.list.length)) { toast('Não há alunos para importar.', 'bad'); return; }
     if (IMP.dest === '__new' && !IMP.newName.trim()) { toast('Escreva o nome da nova turma.', 'bad'); $('#imp-tname') && $('#imp-tname').focus(); return; }
+    if (plan.some(g => !g.t && g.list.length && !g.ano)) { toast('Escolha o ano de escolaridade de cada turma nova.', 'bad'); const f = document.querySelector('#sheet select.falta'); if (f) f.focus(); return; }
     let first = null, nNew = 0, nUpd = 0;
     plan.forEach(g => {
       if (!g.list.length) return;
-      let t = g.t; if (!t) { t = {id: uid(), nome: g.nome.trim(), ciclo: g.ciclo, ano: guessAno(g.nome), escala: '0-20', alunos: []}; S.turmas[t.id] = t; }
+      let t = g.t; if (!t) { t = {id: uid(), nome: g.nome.trim(), ciclo: g.ano ? cicloDoAno(g.ano) : g.ciclo, ano: g.ano || guessAno(g.nome), escala: '0-20', alunos: []}; S.turmas[t.id] = t; }
       t.alunos = t.alunos || []; let n = Math.max(0, ...t.alunos.map(a => +a.num || 0));
       g.list.forEach(x => {
         const ex = findAluno(t, x);
@@ -335,6 +336,7 @@ document.addEventListener('change', e => {
   else if (k === 'imp-dest') { IMP.dest = el.value; if (el.value !== '__new' && el.value !== '__split') { const t = S.turmas[el.value], m = impTurmas().find(x => norm(x) === norm(t.nome)); IMP.filter = m || ''; } sheetImport(true); }
   else if (k === 'imp-filter') { IMP.filter = el.value; sheetImport(true); }
   else if (k === 'imp-ciclo') { IMP.newCiclo = el.value; }
+  else if (k === 'imp-ano') { IMP.anos = IMP.anos || {}; IMP.anos[el.dataset.k] = el.value ? +el.value : null; sheetImport(true); }
   else if (k === 'comp') { compSet(id => id === el.dataset.id, el.checked); }
   else if (k === 'disp') { const d = UI.draft.disp[+el.dataset.i]; d[el.dataset.k] = el.value.trim(); }
   else if (k === 'cons-all') { UI.consAll = el.checked; sheetConselho(); }
