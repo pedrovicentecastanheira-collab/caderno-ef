@@ -33,3 +33,8 @@
 .rb-dt td{vertical-align:top;font-size:12px}
 .rb-kop button{text-align:left;line-height:1.3}
 @media (max-width:600px){.rb-c{min-width:42px}.rb-d{grid-template-columns:1fr}.rb-d span{padding:0}}
+
+/* importação: ano de escolaridade de cada turma nova */
+.imp-anos{display:flex;flex-direction:column;gap:6px}
+.imp-anos label{display:grid;grid-template-columns:1fr 150px;gap:8px;align-items:center}
+.imp-anos select.falta{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad-soft)}
