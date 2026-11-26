@@ -560,6 +560,64 @@ test('OneDrive: ligar (início de sessão simulado), guardar sozinho, recuperar 
   await page.click('[data-a="snap-ver"]'); await expect(page.locator('[data-a="snap-rest"]')).toHaveCount(1);
 });
 
+test('Google Drive: ligar (início de sessão simulado), guardar sozinho, juntar outro aparelho e recuperar', async ({page}) => {
+  // Drive simulado: ficheiros em memória
+  const F = {}; let n = 0, pedidoAuth = null;
+  const novo = (meta, content = '') => { const id = 'f' + (++n); F[id] = {id, name: meta.name, parents: meta.parents || [], mime: meta.mimeType, content, modifiedTime: new Date(Date.now() + n).toISOString()}; return id; };
+  await page.route(/accounts\.google\.com\/o\/oauth2\/v2\/auth/, r => {
+    const u = new URL(r.request().url()); pedidoAuth = Object.fromEntries(u.searchParams);
+    return r.fulfill({status: 302, headers: {location: u.searchParams.get('redirect_uri') + '#access_token=ATG&token_type=Bearer&expires_in=3599&state=' + u.searchParams.get('state')}});
+  });
+  await page.route(/www\.googleapis\.com\/oauth2\/v3\/userinfo/, r => r.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify({email: 'professor@exemplo.pt'})}));
+  await page.route(/www\.googleapis\.com\/(upload\/)?drive\/v3\/files/, r => {
+    const req = r.request(), u = new URL(req.url()), m = req.method();
+    expect(req.headers().authorization).toBe('Bearer ATG');
+    const id = (/files\/([^/?]+)/.exec(u.pathname) || [])[1];
+    const json = o => r.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify(o)});
+    if (m === 'POST' && !id) return json({id: novo(JSON.parse(req.postData()))});
+    if (m === 'PATCH' && id) { if (!F[id]) return r.fulfill({status: 404, body: '{}'}); F[id].content = req.postData(); F[id].modifiedTime = new Date().toISOString(); return json({id}); }
+    if (m === 'GET' && id) return F[id] ? r.fulfill({status: 200, contentType: 'application/json', body: F[id].content}) : r.fulfill({status: 404, body: '{}'});
+    const q = u.searchParams.get('q') || '', nome = (/name='((?:[^'\\]|\\.)*)'/.exec(q) || [])[1], cont = (/name contains '([^']*)'/.exec(q) || [])[1], pai = (/'([^']+)' in parents/.exec(q) || [])[1];
+    return json({files: Object.values(F).filter(f => (!nome || f.name === nome.replace(/\\(.)/g, '$1')) && (!cont || f.name.includes(cont)) && (!pai || f.parents.includes(pai)) && (!q.includes('folder') || f.mime === 'application/vnd.google-apps.folder'))
+      .map(f => ({id: f.id, name: f.name, modifiedTime: f.modifiedTime}))});
+  });
+  await demo(page);
+  await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
+  await expect(page.locator('[data-a="gd-entrar"]')).toBeDisabled();
+  await page.fill('#gd-cid', '123-abc.apps.googleusercontent.com');
+  await page.click('[data-a="gd-entrar"]');
+  await expect.poll(() => pedidoAuth).not.toBeNull();
+  await page.waitForFunction(() => typeof GD !== 'undefined' && GD.t && !location.hash.includes('access_token'));
+  expect(pedidoAuth.client_id).toBe('123-abc.apps.googleusercontent.com');
+  expect(pedidoAuth.response_type).toBe('token');
+  expect(pedidoAuth.scope).toContain('drive.file');
+  await expect.poll(() => Object.values(F).filter(f => f.content).length, {timeout: 15000}).toBe(3);   // aparelho, mais recente e cópia do dia
+  const nomes = Object.values(F).map(f => f.name);
+  expect(nomes.some(x => /^dev-.+\.json$/.test(x))).toBe(true);
+  expect(nomes).toContain('caderno-ef.json'); expect(nomes.some(x => /^caderno-ef-[^.]+\.json$/.test(x))).toBe(true);
+  expect(Object.values(F).filter(f => f.name === 'Caderno EF')).toHaveLength(1);   // só uma pasta
+  await page.click('[data-a="dsec"][data-k="sync"]');
+  await expect(page.locator('#main')).toContainText('Ligado · professor@exemplo.pt');
+  // outro aparelho deixou o seu ficheiro na pasta: o sumário de uma aula mudou lá, mais recentemente
+  const pasta = Object.values(F).find(f => f.name === 'Caderno EF').id;
+  const outro = await page.evaluate(() => { const d = JSON.parse(JSON.stringify(syncData())), a = Object.values(d.aulas)[0]; a.sumario = 'Vindo do Google Drive'; a._u = Date.now() + 5000;
+    d.dev = 'outro-aparelho'; d.meta = Object.assign({}, d.meta, {['aulas' + FS_SEP + a.id + FS_SEP + 'sumario']: Date.now() + 5000}); return JSON.stringify(d); });
+  novo({name: 'dev-outro-aparelho.json', parents: [pasta]}, outro);
+  expect(await page.evaluate(() => gdPuxar())).toBeGreaterThan(0);
+  expect(await page.evaluate(() => Object.values(S.aulas).some(a => a.sumario === 'Vindo do Google Drive'))).toBe(true);
+  expect(await page.evaluate(() => gdPuxar())).toBe(0);   // já visto: não volta a ler
+  // guardar agora e recuperar
+  await page.click('[data-a="gd-agora"]'); await expect(page.locator('#toast, .toast').last()).toContainText('Google Drive');
+  await page.click('[data-a="gd-rec"]'); await page.click('[data-a="gd-rec"]');
+  await expect(page.locator('#toast, .toast').last()).toContainText(/Google Drive|já tinha/);
+  // sessão expirada: aparece "Voltar a ligar" e não tenta enviar
+  await page.evaluate(() => { GD.t.exp = 0; gdSave(); GD.a = true; render(); });
+  await expect(page.locator('[data-a="gd-entrar"]')).toHaveText('Voltar a ligar');
+  // desligar
+  await page.click('[data-a="gd-sair"]'); await page.click('[data-a="gd-sair"]');
+  await expect(page.locator('#gd-cid')).toBeVisible();
+});
+
 test('o nível sobe à medida que se assinalam as competências motoras e táticas', async ({page}) => {
   await demo(page);
   const seq = await page.evaluate(() => { const t = turma(), al = t.alunos[3], m = 'Voleibol', v = avalOf(t.id, 1); if (v.af[al.id]) delete v.af[al.id][m]; if (v.comp) delete v.comp[al.id];
