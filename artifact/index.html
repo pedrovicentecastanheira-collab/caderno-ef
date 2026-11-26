@@ -5928,7 +5928,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = 'ba149ee1';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = '4de3d34b';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -7145,6 +7145,7 @@ async function gdRetorno() {
   if (!pk || pk.st !== h.get('state')) return;   // não é nosso
   history.replaceState(null, '', odRedirect() + location.search);
   if (h.has('error')) { if (pk.silencioso) { GD.a = true; render(); return; } toast('O Google Drive não foi ligado: ' + (h.get('error_description') || h.get('error')).slice(0, 120), 'bad'); return; }
+  if (h.get('scope') && !/drive\.file|\/auth\/drive(\s|$)/.test(h.get('scope'))) { GD.erro = gdMotivo({gd:{st:403, rz:'insufficientPermissions', msg:''}}); toast(GD.erro, 'bad'); }
   const novo = !GD.t;
   GD.t = Object.assign(GD.t || {}, {at:h.get('access_token'), exp:Date.now() + ((+h.get('expires_in') || 3600) - 60) * 1000}); GD.a = false; gdSave();
   try { if (!GD.t.email) { const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {headers:{Authorization:'Bearer ' + GD.t.at}}); if (r.ok) { const j = await r.json(); GD.t.email = j.email || ''; gdSave(); } } } catch (e) {}
@@ -7155,7 +7156,9 @@ async function gdApi(method, url, body, type) {
   if (!GD.t || !GD.t.at || GD.t.exp < Date.now()) { GD.a = true; throw new Error('sessão expirada'); }
   const r = await fetch(url, {method, headers:Object.assign({Authorization:'Bearer ' + GD.t.at}, type ? {'Content-Type':type} : {}), body});
   if (r.status === 401) { GD.t.exp = 0; GD.a = true; gdSave(); throw new Error('401'); }
-  if (!r.ok) throw new Error('drive ' + r.status);
+  if (!r.ok) { let j = {}; try { j = (await r.json()).error || {}; } catch (e) {}
+    const rz = [j.status, ...((j.errors || []).map(x => x.reason)), ...((j.details || []).map(x => x.reason))].filter(Boolean).join(' ');
+    const e = new Error('drive ' + r.status + ' ' + rz); e.gd = {st:r.status, rz, msg:j.message || ''}; throw e; }
   const ct = r.headers.get('content-type') || ''; return ct.includes('json') ? r.json() : r.text();
 }
 const gdQ = s => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
@@ -7199,14 +7202,26 @@ async function gdGuardar(manual) {
     await gdEnviar('caderno-ef.json', txt); await gdEnviar('caderno-ef-' + DIAS7[new Date().getDay()] + '.json', txt);
     GD.ultimo = new Date().toISOString(); try { localStorage.setItem('ef:gdUlt', GD.ultimo); localStorage.setItem('ef:lastBackup', today()); } catch (e) {}
     if (manual) toast('Cópia guardada no Google Drive.'); }
-  catch (e) { GD.erro = GD.a ? 'A ligação ao Google Drive expirou: toque em "Voltar a ligar".' : 'Não foi possível guardar no Google Drive (sem internet?). Tenta de novo mais tarde.'; if (manual) toast(GD.erro, 'bad'); }
+  catch (e) { GD.erro = gdMotivo(e); if (manual) toast(GD.erro, 'bad'); }
   if (UI.tab === 'defs') render();
+}
+// Explica em português o que a Google respondeu (os erros mais comuns na primeira configuração).
+function gdMotivo(e) {
+  const g = e && e.gd, rz = g ? g.rz : '';
+  if (GD.a) return 'A ligação ao Google Drive expirou: toque em "Voltar a ligar".';
+  if (e && e.message === 'sem chave') return 'As cópias estão cifradas: indique a palavra-passe em Definições › Privacidade.';
+  if (!g) return navigator.onLine === false ? 'Sem internet: a cópia será guardada no Google Drive quando voltar a ligação.' : 'Não foi possível contactar o Google Drive (' + String(e && e.message || e).slice(0, 80) + '). Tente de novo mais tarde.';
+  if (/accessNotConfigured|SERVICE_DISABLED/.test(rz) || /has not been used|is disabled/.test(g.msg)) return 'A «Google Drive API» não está ativada no projeto do ID de cliente. Na consola da Google, com o projeto Caderno EF selecionado, pesquise «Google Drive API» e carregue em Ativar; espere 2 minutos e toque em «Guardar agora».';
+  if (/insufficient|SCOPE/i.test(rz)) return 'A Google não deu acesso aos ficheiros: ao autorizar, é preciso marcar a caixa do acesso ao Google Drive. Toque em «Desligar» e volte a ligar, marcando essa caixa.';
+  if (/rateLimit|userRateLimit|RESOURCE_EXHAUSTED/.test(rz)) return 'O Google Drive pediu para esperar um pouco. O caderno tenta de novo sozinho.';
+  if (/storageQuota/.test(rz)) return 'O seu Google Drive está cheio.';
+  return 'O Google Drive recusou a cópia (erro ' + g.st + (g.msg ? ': ' + g.msg.slice(0, 140) : '') + ').';
 }
 async function gdRecuperar() {
   try { const id = await gdIdDe('caderno-ef.json', false); if (!id) { toast('Ainda não há nenhuma cópia no Google Drive.', 'bad'); return; }
     const d = await gdLer(id); if (!d || d.app !== 'Caderno EF') throw new Error('ficheiro');
     const n = syncMerge(d) + await gdPuxar(); render(); toast(n ? `Recuperado do Google Drive: ${n} ${n === 1 ? 'registo atualizado' : 'registos atualizados'}.` : 'Este aparelho já tinha tudo o que está no Google Drive.'); }
-  catch (e) { toast(GD.a ? 'A ligação expirou: volte a ligar o Google Drive.' : 'Não foi possível ler a cópia do Google Drive.', 'bad'); }
+  catch (e) { toast(e && e.gd ? gdMotivo(e) : GD.a ? 'A ligação expirou: volte a ligar o Google Drive.' : 'Não foi possível ler a cópia do Google Drive.', 'bad'); }
 }
 // Guarda sozinho 2 minutos depois da última alteração e ao sair; junta os outros aparelhos ao voltar à app e de 5 em 5 minutos.
 { const _s = Store.save.bind(Store); Store.save = function (k, obj, keep) { _s(k, obj, keep); if (gdOn() && !GD.a) { clearTimeout(GD.tm); GD.tm = setTimeout(() => gdGuardar(), 120000); } }; }
