@@ -5928,7 +5928,7 @@ document.addEventListener('change', e => { const el = e.target, k = el.dataset &
 /* ---------- integridade, recuperação e diagnóstico ---------- */
 // Verificação ao abrir (registos órfãos, datas inválidas, registos perto do limite de tamanho) com arrumação segura;
 // validação das cópias antes de as aplicar; reposição de uma só turma; registo de erros e relatório sem dados pessoais.
-const VERSAO_APP = 'bf842897';   // trocado pelo build (resumo do código-fonte)
+const VERSAO_APP = 'ba149ee1';   // trocado pelo build (resumo do código-fonte)
 
 /* registo de erros (sem dados dos alunos: só a mensagem e o sítio) */
 const ERRLOG = [];
@@ -7133,7 +7133,7 @@ function gdSave() { try { if (GD.t) localStorage.setItem('ef:gd', JSON.stringify
 async function gdEntrar(silencioso) {
   const st = b64u(crypto.getRandomValues(new Uint8Array(16)));
   try { sessionStorage.setItem('ef:gdst', JSON.stringify({st, silencioso:!!silencioso})); if (silencioso) localStorage.setItem('ef:gdtent', String(Date.now())); } catch (e) {}
-  Store.flush(); try { await Promise.all(Object.values(Store.q)); } catch (e) {}   // só sai depois de tudo gravado
+  Store.flush(); try { await Promise.race([Promise.all(Object.values(Store.q)), new Promise(r => setTimeout(r, 3000))]); } catch (e) {}   // só sai depois de tudo gravado (no máximo 3 s)
   const p = {client_id:CFG.gdCid, redirect_uri:odRedirect(), response_type:'token', scope:GD_SC, include_granted_scopes:'true', state:st};
   if (silencioso) { p.prompt = 'none'; if (GD.t && GD.t.email) p.login_hint = GD.t.email; } else p.prompt = 'consent';
   location.href = GD_AUTH + '?' + new URLSearchParams(p);
@@ -7235,18 +7235,23 @@ function vGoogleDrive() {
         <li>Em <b>Clientes › Criar cliente</b>: tipo <b>Aplicação Web</b>, nome <b>Caderno EF</b>. Em <b>Origens JavaScript autorizadas</b> junte <code>${esc(location.origin)}</code>; em <b>URIs de redirecionamento autorizados</b> junte <code>${esc(odRedirect())}</code>. Criar.</li>
         <li>Copie o <b>ID de cliente</b> (termina em <i>.apps.googleusercontent.com</i>), cole-o abaixo e toque em <b>Ligar ao Google Drive</b>. A Google avisa que a app não está verificada: toque em <b>Continuar</b> (a app é sua) e autorize o acesso aos ficheiros do Caderno EF.</li>
       </ol><p class="hint">Use o mesmo ID em todos os aparelhos. Se abrir o caderno noutro endereço (por exemplo, terminado em /app/), junte também esse endereço aos URIs de redirecionamento.</p></details>
-      <div class="sync-url"><input type="text" id="gd-cid" data-in="gd-cid" placeholder="ID de cliente (…apps.googleusercontent.com)" value="${esc(CFG.gdCid || '')}" aria-label="ID de cliente Google"><button class="btn primary" data-a="gd-entrar"${/\.apps\.googleusercontent\.com$/.test(CFG.gdCid || '') ? '' : ' disabled'}>Ligar ao Google Drive</button></div>`;
+      <div class="sync-url"><input type="text" id="gd-cid" data-in="gd-cid" placeholder="ID de cliente (…apps.googleusercontent.com)" value="${esc(CFG.gdCid || '')}" aria-label="ID de cliente Google"><button class="btn primary" data-a="gd-entrar">Ligar ao Google Drive</button></div>`;
   return h + '</div>';
 }
 { const _vc = vCopias; vCopias = function () { return vGoogleDrive() + _vc(); }; }
 Object.assign(A, {
-  'gd-entrar': () => { const v = (($('#gd-cid') || {}).value || CFG.gdCid || '').trim(); if (!/^[\w-]+\.apps\.googleusercontent\.com$/.test(v)) { toast('O ID de cliente termina em .apps.googleusercontent.com: copie-o da consola da Google.', 'bad'); return; }
-    if (v !== CFG.gdCid) { CFG.gdCid = v; Store.save('cfg', CFG); } gdEntrar(false); },
+  'gd-entrar': () => {
+    // Dentro de outra página (por exemplo, a versão no Claude) a Google não deixa entrar: tem de ser no endereço próprio do caderno.
+    let dentro = false; try { dentro = window.top !== window.self; } catch (e) { dentro = true; }
+    if (dentro || !/^https:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname)) { toast('Para ligar o Google Drive abra o caderno no seu endereço próprio (…github.io/caderno-ef/) no navegador, não dentro do Claude.', 'bad'); return; }
+    const v = (($('#gd-cid') || {}).value || CFG.gdCid || '').replace(/\s+/g, '');
+    if (!v) { toast('Cole primeiro o ID de cliente que copiou da consola da Google.', 'bad'); $('#gd-cid') && $('#gd-cid').focus(); return; }
+    if (!/^[\w-]+\.apps\.googleusercontent\.com$/.test(v)) { toast(/GOCSPX/.test(v) ? 'Isso é a «chave secreta» do cliente: copie antes o «ID de cliente», que termina em .apps.googleusercontent.com.' : 'O ID de cliente termina em .apps.googleusercontent.com: copie-o da consola da Google.', 'bad'); return; }
+    if (v !== CFG.gdCid) { CFG.gdCid = v; Store.save('cfg', CFG); } toast('A abrir a página da Google…'); gdEntrar(false); },
   'gd-agora': () => gdGuardar(true),
   'gd-rec': el => { if (!armed(el, 'Juntar a cópia do Google Drive?')) return; gdRecuperar(); },
   'gd-sair': el => { if (!armed(el, 'Desligar?')) return; GD.t = null; GD.a = false; GD.ids = {}; gdSave(); try { localStorage.removeItem('ef:gdvistos'); } catch (e) {} render(); toast('Google Drive desligado neste aparelho.'); }
 });
-document.addEventListener('input', e => { const el = e.target; if (el.dataset && el.dataset.in === 'gd-cid') { const b = el.parentNode.querySelector('[data-a="gd-entrar"]'); if (b) b.disabled = !/^[\w-]+\.apps\.googleusercontent\.com$/.test(el.value.trim()); } });
 // Arranque: volta da Google, ou renova a sessão sozinha (no máximo uma tentativa a cada 10 minutos) e junta/guarda.
 (function esperar() { if (!CFG || !S || !S.cfg) { setTimeout(esperar, 300); return; }
   gdLoad(); gdRetorno();

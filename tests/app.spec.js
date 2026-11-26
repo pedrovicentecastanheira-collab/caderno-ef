@@ -583,8 +583,9 @@ test('Google Drive: ligar (início de sessão simulado), guardar sozinho, juntar
   });
   await demo(page);
   await page.click('#top .gear'); await page.click('[data-a="dsec"][data-k="sync"]');
-  await expect(page.locator('[data-a="gd-entrar"]')).toBeDisabled();
-  await page.fill('#gd-cid', '123-abc.apps.googleusercontent.com');
+  await page.click('[data-a="gd-entrar"]'); await expect(page.locator('#toast')).toContainText('Cole primeiro');
+  await page.fill('#gd-cid', 'GOCSPX-segredo'); await page.click('[data-a="gd-entrar"]'); await expect(page.locator('#toast')).toContainText('chave secreta');
+  await page.fill('#gd-cid', ' 123-abc.apps.googleusercontent.com ');
   await page.click('[data-a="gd-entrar"]');
   await expect.poll(() => pedidoAuth).not.toBeNull();
   await page.waitForFunction(() => typeof GD !== 'undefined' && GD.t && !location.hash.includes('access_token'));
