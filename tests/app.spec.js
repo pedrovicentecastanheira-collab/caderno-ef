@@ -614,6 +614,12 @@ test('Google Drive: ligar (início de sessão simulado), guardar sozinho, juntar
   // sessão expirada: aparece "Voltar a ligar" e não tenta enviar
   await page.evaluate(() => { GD.t.exp = 0; gdSave(); GD.a = true; render(); });
   await expect(page.locator('[data-a="gd-entrar"]')).toHaveText('Voltar a ligar');
+  // a API do Drive não está ativada no projeto: a mensagem diz o que fazer
+  await page.evaluate(() => { GD.t.exp = Date.now() + 3600e3; GD.a = false; GD.ids = {}; gdSave(); render(); });
+  await page.route(/www\.googleapis\.com\/drive\/v3\/files/, r => r.fulfill({status: 403, contentType: 'application/json', body: JSON.stringify({error: {code: 403, status: 'PERMISSION_DENIED', message: 'Google Drive API has not been used in project 123 before or it is disabled.', errors: [{reason: 'accessNotConfigured'}]}})}));
+  await page.click('[data-a="gd-agora"]'); await expect(page.locator('#toast')).toContainText('Google Drive API» não está ativada');
+  await page.route(/www\.googleapis\.com\/drive\/v3\/files/, r => r.fulfill({status: 403, contentType: 'application/json', body: JSON.stringify({error: {code: 403, message: 'Request had insufficient authentication scopes.', status: 'PERMISSION_DENIED', details: [{reason: 'ACCESS_TOKEN_SCOPE_INSUFFICIENT'}]}})}));
+  await page.click('[data-a="gd-agora"]'); await expect(page.locator('#toast')).toContainText('marcar a caixa');
   // desligar
   await page.click('[data-a="gd-sair"]'); await page.click('[data-a="gd-sair"]');
   await expect(page.locator('#gd-cid')).toBeVisible();
